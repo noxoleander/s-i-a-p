@@ -60,7 +60,7 @@
     z-index:1;
   }
 
-  #secret-view, #view-yes, #view-no, #page-perf{
+  #secret-view, #view-yes, #view-no, #page-perf, #page-please{
     position:fixed;
     inset:0;
     z-index:3;
@@ -77,7 +77,8 @@
   #secret-view video,
   #view-yes video,
   #view-no video,
-  #page-perf video{
+  #page-perf video,
+  #page-please video{
     position:absolute;
     top:50%; left:50%;
     min-width:100%; min-height:100%;
@@ -96,6 +97,7 @@
   body.v-yes #view-yes{ opacity:1; pointer-events:auto; }
   body.v-no #view-no{ opacity:1; pointer-events:auto; }
   body.v-perf #page-perf{ opacity:1; pointer-events:auto; }
+  body.v-please #page-please{ opacity:1; pointer-events:auto; }
 
   #page-perf .perf-hold-video{
     z-index:2;
@@ -189,7 +191,8 @@
   #secret-view .back,
   #view-yes .back,
   #view-no .back,
-  #page-perf .back{
+  #page-perf .back,
+  #page-please .back{
     position:absolute;
     bottom:0; left:0;
     z-index:1;
@@ -408,7 +411,21 @@
     <p id="perf-intro-text">I think there's someone in the garden</p>
   </div>
 
+  <button type="button" class="back-phrase" id="perf-please-msg">If you want him to go away, you're gonna have to say "please".</button>
+
   <a class="back" href="#" id="back-link-perf">← retour</a>
+</div>
+
+<div id="page-please">
+  <!--
+    VIDÉO DE FOND — "page please" :
+    remplace "video-please.mp4" par ton fichier, ou supprime
+    la balise si tu ne veux pas de vidéo ici.
+  -->
+  <video autoplay muted loop playsinline>
+    <source src="video-please.mp4" type="video/mp4">
+  </video>
+  <a class="back" href="#" id="back-link-please">← retour</a>
 </div>
 
 <script>
@@ -544,8 +561,13 @@
   });
 
   /* ---------------- portal: only manually-dropped letters can rest inside ---------------- */
-  var portalOpened = false;
-  var needed = ['S','U','B','L','I','M','E'];
+  var solvedSublime = false;
+  var solvedPlease = false;
+  var needed = ['S','U','B','L','I','M','E']; // used elsewhere (sfx trigger) — kept as a flat list
+
+  // required letter counts for each word the box can recognise
+  var sublimeCounts = { S:1, U:1, B:1, L:1, I:1, M:1, E:1 };
+  var pleaseCounts  = { P:1, L:1, E:2, A:1, S:1 };
 
   function bounceOffBox(L){
     var r = portalEl.getBoundingClientRect();
@@ -581,35 +603,70 @@
     }
   }
 
-  function updatePortalState(){
-    if(portalOpened) return;
-    var found = {};
-    var any = false;
-
+  function boxLetterCounts(){
+    var counts = {};
     for(var i=0; i<letters.length; i++){
       if(letters[i].inBox){
-        found[letters[i].el.textContent] = true;
-        any = true;
+        var ch = letters[i].el.textContent;
+        counts[ch] = (counts[ch] || 0) + 1;
       }
     }
+    return counts;
+  }
 
-    var allThere = needed.every(function(ch){ return found[ch]; });
-    if(allThere){
-      portalOpened = true;
+  function satisfiesCounts(counts, required){
+    for(var ch in required){
+      if((counts[ch] || 0) < required[ch]) return false;
+    }
+    return true;
+  }
+
+  // pops every letter currently resting in the box back out into the wind,
+  // so the box is empty and ready for the next word
+  function clearBox(){
+    for(var i=0; i<letters.length; i++){
+      var L = letters[i];
+      if(L.inBox){
+        L.inBox = false;
+        L.vx = rand(-3, 3);
+        L.vy = rand(-3, 3);
+      }
+    }
+  }
+
+  function updatePortalState(){
+    if(solvedSublime && solvedPlease) return;
+    var counts = boxLetterCounts();
+
+    if(!solvedSublime && satisfiesCounts(counts, sublimeCounts)){
+      solvedSublime = true;
+      clearBox();
       setTimeout(function(){
         document.body.classList.add('opened', 'v-secret');
         switchTrack(bgmSecret);
+      }, 400);
+      return;
+    }
+
+    if(!solvedPlease && satisfiesCounts(counts, pleaseCounts)){
+      solvedPlease = true;
+      clearBox();
+      setTimeout(function(){
+        document.body.classList.add('opened', 'v-please');
       }, 400);
     }
   }
 
   function goHome(){
-    document.body.classList.remove('opened', 'v-secret', 'v-yes', 'v-no', 'v-perf');
-    portalOpened = false;
+    document.body.classList.remove('opened', 'v-secret', 'v-yes', 'v-no', 'v-perf', 'v-please');
+    solvedSublime = false;
+    solvedPlease = false;
     resetYesSequence();
     switchTrack(bgmHome);
     perfBgVideo.pause();
     perfHideOverlay();
+    clearTimeout(perfHoldTimer);
+    perfPleaseMsg.style.display = 'none';
   }
 
   document.getElementById('back-link').addEventListener('click', function(e){
@@ -628,6 +685,10 @@
     e.preventDefault();
     goHome();
   });
+  document.getElementById('back-link-please').addEventListener('click', function(e){
+    e.preventDefault();
+    goHome();
+  });
 
   /* ---------------- page-perf: press-and-hold overlay video ---------------- */
   var perfContainer = document.getElementById('page-perf');
@@ -642,6 +703,8 @@
   perfHoldSound.volume = 0.7;
   var perfActiveHold = null;
   var perfStarted = false; // true only once the intro message has been dismissed
+  var perfHoldTimer = null;
+  var perfPleaseMsg = document.getElementById('perf-please-msg');
 
   // force an early metadata load so the browser knows each video's real
   // dimensions before the first press — avoids a wrong-size flash/crop
@@ -651,6 +714,7 @@
   function perfShowOverlay(e){
     if(!perfStarted) return;
     if(e.target.closest && e.target.closest('.back')) return;
+    if(e.target === perfPleaseMsg) return;
     perfActiveHold = perfHoldVideos[Math.floor(Math.random() * perfHoldVideos.length)];
     perfActiveHold.classList.add('active');
     perfActiveHold.currentTime = 0;
@@ -661,6 +725,12 @@
       perfHoldSound.currentTime = Math.random() * perfHoldSound.duration;
     }
     perfHoldSound.play().catch(function(){});
+
+    // if the click is held for 7 straight seconds, reveal the "please" message
+    clearTimeout(perfHoldTimer);
+    perfHoldTimer = setTimeout(function(){
+      perfPleaseMsg.style.display = 'block';
+    }, 7000);
   }
   function perfHideOverlay(){
     if(perfActiveHold){
@@ -669,11 +739,20 @@
       perfActiveHold = null;
     }
     perfHoldSound.pause();
+    clearTimeout(perfHoldTimer);
   }
   perfContainer.addEventListener('mousedown', perfShowOverlay);
   window.addEventListener('mouseup', perfHideOverlay);
   perfContainer.addEventListener('touchstart', perfShowOverlay, {passive:true});
   window.addEventListener('touchend', perfHideOverlay);
+
+  perfPleaseMsg.addEventListener('mousedown', function(e){
+    e.stopPropagation();
+  });
+  perfPleaseMsg.addEventListener('click', function(e){
+    e.stopPropagation();
+    goHome();
+  });
 
   /* ---------------- page-perf: black-screen intro message ---------------- */
   var perfIntroEl = document.getElementById('perf-intro');
@@ -700,6 +779,8 @@
     perfIntroTextEl.classList.remove('show');
     perfIntroEl.style.opacity = '1';
     perfIntroEl.style.pointerEvents = 'auto';
+    perfPleaseMsg.style.display = 'none';
+    clearTimeout(perfHoldTimer);
 
     // after 2s of pure black, reveal the message (instantly, no fade)
     setTimeout(function(){
@@ -937,13 +1018,15 @@
      touche 3 : vue "yes"
      touche 4 : vue "no"
      touche 5 : "page perf"
+     touche 6 : "page please"
      ================================================================ */
   window.addEventListener('keydown', function(e){
     if(e.key === '1'){ goHome(); }
-    if(e.key === '2'){ portalOpened = true; goHome(); document.body.classList.add('opened','v-secret'); switchTrack(bgmSecret); }
-    if(e.key === '3'){ portalOpened = true; goHome(); document.body.classList.add('opened','v-yes'); switchTrack(bgmYes); enterYesSequence(); }
-    if(e.key === '4'){ portalOpened = true; goHome(); document.body.classList.add('opened','v-no'); switchTrack(bgmSecret); }
-    if(e.key === '5'){ portalOpened = true; goHome(); document.body.classList.add('opened','v-perf'); enterPerfPage(); }
+    if(e.key === '2'){ solvedSublime = true; goHome(); document.body.classList.add('opened','v-secret'); switchTrack(bgmSecret); }
+    if(e.key === '3'){ solvedSublime = true; goHome(); document.body.classList.add('opened','v-yes'); switchTrack(bgmYes); enterYesSequence(); }
+    if(e.key === '4'){ solvedSublime = true; goHome(); document.body.classList.add('opened','v-no'); switchTrack(bgmSecret); }
+    if(e.key === '5'){ solvedSublime = true; goHome(); document.body.classList.add('opened','v-perf'); enterPerfPage(); }
+    if(e.key === '6'){ solvedPlease = true; goHome(); document.body.classList.add('opened','v-please'); }
   });
   /* ================================================================ */
 })();
