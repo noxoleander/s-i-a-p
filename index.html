@@ -60,21 +60,30 @@
     z-index:1;
   }
 
-  #secret-view{
+  #secret-view, #view-yes, #view-no{
     position:fixed;
     inset:0;
     z-index:3;
-    /*
-      PHOTO DE FOND DE CETTE VUE :
-      remplace le background-color ci-dessous par ta photo, par ex :
-      background: #000 url('ta-photo.jpg') center center / cover no-repeat;
-    */
     background:#000;
+    overflow:hidden;
     opacity:0;
     pointer-events:none;
     transition:opacity 1.1s;
     display:flex;
-    align-items:flex-end;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+  }
+  #secret-view video,
+  #view-yes video,
+  #view-no video{
+    position:absolute;
+    top:50%; left:50%;
+    min-width:100%; min-height:100%;
+    width:auto; height:auto;
+    transform:translate(-50%,-50%);
+    object-fit:cover;
+    z-index:0;
   }
   body.opened #stage,
   body.opened #portal{
@@ -82,9 +91,36 @@
     pointer-events:none;
     transition:opacity .8s;
   }
-  body.opened #secret-view{
-    opacity:1;
-    pointer-events:auto;
+  body.v-secret #secret-view{ opacity:1; pointer-events:auto; }
+  body.v-yes #view-yes{ opacity:1; pointer-events:auto; }
+  body.v-no #view-no{ opacity:1; pointer-events:auto; }
+
+  .options{
+    position:relative;
+    z-index:1;
+    display:flex;
+    gap:3.5rem;
+  }
+  .opt{
+    background:transparent;
+    border:none;
+    padding:0;
+    font-family:Arial, sans-serif;
+    font-weight:700;
+    font-size:0.95rem;
+    color:var(--letter-color);
+    cursor:pointer;
+    opacity:.85;
+    transition:opacity .2s;
+  }
+  .opt:hover{ opacity:1; }
+
+  #secret-view .back,
+  #view-yes .back,
+  #view-no .back{
+    position:absolute;
+    bottom:0; left:0;
+    z-index:1;
   }
 
   a.back{
@@ -174,7 +210,40 @@
 </audio>
 
 <div id="secret-view">
+  <!--
+    VIDÉO DE FOND DE CETTE VUE :
+    remplace "video-suite.mp4" par le nom de ton fichier vidéo.
+  -->
+  <video autoplay muted loop playsinline>
+    <source src="video-suite.mp4" type="video/mp4">
+  </video>
+  <div class="options">
+    <button type="button" class="opt" id="opt-yes">yes</button>
+    <button type="button" class="opt" id="opt-no">no</button>
+  </div>
   <a class="back" href="#" id="back-link">← retour</a>
+</div>
+
+<div id="view-yes">
+  <!--
+    VIDÉO DE FOND — page "yes" (2.1) :
+    remplace "video-yes.mp4" par le nom de ton fichier vidéo.
+  -->
+  <video autoplay muted loop playsinline>
+    <source src="video-yes.mp4" type="video/mp4">
+  </video>
+  <a class="back" href="#" id="back-link-yes">← retour</a>
+</div>
+
+<div id="view-no">
+  <!--
+    VIDÉO DE FOND — page "no" (2.2) :
+    remplace "video-no.mp4" par le nom de ton fichier vidéo.
+  -->
+  <video autoplay muted loop playsinline>
+    <source src="video-no.mp4" type="video/mp4">
+  </video>
+  <a class="back" href="#" id="back-link-no">← retour</a>
 </div>
 
 <script>
@@ -344,14 +413,37 @@
     var allThere = needed.every(function(ch){ return found[ch]; });
     if(allThere){
       portalOpened = true;
-      setTimeout(function(){ document.body.classList.add('opened'); }, 400);
+      setTimeout(function(){
+        document.body.classList.add('opened', 'v-secret');
+      }, 400);
     }
+  }
+
+  function goHome(){
+    document.body.classList.remove('opened', 'v-secret', 'v-yes', 'v-no');
+    portalOpened = false;
   }
 
   document.getElementById('back-link').addEventListener('click', function(e){
     e.preventDefault();
-    document.body.classList.remove('opened');
-    portalOpened = false;
+    goHome();
+  });
+  document.getElementById('back-link-yes').addEventListener('click', function(e){
+    e.preventDefault();
+    goHome();
+  });
+  document.getElementById('back-link-no').addEventListener('click', function(e){
+    e.preventDefault();
+    goHome();
+  });
+
+  document.getElementById('opt-yes').addEventListener('click', function(){
+    document.body.classList.remove('v-secret');
+    document.body.classList.add('v-yes');
+  });
+  document.getElementById('opt-no').addEventListener('click', function(){
+    document.body.classList.remove('v-secret');
+    document.body.classList.add('v-no');
   });
 
   /* ---------------- pointer velocity tracking (wind) ---------------- */
