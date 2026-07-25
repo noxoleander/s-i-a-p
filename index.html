@@ -567,6 +567,23 @@
       soundBtn.textContent = 'son : on';
     }
   });
+
+  /* ================================================================
+     RACCOURCIS TEMPORAIRES DE TEST — À SUPPRIMER avant la mise en ligne finale.
+     Permettent de sauter directement sur une vue sans refaire le geste
+     "sublime dans la boîte" à chaque fois.
+     touche 1 : accueil
+     touche 2 : vue "yes / no" (celle après le puzzle)
+     touche 3 : vue "yes"
+     touche 4 : vue "no"
+     ================================================================ */
+  window.addEventListener('keydown', function(e){
+    if(e.key === '1'){ goHome(); }
+    if(e.key === '2'){ portalOpened = true; goHome(); document.body.classList.add('opened','v-secret'); }
+    if(e.key === '3'){ portalOpened = true; goHome(); document.body.classList.add('opened','v-yes'); }
+    if(e.key === '4'){ portalOpened = true; goHome(); document.body.classList.add('opened','v-no'); }
+  });
+  /* ================================================================ */
 })();
 </script>
 
