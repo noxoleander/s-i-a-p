@@ -60,7 +60,7 @@
     z-index:1;
   }
 
-  #secret-view, #view-yes, #view-no{
+  #secret-view, #view-yes, #view-no, #page-perf{
     position:fixed;
     inset:0;
     z-index:3;
@@ -76,7 +76,8 @@
   }
   #secret-view video,
   #view-yes video,
-  #view-no video{
+  #view-no video,
+  #page-perf video{
     position:absolute;
     top:50%; left:50%;
     min-width:100%; min-height:100%;
@@ -94,6 +95,16 @@
   body.v-secret #secret-view{ opacity:1; pointer-events:auto; }
   body.v-yes #view-yes{ opacity:1; pointer-events:auto; }
   body.v-no #view-no{ opacity:1; pointer-events:auto; }
+  body.v-perf #page-perf{ opacity:1; pointer-events:auto; }
+
+  #yes-img{
+    position:relative;
+    z-index:1;
+    max-width:60vw;
+    max-height:60vh;
+    cursor:pointer;
+    user-select:none;
+  }
 
   .options{
     position:absolute;
@@ -120,7 +131,8 @@
 
   #secret-view .back,
   #view-yes .back,
-  #view-no .back{
+  #view-no .back,
+  #page-perf .back{
     position:absolute;
     bottom:0; left:0;
     z-index:1;
@@ -244,6 +256,16 @@
 <audio id="sfx-4" preload="auto"><source src="sfx-pose-4.mp3" type="audio/mpeg"></audio>
 <audio id="sfx-5" preload="auto"><source src="sfx-pose-5.mp3" type="audio/mpeg"></audio>
 
+<!--
+  SONS — image cliquable de la page "yes" :
+  un son différent pour chacune des 5 images, dans l'ordre.
+-->
+<audio id="yes-click-1" preload="auto"><source src="yes-click-1.mp3" type="audio/mpeg"></audio>
+<audio id="yes-click-2" preload="auto"><source src="yes-click-2.mp3" type="audio/mpeg"></audio>
+<audio id="yes-click-3" preload="auto"><source src="yes-click-3.mp3" type="audio/mpeg"></audio>
+<audio id="yes-click-4" preload="auto"><source src="yes-click-4.mp3" type="audio/mpeg"></audio>
+<audio id="yes-click-5" preload="auto"><source src="yes-click-5.mp3" type="audio/mpeg"></audio>
+
 <div id="secret-view">
   <!--
     VIDÉO DE FOND DE CETTE VUE :
@@ -267,6 +289,11 @@
   <video autoplay muted loop playsinline>
     <source src="video-yes.mp4" type="video/mp4">
   </video>
+  <!--
+    IMAGE CLIQUABLE — remplace yes-img-1.png à yes-img-5.png
+    par tes 5 images.
+  -->
+  <img id="yes-img" src="yes-img-1.png" alt="">
   <a class="back" href="#" id="back-link-yes">← retour</a>
 </div>
 
@@ -279,6 +306,18 @@
     <source src="video-no.mp4" type="video/mp4">
   </video>
   <a class="back" href="#" id="back-link-no">← retour</a>
+</div>
+
+<div id="page-perf">
+  <!--
+    VIDÉO DE FOND — "page perf" :
+    remplace "video-perf.mp4" par ton fichier, ou supprime
+    la balise si tu ne veux pas de vidéo ici.
+  -->
+  <video autoplay muted loop playsinline>
+    <source src="video-perf.mp4" type="video/mp4">
+  </video>
+  <a class="back" href="#" id="back-link-perf">← retour</a>
 </div>
 
 <script>
@@ -474,8 +513,9 @@
   }
 
   function goHome(){
-    document.body.classList.remove('opened', 'v-secret', 'v-yes', 'v-no');
+    document.body.classList.remove('opened', 'v-secret', 'v-yes', 'v-no', 'v-perf');
     portalOpened = false;
+    resetYesSequence();
     switchTrack(bgmHome);
   }
 
@@ -490,6 +530,44 @@
   document.getElementById('back-link-no').addEventListener('click', function(e){
     e.preventDefault();
     goHome();
+  });
+  document.getElementById('back-link-perf').addEventListener('click', function(e){
+    e.preventDefault();
+    goHome();
+  });
+
+  /* ---------------- yes-page: clickable image sequence ---------------- */
+  var yesImgEl = document.getElementById('yes-img');
+  var yesImages = ['yes-img-1.png','yes-img-2.png','yes-img-3.png','yes-img-4.png','yes-img-5.png'];
+  var yesSoundEls = [
+    document.getElementById('yes-click-1'),
+    document.getElementById('yes-click-2'),
+    document.getElementById('yes-click-3'),
+    document.getElementById('yes-click-4'),
+    document.getElementById('yes-click-5')
+  ];
+  var yesIndex = 0;
+
+  function resetYesSequence(){
+    yesIndex = 0;
+    yesImgEl.src = yesImages[0];
+  }
+
+  yesImgEl.addEventListener('click', function(){
+    // play the sound tied to the image currently showing
+    var snd = yesSoundEls[yesIndex].cloneNode(true);
+    snd.volume = 0.8;
+    snd.play().catch(function(){});
+
+    yesIndex++;
+    if(yesIndex < yesImages.length){
+      yesImgEl.src = yesImages[yesIndex];
+    } else {
+      setTimeout(function(){
+        document.body.classList.remove('v-yes');
+        document.body.classList.add('v-perf');
+      }, 300);
+    }
   });
 
   document.getElementById('opt-yes').addEventListener('click', function(){
@@ -647,12 +725,14 @@
      touche 2 : vue "yes / no" (celle après le puzzle)
      touche 3 : vue "yes"
      touche 4 : vue "no"
+     touche 5 : "page perf"
      ================================================================ */
   window.addEventListener('keydown', function(e){
     if(e.key === '1'){ goHome(); }
     if(e.key === '2'){ portalOpened = true; goHome(); document.body.classList.add('opened','v-secret'); switchTrack(bgmSecret); }
     if(e.key === '3'){ portalOpened = true; goHome(); document.body.classList.add('opened','v-yes'); switchTrack(bgmYes); }
     if(e.key === '4'){ portalOpened = true; goHome(); document.body.classList.add('opened','v-no'); switchTrack(bgmSecret); }
+    if(e.key === '5'){ portalOpened = true; goHome(); document.body.classList.add('opened','v-perf'); }
   });
   /* ================================================================ */
 })();
