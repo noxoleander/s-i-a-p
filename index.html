@@ -96,7 +96,10 @@
   body.v-no #view-no{ opacity:1; pointer-events:auto; }
 
   .options{
-    position:relative;
+    position:absolute;
+    left:50%;
+    top:78%;
+    transform:translate(-50%, -50%);
     z-index:1;
     display:flex;
     gap:3.5rem;
@@ -199,14 +202,24 @@
 <button id="sound-toggle" type="button">son : off</button>
 
 <!--
-  BOUCLE SONORE :
+  BOUCLE SONORE — PAGE D'ACCUEIL :
   remplace la valeur "src" ci-dessous par le nom de ton fichier audio
   (mp3 ou ogg), placé dans le même dossier que ce fichier html.
   Le son se lance au premier clic/drag sur la page (contrainte des
   navigateurs : impossible de jouer du son avant une interaction).
 -->
-<audio id="bgm" loop preload="auto">
+<audio id="bgm-home" loop preload="auto">
   <source src="ta-boucle.mp3" type="audio/mpeg">
+</audio>
+
+<!--
+  BOUCLE SONORE — PAGE "YES / NO" :
+  même principe, fichier différent. Elle prend le relais
+  automatiquement quand on arrive sur cette page, et la boucle
+  d'accueil se coupe.
+-->
+<audio id="bgm-secret" loop preload="auto">
+  <source src="boucle-page2.mp3" type="audio/mpeg">
 </audio>
 
 <div id="secret-view">
@@ -415,6 +428,7 @@
       portalOpened = true;
       setTimeout(function(){
         document.body.classList.add('opened', 'v-secret');
+        switchTrack(bgmSecret);
       }, 400);
     }
   }
@@ -422,6 +436,7 @@
   function goHome(){
     document.body.classList.remove('opened', 'v-secret', 'v-yes', 'v-no');
     portalOpened = false;
+    switchTrack(bgmHome);
   }
 
   document.getElementById('back-link').addEventListener('click', function(e){
@@ -535,16 +550,29 @@
   }
 
   /* ---------------- sound ---------------- */
-  var bgm = document.getElementById('bgm');
+  var bgmHome = document.getElementById('bgm-home');
+  var bgmSecret = document.getElementById('bgm-secret');
   var soundBtn = document.getElementById('sound-toggle');
   var soundOn = false;
   var unlocked = false;
+  var currentTrack = bgmHome;
+
+  bgmHome.volume = 0.6;
+  bgmSecret.volume = 0.6;
+
+  function switchTrack(track){
+    if(currentTrack === track) return;
+    if(unlocked){ currentTrack.pause(); currentTrack.currentTime = 0; }
+    currentTrack = track;
+    if(unlocked && soundOn){
+      currentTrack.play().catch(function(){});
+    }
+  }
 
   function unlockAndPlay(){
     if(unlocked) return;
     unlocked = true;
-    bgm.volume = 0.6;
-    bgm.play().then(function(){
+    currentTrack.play().then(function(){
       soundOn = true;
       soundBtn.textContent = 'son : on';
     }).catch(function(){
@@ -558,11 +586,11 @@
   soundBtn.addEventListener('click', function(){
     if(!unlocked){ unlockAndPlay(); return; }
     if(soundOn){
-      bgm.pause();
+      currentTrack.pause();
       soundOn = false;
       soundBtn.textContent = 'son : off';
     } else {
-      bgm.play();
+      currentTrack.play();
       soundOn = true;
       soundBtn.textContent = 'son : on';
     }
@@ -579,9 +607,9 @@
      ================================================================ */
   window.addEventListener('keydown', function(e){
     if(e.key === '1'){ goHome(); }
-    if(e.key === '2'){ portalOpened = true; goHome(); document.body.classList.add('opened','v-secret'); }
-    if(e.key === '3'){ portalOpened = true; goHome(); document.body.classList.add('opened','v-yes'); }
-    if(e.key === '4'){ portalOpened = true; goHome(); document.body.classList.add('opened','v-no'); }
+    if(e.key === '2'){ portalOpened = true; goHome(); document.body.classList.add('opened','v-secret'); switchTrack(bgmSecret); }
+    if(e.key === '3'){ portalOpened = true; goHome(); document.body.classList.add('opened','v-yes'); switchTrack(bgmSecret); }
+    if(e.key === '4'){ portalOpened = true; goHome(); document.body.classList.add('opened','v-no'); switchTrack(bgmSecret); }
   });
   /* ================================================================ */
 })();
