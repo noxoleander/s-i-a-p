@@ -377,7 +377,9 @@
         L.inBox = true;
         L.vx = 0;
         L.vy = 0;
-        playDropSfx();
+        if(needed.indexOf(L.el.textContent) !== -1){
+          playDropSfx();
+        }
       } else {
         L.inBox = false;
       }
