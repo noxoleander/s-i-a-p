@@ -106,6 +106,33 @@
     opacity:1;
   }
 
+  #perf-intro{
+    position:absolute;
+    inset:0;
+    z-index:5;
+    background:#000;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    opacity:1;
+    transition:opacity .5s;
+  }
+  #perf-intro-text{
+    margin:0;
+    padding:0 2rem;
+    text-align:center;
+    font-family:Arial, sans-serif;
+    font-weight:700;
+    font-size:0.95rem;
+    color:var(--letter-color);
+    opacity:0;
+    transition:opacity 1s;
+  }
+  #perf-intro-text.show{
+    opacity:1;
+  }
+
   #yes-img{
     position:relative;
     z-index:1;
@@ -355,8 +382,9 @@
     VIDÉO DE FOND (avec son) — "page perf" :
     remplace "video-perf.mp4" par ton fichier.
     Pas de "muted" ici : c'est volontaire, tu veux le son de cette vidéo.
+    Pas d'"autoplay" non plus : elle démarre au clic qui ferme l'intro.
   -->
-  <video id="perf-bg-video" autoplay loop playsinline>
+  <video id="perf-bg-video" loop playsinline>
     <source src="video-perf.mp4" type="video/mp4">
   </video>
   <!--
@@ -366,10 +394,22 @@
     par-dessus la vidéo de fond, aux mêmes dimensions. Muettes par
     défaut ; dis-moi si tu veux aussi du son dessus.
   -->
-  <video class="perf-hold-video" id="perf-hold-1" muted loop playsinline><source src="video-perf-hold-1.mp4" type="video/mp4"></video>
-  <video class="perf-hold-video" id="perf-hold-2" muted loop playsinline><source src="video-perf-hold-2.mp4" type="video/mp4"></video>
-  <video class="perf-hold-video" id="perf-hold-3" muted loop playsinline><source src="video-perf-hold-3.mp4" type="video/mp4"></video>
-  <video class="perf-hold-video" id="perf-hold-4" muted loop playsinline><source src="video-perf-hold-4.mp4" type="video/mp4"></video>
+  <video class="perf-hold-video" id="perf-hold-1" muted loop playsinline preload="auto"><source src="video-perf-hold-1.mp4" type="video/mp4"></video>
+  <video class="perf-hold-video" id="perf-hold-2" muted loop playsinline preload="auto"><source src="video-perf-hold-2.mp4" type="video/mp4"></video>
+  <video class="perf-hold-video" id="perf-hold-3" muted loop playsinline preload="auto"><source src="video-perf-hold-3.mp4" type="video/mp4"></video>
+  <video class="perf-hold-video" id="perf-hold-4" muted loop playsinline preload="auto"><source src="video-perf-hold-4.mp4" type="video/mp4"></video>
+
+  <!--
+    SON — pendant le clic maintenu : boucle qui ne joue que tant que
+    le clic est enfoncé, et démarre à un point aléatoire de la boucle
+    à chaque nouvelle pression.
+  -->
+  <audio id="perf-hold-sound" loop preload="auto"><source src="son-hold.mp3" type="audio/mpeg"></audio>
+
+  <div id="perf-intro">
+    <p id="perf-intro-text">I think there's someone in the garden</p>
+  </div>
+
   <a class="back" href="#" id="back-link-perf">← retour</a>
 </div>
 
@@ -600,14 +640,29 @@
     document.getElementById('perf-hold-3'),
     document.getElementById('perf-hold-4')
   ];
+  var perfHoldSound = document.getElementById('perf-hold-sound');
+  perfHoldSound.volume = 0.7;
   var perfActiveHold = null;
+  var perfStarted = false; // true only once the intro message has been dismissed
+
+  // force an early metadata load so the browser knows each video's real
+  // dimensions before the first press — avoids a wrong-size flash/crop
+  perfHoldVideos.forEach(function(v){ v.load(); });
+  perfHoldSound.load();
 
   function perfShowOverlay(e){
+    if(!perfStarted) return;
     if(e.target.closest && e.target.closest('.back')) return;
     perfActiveHold = perfHoldVideos[Math.floor(Math.random() * perfHoldVideos.length)];
     perfActiveHold.classList.add('active');
     perfActiveHold.currentTime = 0;
     perfActiveHold.play().catch(function(){});
+
+    // start the hold-sound from a random point in its loop each press
+    if(perfHoldSound.duration && isFinite(perfHoldSound.duration) && perfHoldSound.duration > 0){
+      perfHoldSound.currentTime = Math.random() * perfHoldSound.duration;
+    }
+    perfHoldSound.play().catch(function(){});
   }
   function perfHideOverlay(){
     if(perfActiveHold){
@@ -615,16 +670,48 @@
       perfActiveHold.pause();
       perfActiveHold = null;
     }
+    perfHoldSound.pause();
   }
   perfContainer.addEventListener('mousedown', perfShowOverlay);
   window.addEventListener('mouseup', perfHideOverlay);
   perfContainer.addEventListener('touchstart', perfShowOverlay, {passive:true});
   window.addEventListener('touchend', perfHideOverlay);
 
-  function enterPerfPage(){
-    // explicit play() call to make sure the (unmuted) background video's
-    // sound actually starts, on top of the autoplay attribute
+  /* ---------------- page-perf: black-screen intro message ---------------- */
+  var perfIntroEl = document.getElementById('perf-intro');
+  var perfIntroTextEl = document.getElementById('perf-intro-text');
+  var perfIntroDismissed = false;
+
+  function dismissPerfIntro(e){
+    if(e){ e.stopPropagation(); }
+    if(perfIntroDismissed) return;
+    perfIntroDismissed = true;
+    perfStarted = true;
+    perfIntroEl.style.opacity = '0';
+    perfIntroEl.style.pointerEvents = 'none';
+    perfBgVideo.currentTime = 0;
     perfBgVideo.play().catch(function(){});
+  }
+  perfIntroEl.addEventListener('mousedown', dismissPerfIntro);
+  perfIntroEl.addEventListener('touchstart', dismissPerfIntro, {passive:true});
+
+  function enterPerfPage(){
+    // reset: black screen, no message, nothing started yet
+    perfIntroDismissed = false;
+    perfStarted = false;
+    perfIntroTextEl.classList.remove('show');
+    perfIntroEl.style.transition = 'none';
+    perfIntroEl.style.opacity = '1';
+    perfIntroEl.style.pointerEvents = 'auto';
+    void perfIntroEl.offsetWidth; // force reflow so the transition re-applies cleanly next time
+    perfIntroEl.style.transition = 'opacity .5s';
+
+    // after 2s of pure black, reveal the message
+    setTimeout(function(){
+      if(!perfIntroDismissed){
+        perfIntroTextEl.classList.add('show');
+      }
+    }, 2000);
   }
 
   /* ---------------- yes-page: clickable image sequence ---------------- */
