@@ -176,6 +176,12 @@
     z-index:1;
     display:flex;
     gap:3.5rem;
+    opacity:0;
+    pointer-events:none;
+  }
+  .options.show{
+    opacity:1;
+    pointer-events:auto;
   }
   .opt{
     background:transparent;
@@ -346,7 +352,7 @@
   <video autoplay muted loop playsinline>
     <source src="video-suite.mp4" type="video/mp4">
   </video>
-  <div class="options">
+  <div class="options" id="yesno-options">
     <button type="button" class="opt" id="opt-yes">yes</button>
     <button type="button" class="opt" id="opt-no">no</button>
   </div>
@@ -647,6 +653,7 @@
       setTimeout(function(){
         document.body.classList.add('opened', 'v-secret');
         switchTrack(bgmSecret);
+        enterSecretPage();
       }, 400);
       return;
     }
@@ -784,12 +791,12 @@
     perfPleaseMsg.style.display = 'none';
     clearTimeout(perfHoldTimer);
 
-    // after 2s of pure black, reveal the message (instantly, no fade)
+    // after 4s of pure black, reveal the message (instantly, no fade)
     setTimeout(function(){
       if(!perfIntroDismissed){
         perfIntroTextEl.classList.add('show');
       }
-    }, 2000);
+    }, 4000);
   }
 
   /* ---------------- yes-page: clickable image sequence ---------------- */
@@ -871,6 +878,14 @@
     document.body.classList.remove('v-secret');
     document.body.classList.add('v-no');
   });
+
+  var yesnoOptionsEl = document.getElementById('yesno-options');
+  function enterSecretPage(){
+    yesnoOptionsEl.classList.remove('show');
+    setTimeout(function(){
+      yesnoOptionsEl.classList.add('show');
+    }, 3000);
+  }
 
   /* ---------------- pointer velocity tracking (wind) ---------------- */
   var mouseX = W/2, mouseY = H/2;
@@ -1024,7 +1039,7 @@
      ================================================================ */
   window.addEventListener('keydown', function(e){
     if(e.key === '1'){ goHome(); }
-    if(e.key === '2'){ solvedSublime = true; goHome(); document.body.classList.add('opened','v-secret'); switchTrack(bgmSecret); }
+    if(e.key === '2'){ solvedSublime = true; goHome(); document.body.classList.add('opened','v-secret'); switchTrack(bgmSecret); enterSecretPage(); }
     if(e.key === '3'){ solvedSublime = true; goHome(); document.body.classList.add('opened','v-yes'); switchTrack(bgmYes); enterYesSequence(); }
     if(e.key === '4'){ solvedSublime = true; goHome(); document.body.classList.add('opened','v-no'); switchTrack(bgmSecret); }
     if(e.key === '5'){ solvedSublime = true; goHome(); document.body.classList.add('opened','v-perf'); enterPerfPage(); }
