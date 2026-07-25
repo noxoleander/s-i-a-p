@@ -223,6 +223,15 @@
 </audio>
 
 <!--
+  BOUCLE SONORE — PAGE "YES" (2.1) :
+  même principe, encore un fichier différent. Elle prend le relais
+  dès qu'on clique sur "yes".
+-->
+<audio id="bgm-yes" loop preload="auto">
+  <source src="boucle-yes.mp3" type="audio/mpeg">
+</audio>
+
+<!--
   EFFETS SONORES — dépôt d'une lettre dans la boîte :
   remplace ces 5 noms par tes fichiers .mp3 (courts).
   Si tu en as moins de 5, tu peux réutiliser les mêmes fichiers
@@ -486,6 +495,7 @@
   document.getElementById('opt-yes').addEventListener('click', function(){
     document.body.classList.remove('v-secret');
     document.body.classList.add('v-yes');
+    switchTrack(bgmYes);
   });
   document.getElementById('opt-no').addEventListener('click', function(){
     document.body.classList.remove('v-secret');
@@ -583,6 +593,7 @@
   /* ---------------- sound ---------------- */
   var bgmHome = document.getElementById('bgm-home');
   var bgmSecret = document.getElementById('bgm-secret');
+  var bgmYes = document.getElementById('bgm-yes');
   var soundBtn = document.getElementById('sound-toggle');
   var soundOn = false;
   var unlocked = false;
@@ -590,6 +601,7 @@
 
   bgmHome.volume = 0.6;
   bgmSecret.volume = 0.6;
+  bgmYes.volume = 0.6;
 
   function switchTrack(track){
     if(currentTrack === track) return;
@@ -639,7 +651,7 @@
   window.addEventListener('keydown', function(e){
     if(e.key === '1'){ goHome(); }
     if(e.key === '2'){ portalOpened = true; goHome(); document.body.classList.add('opened','v-secret'); switchTrack(bgmSecret); }
-    if(e.key === '3'){ portalOpened = true; goHome(); document.body.classList.add('opened','v-yes'); switchTrack(bgmSecret); }
+    if(e.key === '3'){ portalOpened = true; goHome(); document.body.classList.add('opened','v-yes'); switchTrack(bgmYes); }
     if(e.key === '4'){ portalOpened = true; goHome(); document.body.classList.add('opened','v-no'); switchTrack(bgmSecret); }
   });
   /* ================================================================ */
