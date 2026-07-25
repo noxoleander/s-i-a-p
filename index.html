@@ -97,6 +97,15 @@
   body.v-no #view-no{ opacity:1; pointer-events:auto; }
   body.v-perf #page-perf{ opacity:1; pointer-events:auto; }
 
+  #page-perf .perf-hold-video{
+    z-index:2;
+    opacity:0;
+    transition:none;
+  }
+  #page-perf .perf-hold-video.active{
+    opacity:1;
+  }
+
   #yes-img{
     position:relative;
     z-index:1;
@@ -343,13 +352,25 @@
 
 <div id="page-perf">
   <!--
-    VIDÉO DE FOND — "page perf" :
-    remplace "video-perf.mp4" par ton fichier, ou supprime
-    la balise si tu ne veux pas de vidéo ici.
+    VIDÉO DE FOND (avec son) — "page perf" :
+    remplace "video-perf.mp4" par ton fichier.
+    Pas de "muted" ici : c'est volontaire, tu veux le son de cette vidéo.
   -->
-  <video autoplay muted loop playsinline>
+  <video id="perf-bg-video" autoplay loop playsinline>
     <source src="video-perf.mp4" type="video/mp4">
   </video>
+  <!--
+    5 VIDÉOS "CLIC MAINTENU" — remplace video-perf-hold-1.mp4 à
+    video-perf-hold-5.mp4 par tes fichiers. Une est choisie au hasard
+    à chaque nouveau clic, et s'affiche brutalement (sans fondu)
+    par-dessus la vidéo de fond, aux mêmes dimensions. Muettes par
+    défaut ; dis-moi si tu veux aussi du son dessus.
+  -->
+  <video class="perf-hold-video" id="perf-hold-1" muted loop playsinline><source src="video-perf-hold-1.mp4" type="video/mp4"></video>
+  <video class="perf-hold-video" id="perf-hold-2" muted loop playsinline><source src="video-perf-hold-2.mp4" type="video/mp4"></video>
+  <video class="perf-hold-video" id="perf-hold-3" muted loop playsinline><source src="video-perf-hold-3.mp4" type="video/mp4"></video>
+  <video class="perf-hold-video" id="perf-hold-4" muted loop playsinline><source src="video-perf-hold-4.mp4" type="video/mp4"></video>
+  <video class="perf-hold-video" id="perf-hold-5" muted loop playsinline><source src="video-perf-hold-5.mp4" type="video/mp4"></video>
   <a class="back" href="#" id="back-link-perf">← retour</a>
 </div>
 
@@ -550,6 +571,8 @@
     portalOpened = false;
     resetYesSequence();
     switchTrack(bgmHome);
+    perfBgVideo.pause();
+    perfHideOverlay();
   }
 
   document.getElementById('back-link').addEventListener('click', function(e){
@@ -568,6 +591,43 @@
     e.preventDefault();
     goHome();
   });
+
+  /* ---------------- page-perf: press-and-hold overlay video ---------------- */
+  var perfContainer = document.getElementById('page-perf');
+  var perfBgVideo = document.getElementById('perf-bg-video');
+  var perfHoldVideos = [
+    document.getElementById('perf-hold-1'),
+    document.getElementById('perf-hold-2'),
+    document.getElementById('perf-hold-3'),
+    document.getElementById('perf-hold-4'),
+    document.getElementById('perf-hold-5')
+  ];
+  var perfActiveHold = null;
+
+  function perfShowOverlay(e){
+    if(e.target.closest && e.target.closest('.back')) return;
+    perfActiveHold = perfHoldVideos[Math.floor(Math.random() * perfHoldVideos.length)];
+    perfActiveHold.classList.add('active');
+    perfActiveHold.currentTime = 0;
+    perfActiveHold.play().catch(function(){});
+  }
+  function perfHideOverlay(){
+    if(perfActiveHold){
+      perfActiveHold.classList.remove('active');
+      perfActiveHold.pause();
+      perfActiveHold = null;
+    }
+  }
+  perfContainer.addEventListener('mousedown', perfShowOverlay);
+  window.addEventListener('mouseup', perfHideOverlay);
+  perfContainer.addEventListener('touchstart', perfShowOverlay, {passive:true});
+  window.addEventListener('touchend', perfHideOverlay);
+
+  function enterPerfPage(){
+    // explicit play() call to make sure the (unmuted) background video's
+    // sound actually starts, on top of the autoplay attribute
+    perfBgVideo.play().catch(function(){});
+  }
 
   /* ---------------- yes-page: clickable image sequence ---------------- */
   var yesImgEl = document.getElementById('yes-img');
@@ -626,6 +686,7 @@
       setTimeout(function(){
         document.body.classList.remove('v-yes');
         document.body.classList.add('v-perf');
+        enterPerfPage();
       }, 300);
     }
   });
@@ -802,7 +863,7 @@
     if(e.key === '2'){ portalOpened = true; goHome(); document.body.classList.add('opened','v-secret'); switchTrack(bgmSecret); }
     if(e.key === '3'){ portalOpened = true; goHome(); document.body.classList.add('opened','v-yes'); switchTrack(bgmYes); enterYesSequence(); }
     if(e.key === '4'){ portalOpened = true; goHome(); document.body.classList.add('opened','v-no'); switchTrack(bgmSecret); }
-    if(e.key === '5'){ portalOpened = true; goHome(); document.body.classList.add('opened','v-perf'); }
+    if(e.key === '5'){ portalOpened = true; goHome(); document.body.classList.add('opened','v-perf'); enterPerfPage(); }
   });
   /* ================================================================ */
 })();
