@@ -116,7 +116,6 @@
     justify-content:center;
     cursor:pointer;
     opacity:1;
-    transition:opacity .5s;
   }
   #perf-intro-text{
     margin:0;
@@ -127,7 +126,6 @@
     font-size:0.95rem;
     color:var(--letter-color);
     opacity:0;
-    transition:opacity 1s;
   }
   #perf-intro-text.show{
     opacity:1;
@@ -700,13 +698,10 @@
     perfIntroDismissed = false;
     perfStarted = false;
     perfIntroTextEl.classList.remove('show');
-    perfIntroEl.style.transition = 'none';
     perfIntroEl.style.opacity = '1';
     perfIntroEl.style.pointerEvents = 'auto';
-    void perfIntroEl.offsetWidth; // force reflow so the transition re-applies cleanly next time
-    perfIntroEl.style.transition = 'opacity .5s';
 
-    // after 2s of pure black, reveal the message
+    // after 2s of pure black, reveal the message (instantly, no fade)
     setTimeout(function(){
       if(!perfIntroDismissed){
         perfIntroTextEl.classList.add('show');
