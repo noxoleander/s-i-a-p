@@ -733,10 +733,28 @@
     "How long have I been here?"
   ];
   var pleaseMsgIndex = 0;
+  var pleasePlacedPositions = [];
+  var PLEASE_MIN_DIST = 170; // minimum distance (px) between message centers
 
   function enterPleasePage(){
     pleaseMsgIndex = 0;
     pleaseMessagesEl.innerHTML = '';
+    pleasePlacedPositions = [];
+  }
+
+  function pickPleasePosition(){
+    var x, y, tries = 0, ok = false;
+    while(!ok && tries < 40){
+      x = innerWidth * 0.5 + (Math.random() - 0.5) * innerWidth * 0.5;
+      y = innerHeight * 0.5 + (Math.random() - 0.5) * innerHeight * 0.5;
+      ok = pleasePlacedPositions.every(function(p){
+        var dx = p.x - x, dy = p.y - y;
+        return Math.sqrt(dx*dx + dy*dy) >= PLEASE_MIN_DIST;
+      });
+      tries++;
+    }
+    pleasePlacedPositions.push({x:x, y:y});
+    return {x:x, y:y};
   }
 
   pleaseContainer.addEventListener('click', function(e){
@@ -746,15 +764,13 @@
     var phrase = pleasePhrases[pleaseMsgIndex];
     pleaseMsgIndex++;
 
-    // random spot around the middle of the screen
-    var x = innerWidth * 0.5 + (Math.random() - 0.5) * innerWidth * 0.5;
-    var y = innerHeight * 0.5 + (Math.random() - 0.5) * innerHeight * 0.5;
+    var pos = pickPleasePosition();
 
     var el = document.createElement('p');
     el.className = 'please-msg';
     el.textContent = phrase;
-    el.style.left = x + 'px';
-    el.style.top = y + 'px';
+    el.style.left = pos.x + 'px';
+    el.style.top = pos.y + 'px';
     pleaseMessagesEl.appendChild(el);
   });
 
