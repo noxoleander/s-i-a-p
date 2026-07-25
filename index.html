@@ -104,7 +104,30 @@
     max-height:60vh;
     cursor:pointer;
     user-select:none;
+    opacity:1;
+    transition:opacity .8s;
   }
+
+  .back-phrase{
+    position:absolute;
+    left:50%;
+    top:78%;
+    transform:translate(-50%, -50%);
+    z-index:1;
+    background:transparent;
+    border:none;
+    padding:0;
+    font-family:Arial, sans-serif;
+    font-weight:700;
+    font-size:0.95rem;
+    color:var(--letter-color);
+    cursor:pointer;
+    opacity:.85;
+    transition:opacity .2s;
+    display:none;
+    text-align:center;
+  }
+  .back-phrase:hover{ opacity:1; }
 
   .options{
     position:absolute;
@@ -244,6 +267,15 @@
 </audio>
 
 <!--
+  BOUCLE SONORE — "PAGE PERF" :
+  se lance juste après le 5ème clic sur l'image de la page "yes",
+  en coupant net la boucle précédente (pas de fondu).
+-->
+<audio id="bgm-perf" loop preload="auto">
+  <source src="boucle-perf.mp3" type="audio/mpeg">
+</audio>
+
+<!--
   EFFETS SONORES — dépôt d'une lettre dans la boîte :
   remplace ces 5 noms par tes fichiers .mp3 (courts).
   Si tu en as moins de 5, tu peux réutiliser les mêmes fichiers
@@ -294,6 +326,7 @@
     par tes 5 images.
   -->
   <img id="yes-img" src="yes-img-1.png" alt="">
+  <button type="button" class="back-phrase" id="yes-undo">sorry, didn't mean to do that.</button>
   <a class="back" href="#" id="back-link-yes">← retour</a>
 </div>
 
@@ -538,6 +571,7 @@
 
   /* ---------------- yes-page: clickable image sequence ---------------- */
   var yesImgEl = document.getElementById('yes-img');
+  var yesUndoBtn = document.getElementById('yes-undo');
   var yesImages = ['yes-img-1.png','yes-img-2.png','yes-img-3.png','yes-img-4.png','yes-img-5.png'];
   var yesSoundEls = [
     document.getElementById('yes-click-1'),
@@ -548,9 +582,32 @@
   ];
   var yesIndex = 0;
 
+  function updateUndoPhrase(){
+    if(yesIndex >= 1 && yesIndex <= 4){
+      yesUndoBtn.style.display = 'block';
+      yesUndoBtn.textContent = (yesIndex === 4)
+        ? 'almost killed you, sorry.'
+        : "sorry, didn't mean to do that.";
+    } else {
+      yesUndoBtn.style.display = 'none';
+    }
+  }
+
   function resetYesSequence(){
     yesIndex = 0;
     yesImgEl.src = yesImages[0];
+    yesImgEl.style.opacity = '0';
+    yesImgEl.style.pointerEvents = 'none';
+    updateUndoPhrase();
+  }
+
+  function enterYesSequence(){
+    resetYesSequence();
+    // wait 2s before the first image appears
+    setTimeout(function(){
+      yesImgEl.style.opacity = '1';
+      yesImgEl.style.pointerEvents = 'auto';
+    }, 2000);
   }
 
   yesImgEl.addEventListener('click', function(){
@@ -562,7 +619,10 @@
     yesIndex++;
     if(yesIndex < yesImages.length){
       yesImgEl.src = yesImages[yesIndex];
+      updateUndoPhrase();
     } else {
+      // 5th click: cut the yes-page loop dead and hand off to the perf-page loop
+      switchTrack(bgmPerf);
       setTimeout(function(){
         document.body.classList.remove('v-yes');
         document.body.classList.add('v-perf');
@@ -570,10 +630,18 @@
     }
   });
 
+  yesUndoBtn.addEventListener('click', function(){
+    if(yesIndex <= 0) return;
+    yesIndex--;
+    yesImgEl.src = yesImages[yesIndex];
+    updateUndoPhrase();
+  });
+
   document.getElementById('opt-yes').addEventListener('click', function(){
     document.body.classList.remove('v-secret');
     document.body.classList.add('v-yes');
     switchTrack(bgmYes);
+    enterYesSequence();
   });
   document.getElementById('opt-no').addEventListener('click', function(){
     document.body.classList.remove('v-secret');
@@ -672,6 +740,7 @@
   var bgmHome = document.getElementById('bgm-home');
   var bgmSecret = document.getElementById('bgm-secret');
   var bgmYes = document.getElementById('bgm-yes');
+  var bgmPerf = document.getElementById('bgm-perf');
   var soundBtn = document.getElementById('sound-toggle');
   var soundOn = false;
   var unlocked = false;
@@ -680,6 +749,7 @@
   bgmHome.volume = 0.6;
   bgmSecret.volume = 0.6;
   bgmYes.volume = 0.6;
+  bgmPerf.volume = 0.6;
 
   function switchTrack(track){
     if(currentTrack === track) return;
@@ -730,7 +800,7 @@
   window.addEventListener('keydown', function(e){
     if(e.key === '1'){ goHome(); }
     if(e.key === '2'){ portalOpened = true; goHome(); document.body.classList.add('opened','v-secret'); switchTrack(bgmSecret); }
-    if(e.key === '3'){ portalOpened = true; goHome(); document.body.classList.add('opened','v-yes'); switchTrack(bgmYes); }
+    if(e.key === '3'){ portalOpened = true; goHome(); document.body.classList.add('opened','v-yes'); switchTrack(bgmYes); enterYesSequence(); }
     if(e.key === '4'){ portalOpened = true; goHome(); document.body.classList.add('opened','v-no'); switchTrack(bgmSecret); }
     if(e.key === '5'){ portalOpened = true; goHome(); document.body.classList.add('opened','v-perf'); }
   });
