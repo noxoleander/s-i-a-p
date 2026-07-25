@@ -222,6 +222,19 @@
   <source src="boucle-page2.mp3" type="audio/mpeg">
 </audio>
 
+<!--
+  EFFETS SONORES — dépôt d'une lettre dans la boîte :
+  remplace ces 5 noms par tes fichiers .mp3 (courts).
+  Si tu en as moins de 5, tu peux réutiliser les mêmes fichiers
+  sur plusieurs emplacements — ça marche très bien aussi.
+  Un des cinq est choisi au hasard à chaque lettre posée.
+-->
+<audio id="sfx-1" preload="auto"><source src="sfx-pose-1.mp3" type="audio/mpeg"></audio>
+<audio id="sfx-2" preload="auto"><source src="sfx-pose-2.mp3" type="audio/mpeg"></audio>
+<audio id="sfx-3" preload="auto"><source src="sfx-pose-3.mp3" type="audio/mpeg"></audio>
+<audio id="sfx-4" preload="auto"><source src="sfx-pose-4.mp3" type="audio/mpeg"></audio>
+<audio id="sfx-5" preload="auto"><source src="sfx-pose-5.mp3" type="audio/mpeg"></audio>
+
 <div id="secret-view">
   <!--
     VIDÉO DE FOND DE CETTE VUE :
@@ -274,6 +287,21 @@
   var BOX = 12; // half-size used for edge bounce, roughly matches the fixed font-size
 
   var portalEl = document.getElementById('portal');
+
+  var sfxEls = [
+    document.getElementById('sfx-1'),
+    document.getElementById('sfx-2'),
+    document.getElementById('sfx-3'),
+    document.getElementById('sfx-4'),
+    document.getElementById('sfx-5')
+  ];
+  function playDropSfx(){
+    var base = sfxEls[Math.floor(Math.random() * sfxEls.length)];
+    // clone so overlapping drops don't cut each other off
+    var clip = base.cloneNode(true);
+    clip.volume = 0.8;
+    clip.play().catch(function(){});
+  }
 
   function insideBox(x, y, pad){
     var r = portalEl.getBoundingClientRect();
@@ -349,6 +377,7 @@
         L.inBox = true;
         L.vx = 0;
         L.vy = 0;
+        playDropSfx();
       } else {
         L.inBox = false;
       }
