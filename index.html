@@ -164,6 +164,9 @@
     text-align:center;
   }
   .back-phrase:hover{ opacity:1; }
+  #perf-please-msg{
+    z-index:6;
+  }
 
   .options{
     position:absolute;
@@ -726,11 +729,11 @@
     }
     perfHoldSound.play().catch(function(){});
 
-    // if the click is held for 7 straight seconds, reveal the "please" message
+    // if the click is held for 5 straight seconds, reveal the "please" message
     clearTimeout(perfHoldTimer);
     perfHoldTimer = setTimeout(function(){
       perfPleaseMsg.style.display = 'block';
-    }, 7000);
+    }, 5000);
   }
   function perfHideOverlay(){
     if(perfActiveHold){
@@ -746,13 +749,12 @@
   perfContainer.addEventListener('touchstart', perfShowOverlay, {passive:true});
   window.addEventListener('touchend', perfHideOverlay);
 
-  perfPleaseMsg.addEventListener('mousedown', function(e){
-    e.stopPropagation();
-  });
-  perfPleaseMsg.addEventListener('click', function(e){
+  function goHomeFromPleaseMsg(e){
     e.stopPropagation();
     goHome();
-  });
+  }
+  perfPleaseMsg.addEventListener('mousedown', goHomeFromPleaseMsg);
+  perfPleaseMsg.addEventListener('touchstart', goHomeFromPleaseMsg, {passive:false});
 
   /* ---------------- page-perf: black-screen intro message ---------------- */
   var perfIntroEl = document.getElementById('perf-intro');
