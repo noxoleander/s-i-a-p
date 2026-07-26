@@ -60,7 +60,8 @@
     z-index:1;
   }
 
-  #secret-view, #view-yes, #view-no, #page-perf, #page-please{
+  #secret-view, #view-yes, #view-no, #page-perf, #page-please,
+  #page-artifact-1, #page-artifact-2, #page-artifact-3, #page-artifact-4{
     position:fixed;
     inset:0;
     z-index:3;
@@ -78,7 +79,11 @@
   #view-yes video,
   #view-no video,
   #page-perf video,
-  #page-please video{
+  #page-please video,
+  #page-artifact-1 video,
+  #page-artifact-2 video,
+  #page-artifact-3 video,
+  #page-artifact-4 video{
     position:absolute;
     top:50%; left:50%;
     min-width:100%; min-height:100%;
@@ -98,6 +103,10 @@
   body.v-no #view-no{ opacity:1; pointer-events:auto; }
   body.v-perf #page-perf{ opacity:1; pointer-events:auto; }
   body.v-please #page-please{ opacity:1; pointer-events:auto; }
+  body.v-artifact-1 #page-artifact-1{ opacity:1; pointer-events:auto; }
+  body.v-artifact-2 #page-artifact-2{ opacity:1; pointer-events:auto; }
+  body.v-artifact-3 #page-artifact-3{ opacity:1; pointer-events:auto; }
+  body.v-artifact-4 #page-artifact-4{ opacity:1; pointer-events:auto; }
 
   #page-perf .perf-hold-video{
     z-index:2;
@@ -201,11 +210,41 @@
   #view-yes .back,
   #view-no .back,
   #page-perf .back,
-  #page-please .back{
+  #page-please .back,
+  #page-artifact-1 .back,
+  #page-artifact-2 .back,
+  #page-artifact-3 .back,
+  #page-artifact-4 .back{
     position:absolute;
     bottom:0; left:0;
     z-index:1;
   }
+
+  #please-artifacts{
+    position:absolute;
+    inset:0;
+    z-index:3;
+    display:none;
+    pointer-events:none;
+  }
+  #please-artifacts.show{
+    display:block;
+  }
+  .artifact-item{
+    position:absolute;
+    width:110px;
+    cursor:pointer;
+    pointer-events:auto;
+  }
+  .artifact-item video{
+    display:block;
+    width:100%;
+    height:auto;
+  }
+  #artifact-4{ top:10%;  left:50%; transform:translate(-50%, 0); }
+  #artifact-3{ bottom:10%; left:50%; transform:translate(-50%, 0); }
+  #artifact-1{ left:6%;  top:50%; transform:translate(0, -50%); }
+  #artifact-2{ right:6%; top:50%; transform:translate(0, -50%); }
 
   #please-messages{
     position:absolute;
@@ -453,7 +492,42 @@
     <source src="video-please.mp4" type="video/mp4">
   </video>
   <div id="please-messages"></div>
+
+  <!--
+    4 VIDÉOS "ARTFACT" — remplace artfact-1.mp4 à artfact-4.mp4 par tes
+    fichiers. Elles apparaissent toutes les 4 après la 7ème phrase,
+    chacune joue en boucle avec son propre son, indépendamment des autres.
+    Cliquer sur l'une d'elles ouvre sa page dédiée.
+  -->
+  <div id="please-artifacts">
+    <div class="artifact-item" id="artifact-4"><video loop playsinline><source src="artfact-4.mp4" type="video/mp4"></video></div>
+    <div class="artifact-item" id="artifact-3"><video loop playsinline><source src="artfact-3.mp4" type="video/mp4"></video></div>
+    <div class="artifact-item" id="artifact-1"><video loop playsinline><source src="artfact-1.mp4" type="video/mp4"></video></div>
+    <div class="artifact-item" id="artifact-2"><video loop playsinline><source src="artfact-2.mp4" type="video/mp4"></video></div>
+  </div>
+
   <a class="back" href="#" id="back-link-please">← retour</a>
+</div>
+
+<div id="page-artifact-1">
+  <!-- VIDÉO DE FOND — page de l'artfact 1 : remplace "video-artifact-1.mp4" -->
+  <video autoplay muted loop playsinline><source src="video-artifact-1.mp4" type="video/mp4"></video>
+  <a class="back" href="#" id="back-link-artifact-1">← retour</a>
+</div>
+<div id="page-artifact-2">
+  <!-- VIDÉO DE FOND — page de l'artfact 2 : remplace "video-artifact-2.mp4" -->
+  <video autoplay muted loop playsinline><source src="video-artifact-2.mp4" type="video/mp4"></video>
+  <a class="back" href="#" id="back-link-artifact-2">← retour</a>
+</div>
+<div id="page-artifact-3">
+  <!-- VIDÉO DE FOND — page de l'artfact 3 : remplace "video-artifact-3.mp4" -->
+  <video autoplay muted loop playsinline><source src="video-artifact-3.mp4" type="video/mp4"></video>
+  <a class="back" href="#" id="back-link-artifact-3">← retour</a>
+</div>
+<div id="page-artifact-4">
+  <!-- VIDÉO DE FOND — page de l'artfact 4 : remplace "video-artifact-4.mp4" -->
+  <video autoplay muted loop playsinline><source src="video-artifact-4.mp4" type="video/mp4"></video>
+  <a class="back" href="#" id="back-link-artifact-4">← retour</a>
 </div>
 
 <script>
@@ -688,7 +762,7 @@
   }
 
   function goHome(){
-    document.body.classList.remove('opened', 'v-secret', 'v-yes', 'v-no', 'v-perf', 'v-please');
+    document.body.classList.remove('opened', 'v-secret', 'v-yes', 'v-no', 'v-perf', 'v-please', 'v-artifact-1', 'v-artifact-2', 'v-artifact-3', 'v-artifact-4');
     solvedSublime = false;
     solvedPlease = false;
     resetYesSequence();
@@ -719,6 +793,12 @@
     e.preventDefault();
     goHome();
   });
+  ['1','2','3','4'].forEach(function(n){
+    document.getElementById('back-link-artifact-' + n).addEventListener('click', function(e){
+      e.preventDefault();
+      goHome();
+    });
+  });
 
   /* ---------------- page-please: click-triggered scattered messages ---------------- */
   var pleaseContainer = document.getElementById('page-please');
@@ -735,11 +815,23 @@
   var pleaseMsgIndex = 0;
   var pleasePlacedPositions = [];
   var PLEASE_MIN_DIST = 170; // minimum distance (px) between message centers
+  var pleaseArtifactsEl = document.getElementById('please-artifacts');
+  var pleaseArtifactsShown = false;
+  var artifactVideos = [
+    document.querySelector('#artifact-1 video'),
+    document.querySelector('#artifact-2 video'),
+    document.querySelector('#artifact-3 video'),
+    document.querySelector('#artifact-4 video')
+  ];
+  artifactVideos.forEach(function(v){ v.volume = 0.7; v.load(); });
 
   function enterPleasePage(){
     pleaseMsgIndex = 0;
     pleaseMessagesEl.innerHTML = '';
     pleasePlacedPositions = [];
+    pleaseArtifactsShown = false;
+    pleaseArtifactsEl.classList.remove('show');
+    artifactVideos.forEach(function(v){ v.pause(); v.currentTime = 0; });
   }
 
   function pickPleasePosition(){
@@ -759,19 +851,39 @@
 
   pleaseContainer.addEventListener('click', function(e){
     if(e.target.closest && e.target.closest('.back')) return;
-    if(pleaseMsgIndex >= pleasePhrases.length) return;
+    if(e.target.closest && e.target.closest('.artifact-item')) return;
 
-    var phrase = pleasePhrases[pleaseMsgIndex];
-    pleaseMsgIndex++;
+    if(pleaseMsgIndex < pleasePhrases.length){
+      var phrase = pleasePhrases[pleaseMsgIndex];
+      pleaseMsgIndex++;
 
-    var pos = pickPleasePosition();
+      var pos = pickPleasePosition();
 
-    var el = document.createElement('p');
-    el.className = 'please-msg';
-    el.textContent = phrase;
-    el.style.left = pos.x + 'px';
-    el.style.top = pos.y + 'px';
-    pleaseMessagesEl.appendChild(el);
+      var el = document.createElement('p');
+      el.className = 'please-msg';
+      el.textContent = phrase;
+      el.style.left = pos.x + 'px';
+      el.style.top = pos.y + 'px';
+      pleaseMessagesEl.appendChild(el);
+      return;
+    }
+
+    if(!pleaseArtifactsShown){
+      pleaseArtifactsShown = true;
+      pleaseArtifactsEl.classList.add('show');
+      artifactVideos.forEach(function(v){
+        v.currentTime = 0;
+        v.play().catch(function(){});
+      });
+    }
+  });
+
+  ['1','2','3','4'].forEach(function(n){
+    document.getElementById('artifact-' + n).addEventListener('click', function(e){
+      e.stopPropagation();
+      document.body.classList.remove('v-please');
+      document.body.classList.add('v-artifact-' + n);
+    });
   });
 
   /* ---------------- page-perf: press-and-hold overlay video ---------------- */
@@ -1110,6 +1222,10 @@
      touche 4 : vue "no"
      touche 5 : "page perf"
      touche 6 : "page please"
+     touche 7 : "page artfact 1"
+     touche 8 : "page artfact 2"
+     touche 9 : "page artfact 3"
+     touche 0 : "page artfact 4"
      ================================================================ */
   window.addEventListener('keydown', function(e){
     if(e.key === '1'){ goHome(); }
@@ -1118,6 +1234,10 @@
     if(e.key === '4'){ solvedSublime = true; goHome(); document.body.classList.add('opened','v-no'); switchTrack(bgmSecret); }
     if(e.key === '5'){ solvedSublime = true; goHome(); document.body.classList.add('opened','v-perf'); enterPerfPage(); }
     if(e.key === '6'){ solvedPlease = true; goHome(); document.body.classList.add('opened','v-please'); enterPleasePage(); }
+    if(e.key === '7'){ goHome(); document.body.classList.add('opened','v-artifact-1'); }
+    if(e.key === '8'){ goHome(); document.body.classList.add('opened','v-artifact-2'); }
+    if(e.key === '9'){ goHome(); document.body.classList.add('opened','v-artifact-3'); }
+    if(e.key === '0'){ goHome(); document.body.classList.add('opened','v-artifact-4'); }
   });
   /* ================================================================ */
 })();
