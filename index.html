@@ -559,7 +559,7 @@
 
 <div id="page-artlife">
   <!-- VIDÉO — remplace "vid-artlife.mp4" par ton fichier. Centrée, prend 3/4 de l'écran max. -->
-  <video class="artlife-video" autoplay muted loop playsinline><source src="vid-artlife.mp4" type="video/mp4"></video>
+  <video class="artlife-video" id="artlife-video" autoplay loop playsinline disablepictureinpicture disableremoteplayback><source src="vid-artlife.mp4" type="video/mp4"></video>
   <button type="button" class="back-phrase" id="artlife-back-phrase" style="display:block;">i don't care</button>
 </div>
 <div id="page-artifact-2">
@@ -863,6 +863,7 @@
     // at the right moment if that view is the one being shown
     document.getElementById('yes-img').style.pointerEvents = 'none';
     document.getElementById('perf-intro').style.pointerEvents = 'none';
+    document.getElementById('artlife-video').pause();
   }
 
   function revealView(key){
@@ -923,7 +924,15 @@
   function showArtifact(n){
     clearAllViewClasses();
     revealView('artifact-' + n);
-    switchTrack(bgmHome);
+    if(n === '1'){
+      silenceAmbient();
+      var artlifeVideo = document.getElementById('artlife-video');
+      artlifeVideo.muted = false;
+      artlifeVideo.currentTime = 0;
+      artlifeVideo.play().catch(function(){});
+    } else {
+      switchTrack(bgmHome);
+    }
     currentView = 'artifact-' + n;
   }
   function showNote(){
