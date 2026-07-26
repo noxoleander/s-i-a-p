@@ -61,7 +61,7 @@
   }
 
   #secret-view, #view-yes, #view-no, #page-perf, #page-please,
-  #page-artifact-1, #page-artifact-2, #page-artifact-3{
+  #page-artlife, #page-artifact-2, #page-artifact-3{
     position:fixed;
     inset:0;
     z-index:3;
@@ -80,7 +80,6 @@
   #view-no video,
   #page-perf video,
   #page-please video,
-  #page-artifact-1 video,
   #page-artifact-2 video,
   #page-artifact-3 video{
     position:absolute;
@@ -102,7 +101,7 @@
   body.v-no #view-no{ opacity:1; pointer-events:auto; }
   body.v-perf #page-perf{ opacity:1; pointer-events:auto; }
   body.v-please #page-please{ opacity:1; pointer-events:auto; }
-  body.v-artifact-1 #page-artifact-1{ opacity:1; pointer-events:auto; }
+  body.v-artifact-1 #page-artlife{ opacity:1; pointer-events:auto; }
   body.v-artifact-2 #page-artifact-2{ opacity:1; pointer-events:auto; }
   body.v-artifact-3 #page-artifact-3{ opacity:1; pointer-events:auto; }
   body.v-note #page-note{ opacity:1; pointer-events:auto; }
@@ -239,13 +238,21 @@
   #view-no .back,
   #page-perf .back,
   #page-please .back,
-  #page-artifact-1 .back,
   #page-artifact-2 .back,
   #page-artifact-3 .back,
   #page-note .back{
     position:absolute;
     bottom:0; left:0;
     z-index:1;
+  }
+
+  #page-artlife .artlife-video{
+    position:static;
+    max-width:75vw;
+    max-height:75vh;
+    width:auto;
+    height:auto;
+    object-fit:contain;
   }
 
   #please-artifacts{
@@ -550,10 +557,10 @@
   <a class="back" href="#" id="back-link-please">← retour</a>
 </div>
 
-<div id="page-artifact-1">
-  <!-- VIDÉO DE FOND — page de l'artfact 1 : remplace "video-artifact-1.mp4" -->
-  <video autoplay muted loop playsinline><source src="video-artifact-1.mp4" type="video/mp4"></video>
-  <a class="back" href="#" id="back-link-artifact-1">← retour</a>
+<div id="page-artlife">
+  <!-- VIDÉO — remplace "vid-artlife.mp4" par ton fichier. Centrée, prend 3/4 de l'écran max. -->
+  <video class="artlife-video" autoplay muted loop playsinline><source src="vid-artlife.mp4" type="video/mp4"></video>
+  <button type="button" class="back-phrase" id="artlife-back-phrase" style="display:block;">i don't care</button>
 </div>
 <div id="page-artifact-2">
   <!-- VIDÉO DE FOND — page de l'artfact 2 : remplace "video-artifact-2.mp4" -->
@@ -835,7 +842,7 @@
     'no': document.getElementById('view-no'),
     'perf': document.getElementById('page-perf'),
     'please': document.getElementById('page-please'),
-    'artifact-1': document.getElementById('page-artifact-1'),
+    'artifact-1': document.getElementById('page-artlife'),
     'artifact-2': document.getElementById('page-artifact-2'),
     'artifact-3': document.getElementById('page-artifact-3'),
     'note': document.getElementById('page-note')
@@ -968,11 +975,14 @@
     e.preventDefault();
     goBack();
   });
-  ['1','2','3'].forEach(function(n){
+  ['2','3'].forEach(function(n){
     document.getElementById('back-link-artifact-' + n).addEventListener('click', function(e){
       e.preventDefault();
       goBack();
     });
+  });
+  document.getElementById('artlife-back-phrase').addEventListener('click', function(){
+    goToPleaseWithArtifactsShown();
   });
 
   /* ---------------- page-note: click photos in the right order ---------------- */
