@@ -839,11 +839,11 @@
   ];
   artifactVideos.forEach(function(v){ v.volume = 0.7; v.load(); });
   var artifactsRevealSound = document.getElementById('artifacts-reveal-sound');
-  artifactsRevealSound.volume = 0.45;
+  artifactsRevealSound.volume = 0.3;
   artifactsRevealSound.load();
-  // manual loop that cuts 0.10s off the tail, since the source loop point isn't seamless
+  // manual loop that cuts 0.20s off the tail, since the source loop point isn't seamless
   artifactsRevealSound.addEventListener('timeupdate', function(){
-    if(artifactsRevealSound.duration && artifactsRevealSound.currentTime >= artifactsRevealSound.duration - 0.10){
+    if(artifactsRevealSound.duration && artifactsRevealSound.currentTime >= artifactsRevealSound.duration - 0.20){
       artifactsRevealSound.currentTime = 0;
       artifactsRevealSound.play().catch(function(){});
     }
