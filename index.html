@@ -500,6 +500,13 @@
     chacune joue en boucle avec son propre son, indépendamment des autres.
     Cliquer sur l'une d'elles ouvre sa page dédiée.
   -->
+  <!--
+    SON SUPPLÉMENTAIRE — se joue une fois, au moment où les 4 vidéos
+    "artfact" apparaissent (en plus du son propre à chaque vidéo).
+    Remplace "son-artfacts.mp3" par ton fichier.
+  -->
+  <audio id="artifacts-reveal-sound" preload="auto"><source src="son-artfacts.mp3" type="audio/mpeg"></audio>
+
   <div id="please-artifacts">
     <div class="artifact-item" id="artifact-4"><video loop playsinline><source src="artfact-4.mp4" type="video/mp4"></video></div>
     <div class="artifact-item" id="artifact-3"><video loop playsinline><source src="artfact-3.mp4" type="video/mp4"></video></div>
@@ -825,6 +832,9 @@
     document.querySelector('#artifact-4 video')
   ];
   artifactVideos.forEach(function(v){ v.volume = 0.7; v.load(); });
+  var artifactsRevealSound = document.getElementById('artifacts-reveal-sound');
+  artifactsRevealSound.volume = 0.8;
+  artifactsRevealSound.load();
 
   function enterPleasePage(){
     pleaseMsgIndex = 0;
@@ -833,6 +843,8 @@
     pleaseArtifactsShown = false;
     pleaseArtifactsEl.classList.remove('show');
     artifactVideos.forEach(function(v){ v.pause(); v.currentTime = 0; });
+    artifactsRevealSound.pause();
+    artifactsRevealSound.currentTime = 0;
   }
 
   function pickPleasePosition(){
@@ -876,6 +888,8 @@
         v.currentTime = 0;
         v.play().catch(function(){});
       });
+      artifactsRevealSound.currentTime = 0;
+      artifactsRevealSound.play().catch(function(){});
     }
   });
 
