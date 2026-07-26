@@ -850,6 +850,12 @@
       el.style.opacity = '0';
       el.style.pointerEvents = 'none';
     });
+    // some elements inside a view manage their own pointer-events
+    // independently (they can override a hidden parent) — neutralise
+    // them here too, the relevant enter*() function re-enables them
+    // at the right moment if that view is the one being shown
+    document.getElementById('yes-img').style.pointerEvents = 'none';
+    document.getElementById('perf-intro').style.pointerEvents = 'none';
   }
 
   function revealView(key){
