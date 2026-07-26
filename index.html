@@ -61,7 +61,7 @@
   }
 
   #secret-view, #view-yes, #view-no, #page-perf, #page-please,
-  #page-artifact-1, #page-artifact-2, #page-artifact-3, #page-artifact-4{
+  #page-artifact-1, #page-artifact-2, #page-artifact-3{
     position:fixed;
     inset:0;
     z-index:3;
@@ -82,8 +82,7 @@
   #page-please video,
   #page-artifact-1 video,
   #page-artifact-2 video,
-  #page-artifact-3 video,
-  #page-artifact-4 video{
+  #page-artifact-3 video{
     position:absolute;
     top:50%; left:50%;
     min-width:100%; min-height:100%;
@@ -106,7 +105,6 @@
   body.v-artifact-1 #page-artifact-1{ opacity:1; pointer-events:auto; }
   body.v-artifact-2 #page-artifact-2{ opacity:1; pointer-events:auto; }
   body.v-artifact-3 #page-artifact-3{ opacity:1; pointer-events:auto; }
-  body.v-artifact-4 #page-artifact-4{ opacity:1; pointer-events:auto; }
   body.v-note #page-note{ opacity:1; pointer-events:auto; }
 
   #page-note{
@@ -244,7 +242,6 @@
   #page-artifact-1 .back,
   #page-artifact-2 .back,
   #page-artifact-3 .back,
-  #page-artifact-4 .back,
   #page-note .back{
     position:absolute;
     bottom:0; left:0;
@@ -568,11 +565,6 @@
   <video autoplay muted loop playsinline><source src="video-artifact-3.mp4" type="video/mp4"></video>
   <a class="back" href="#" id="back-link-artifact-3">← retour</a>
 </div>
-<div id="page-artifact-4">
-  <!-- VIDÉO DE FOND — page de l'artfact 4 : remplace "video-artifact-4.mp4" -->
-  <video autoplay muted loop playsinline><source src="video-artifact-4.mp4" type="video/mp4"></video>
-  <a class="back" href="#" id="back-link-artifact-4">← retour</a>
-</div>
 
 <div id="page-note">
   <!--
@@ -835,7 +827,7 @@
   }
 
   function goHome(){
-    document.body.classList.remove('opened', 'v-secret', 'v-yes', 'v-no', 'v-perf', 'v-please', 'v-artifact-1', 'v-artifact-2', 'v-artifact-3', 'v-artifact-4', 'v-note');
+    document.body.classList.remove('opened', 'v-secret', 'v-yes', 'v-no', 'v-perf', 'v-please', 'v-artifact-1', 'v-artifact-2', 'v-artifact-3', 'v-note');
     solvedSublime = false;
     solvedPlease = false;
     resetYesSequence();
@@ -871,7 +863,7 @@
     e.preventDefault();
     goHome();
   });
-  ['1','2','3','4'].forEach(function(n){
+  ['1','2','3'].forEach(function(n){
     document.getElementById('back-link-artifact-' + n).addEventListener('click', function(e){
       e.preventDefault();
       goHome();
@@ -1370,8 +1362,7 @@
      touche 7 : "page artfact 1"
      touche 8 : "page artfact 2"
      touche 9 : "page artfact 3"
-     touche 0 : "page artfact 4"
-     touche n : "page note"
+     touche n : "page note" (accessible via artfact-4 sur la page please)
      ================================================================ */
   window.addEventListener('keydown', function(e){
     if(e.key === '1'){ goHome(); }
@@ -1383,7 +1374,6 @@
     if(e.key === '7'){ goHome(); document.body.classList.add('opened','v-artifact-1'); }
     if(e.key === '8'){ goHome(); document.body.classList.add('opened','v-artifact-2'); }
     if(e.key === '9'){ goHome(); document.body.classList.add('opened','v-artifact-3'); }
-    if(e.key === '0'){ goHome(); document.body.classList.add('opened','v-artifact-4'); }
     if(e.key === 'n'){ goHome(); document.body.classList.add('opened','v-note'); enterNotePage(); }
   });
   /* ================================================================ */
