@@ -232,7 +232,7 @@
   }
   .artifact-item{
     position:absolute;
-    height:40px;
+    height:80px;
     width:auto;
     cursor:pointer;
     pointer-events:auto;
@@ -243,14 +243,14 @@
     min-width:0;
     min-height:0;
     width:auto;
-    height:40px;
+    height:80px;
     transform:none;
     object-fit:initial;
   }
-  #artifact-4{ top:10%;  left:50%; transform:translate(-50%, 0); }
-  #artifact-3{ bottom:10%; left:50%; transform:translate(-50%, 0); }
-  #artifact-1{ left:6%;  top:50%; transform:translate(0, -50%); }
-  #artifact-2{ right:6%; top:50%; transform:translate(0, -50%); }
+  #artifact-4{ top:22%;  left:50%; transform:translate(-50%, 0); }
+  #artifact-3{ bottom:22%; left:50%; transform:translate(-50%, 0); }
+  #artifact-1{ left:18%;  top:50%; transform:translate(0, -50%); }
+  #artifact-2{ right:18%; top:50%; transform:translate(0, -50%); }
 
   #please-messages{
     position:absolute;
@@ -510,7 +510,7 @@
     "artfact" apparaissent (en plus du son propre à chaque vidéo).
     Remplace "son-artfacts.mp3" par ton fichier.
   -->
-  <audio id="artifacts-reveal-sound" preload="auto"><source src="son-artfacts.mp3" type="audio/mpeg"></audio>
+  <audio id="artifacts-reveal-sound" loop preload="auto"><source src="son-artfacts.mp3" type="audio/mpeg"></audio>
 
   <div id="please-artifacts">
     <div class="artifact-item" id="artifact-4"><video loop playsinline><source src="artfact-4.mp4" type="video/mp4"></video></div>
@@ -784,6 +784,7 @@
     perfHideOverlay();
     clearTimeout(perfHoldTimer);
     perfPleaseMsg.style.display = 'none';
+    artifactsRevealSound.pause();
   }
 
   document.getElementById('back-link').addEventListener('click', function(e){
@@ -888,6 +889,7 @@
 
     if(!pleaseArtifactsShown){
       pleaseArtifactsShown = true;
+      pleaseMessagesEl.innerHTML = '';
       pleaseArtifactsEl.classList.add('show');
       artifactVideos.forEach(function(v){
         v.currentTime = 0;
@@ -901,6 +903,7 @@
   ['1','2','3','4'].forEach(function(n){
     document.getElementById('artifact-' + n).addEventListener('click', function(e){
       e.stopPropagation();
+      artifactsRevealSound.pause();
       document.body.classList.remove('v-please');
       document.body.classList.add('v-artifact-' + n);
     });
