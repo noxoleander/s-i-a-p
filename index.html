@@ -809,9 +809,8 @@
       solvedSublime = true;
       clearBox();
       setTimeout(function(){
-        document.body.classList.add('opened', 'v-secret');
-        switchTrack(bgmSecret);
-        enterSecretPage();
+        navStack.push(currentView);
+        showSecret();
       }, 400);
       return;
     }
@@ -820,14 +819,22 @@
       solvedPlease = true;
       clearBox();
       setTimeout(function(){
-        document.body.classList.add('opened', 'v-please');
-        enterPleasePage();
+        navStack.push(currentView);
+        showPlease();
       }, 400);
     }
   }
 
-  function goHome(){
+  /* ---------------- navigation stack: "back" returns to the previous screen ---------------- */
+  var currentView = 'home';
+  var navStack = [];
+
+  function clearAllViewClasses(){
     document.body.classList.remove('opened', 'v-secret', 'v-yes', 'v-no', 'v-perf', 'v-please', 'v-artifact-1', 'v-artifact-2', 'v-artifact-3', 'v-note');
+  }
+
+  function goHome(){
+    clearAllViewClasses();
     solvedSublime = false;
     solvedPlease = false;
     resetYesSequence();
@@ -837,36 +844,99 @@
     clearTimeout(perfHoldTimer);
     perfPleaseMsg.style.display = 'none';
     artifactsRevealSound.pause();
+    currentView = 'home';
+    navStack = [];
+  }
+
+  function showSecret(){
+    clearAllViewClasses();
+    document.body.classList.add('opened', 'v-secret');
+    switchTrack(bgmSecret);
+    enterSecretPage();
+    currentView = 'secret';
+  }
+  function showYes(){
+    clearAllViewClasses();
+    document.body.classList.add('opened', 'v-yes');
+    switchTrack(bgmYes);
+    enterYesSequence();
+    currentView = 'yes';
+  }
+  function showNo(){
+    clearAllViewClasses();
+    document.body.classList.add('opened', 'v-no');
+    switchTrack(bgmSecret);
+    currentView = 'no';
+  }
+  function showPerf(){
+    clearAllViewClasses();
+    document.body.classList.add('opened', 'v-perf');
+    enterPerfPage();
+    currentView = 'perf';
+  }
+  function showPlease(){
+    clearAllViewClasses();
+    document.body.classList.add('opened', 'v-please');
+    enterPleasePage();
+    currentView = 'please';
+  }
+  function showArtifact(n){
+    clearAllViewClasses();
+    document.body.classList.add('opened', 'v-artifact-' + n);
+    currentView = 'artifact-' + n;
+  }
+  function showNote(){
+    clearAllViewClasses();
+    document.body.classList.add('opened', 'v-note');
+    enterNotePage();
+    currentView = 'note';
+  }
+
+  // used by every "← retour" link: pop the stack and show whatever came before
+  function goBack(){
+    var prev = navStack.pop();
+    switch(prev){
+      case 'secret': showSecret(); break;
+      case 'yes': showYes(); break;
+      case 'no': showNo(); break;
+      case 'perf': showPerf(); break;
+      case 'please': showPlease(); break;
+      case 'artifact-1': showArtifact('1'); break;
+      case 'artifact-2': showArtifact('2'); break;
+      case 'artifact-3': showArtifact('3'); break;
+      case 'note': showNote(); break;
+      default: goHome();
+    }
   }
 
   document.getElementById('back-link').addEventListener('click', function(e){
     e.preventDefault();
-    goHome();
+    goBack();
   });
   document.getElementById('back-link-yes').addEventListener('click', function(e){
     e.preventDefault();
-    goHome();
+    goBack();
   });
   document.getElementById('back-link-no').addEventListener('click', function(e){
     e.preventDefault();
-    goHome();
+    goBack();
   });
   document.getElementById('back-link-perf').addEventListener('click', function(e){
     e.preventDefault();
-    goHome();
+    goBack();
   });
   document.getElementById('back-link-please').addEventListener('click', function(e){
     e.preventDefault();
-    goHome();
+    goBack();
   });
   document.getElementById('back-link-note').addEventListener('click', function(e){
     e.preventDefault();
-    goHome();
+    goBack();
   });
   ['1','2','3'].forEach(function(n){
     document.getElementById('back-link-artifact-' + n).addEventListener('click', function(e){
       e.preventDefault();
-      goHome();
+      goBack();
     });
   });
 
@@ -1013,12 +1083,11 @@
     document.getElementById('artifact-' + n).addEventListener('click', function(e){
       e.stopPropagation();
       artifactsRevealSound.pause();
-      document.body.classList.remove('v-please');
+      navStack.push(currentView);
       if(n === '4'){
-        document.body.classList.add('v-note');
-        enterNotePage();
+        showNote();
       } else {
-        document.body.classList.add('v-artifact-' + n);
+        showArtifact(n);
       }
     });
   });
@@ -1177,9 +1246,8 @@
       // 5th click: cut the yes-page loop dead and hand off to the perf-page loop
       switchTrack(bgmPerf);
       setTimeout(function(){
-        document.body.classList.remove('v-yes');
-        document.body.classList.add('v-perf');
-        enterPerfPage();
+        navStack.push(currentView);
+        showPerf();
       }, 300);
     }
   });
@@ -1192,14 +1260,12 @@
   });
 
   document.getElementById('opt-yes').addEventListener('click', function(){
-    document.body.classList.remove('v-secret');
-    document.body.classList.add('v-yes');
-    switchTrack(bgmYes);
-    enterYesSequence();
+    navStack.push(currentView);
+    showYes();
   });
   document.getElementById('opt-no').addEventListener('click', function(){
-    document.body.classList.remove('v-secret');
-    document.body.classList.add('v-no');
+    navStack.push(currentView);
+    showNo();
   });
 
   var yesnoOptionsEl = document.getElementById('yesno-options');
@@ -1366,15 +1432,15 @@
      ================================================================ */
   window.addEventListener('keydown', function(e){
     if(e.key === '1'){ goHome(); }
-    if(e.key === '2'){ solvedSublime = true; goHome(); document.body.classList.add('opened','v-secret'); switchTrack(bgmSecret); enterSecretPage(); }
-    if(e.key === '3'){ solvedSublime = true; goHome(); document.body.classList.add('opened','v-yes'); switchTrack(bgmYes); enterYesSequence(); }
-    if(e.key === '4'){ solvedSublime = true; goHome(); document.body.classList.add('opened','v-no'); switchTrack(bgmSecret); }
-    if(e.key === '5'){ solvedSublime = true; goHome(); document.body.classList.add('opened','v-perf'); enterPerfPage(); }
-    if(e.key === '6'){ solvedPlease = true; goHome(); document.body.classList.add('opened','v-please'); enterPleasePage(); }
-    if(e.key === '7'){ goHome(); document.body.classList.add('opened','v-artifact-1'); }
-    if(e.key === '8'){ goHome(); document.body.classList.add('opened','v-artifact-2'); }
-    if(e.key === '9'){ goHome(); document.body.classList.add('opened','v-artifact-3'); }
-    if(e.key === 'n'){ goHome(); document.body.classList.add('opened','v-note'); enterNotePage(); }
+    if(e.key === '2'){ solvedSublime = true; goHome(); navStack.push('home'); showSecret(); }
+    if(e.key === '3'){ solvedSublime = true; goHome(); navStack.push('home'); navStack.push('secret'); showYes(); }
+    if(e.key === '4'){ solvedSublime = true; goHome(); navStack.push('home'); navStack.push('secret'); showNo(); }
+    if(e.key === '5'){ solvedSublime = true; goHome(); navStack.push('home'); navStack.push('secret'); navStack.push('yes'); showPerf(); }
+    if(e.key === '6'){ solvedPlease = true; goHome(); navStack.push('home'); showPlease(); }
+    if(e.key === '7'){ goHome(); navStack.push('home'); navStack.push('please'); showArtifact('1'); }
+    if(e.key === '8'){ goHome(); navStack.push('home'); navStack.push('please'); showArtifact('2'); }
+    if(e.key === '9'){ goHome(); navStack.push('home'); navStack.push('please'); showArtifact('3'); }
+    if(e.key === 'n'){ goHome(); navStack.push('home'); navStack.push('please'); showNote(); }
   });
   /* ================================================================ */
 })();
