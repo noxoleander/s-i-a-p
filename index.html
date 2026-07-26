@@ -5,9 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Nox Oleander — Sublime in all Places</title>
 <meta name="description" content="Nox Oleander — Sublime in all Places">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bodoni+Ornaments&display=swap" rel="stylesheet">
 <style>
   :root{
     --letter-color:#ffe600;
@@ -64,7 +61,7 @@
   }
 
   #secret-view, #view-yes, #view-no, #page-perf, #page-please,
-  #page-artlife, #page-artifact-2{
+  #page-artlife, #page-artifact-2, #page-artifact-3{
     position:fixed;
     inset:0;
     z-index:3;
@@ -83,7 +80,8 @@
   #view-no video,
   #page-perf video,
   #page-please video,
-  #page-artifact-2 video{
+  #page-artifact-2 video,
+  #page-artifact-3 video{
     position:absolute;
     top:50%; left:50%;
     min-width:100%; min-height:100%;
@@ -255,32 +253,6 @@
     width:auto;
     height:auto;
     object-fit:contain;
-  }
-
-  #page-artifact-3{
-    background:#000 url('img-killed.jpg') center center / cover no-repeat;
-  }
-  #killed-stage{
-    position:absolute;
-    inset:0;
-    overflow:hidden;
-    z-index:1;
-  }
-  .killed-letter{
-    position:absolute;
-    top:0; left:0;
-    font-family:'Bodoni Ornaments';
-    font-size:0.95rem;
-    color:var(--letter-color);
-    user-select:none;
-    pointer-events:none;
-    cursor:grab;
-    will-change:transform;
-    line-height:1;
-  }
-  .killed-letter.dragging{
-    cursor:grabbing;
-    z-index:5;
   }
 
   #please-artifacts{
@@ -596,11 +568,8 @@
   <a class="back" href="#" id="back-link-artifact-2">← retour</a>
 </div>
 <div id="page-artifact-3">
-  <!--
-    IMAGE DE FOND — remplace "img-killed.jpg" par ton fichier (même nom/casse
-    exacte que sur ton disque, dis-le-moi si ça diffère).
-  -->
-  <div id="killed-stage"></div>
+  <!-- VIDÉO DE FOND — page de l'artfact 3 : remplace "video-artifact-3.mp4" -->
+  <video autoplay muted loop playsinline><source src="video-artifact-3.mp4" type="video/mp4"></video>
   <a class="back" href="#" id="back-link-artifact-3">← retour</a>
 </div>
 
@@ -895,7 +864,6 @@
     document.getElementById('yes-img').style.pointerEvents = 'none';
     document.getElementById('perf-intro').style.pointerEvents = 'none';
     document.getElementById('artlife-video').pause();
-    killedLetters.forEach(function(L){ L.el.style.pointerEvents = 'none'; });
   }
 
   function revealView(key){
@@ -962,9 +930,6 @@
       artlifeVideo.muted = false;
       artlifeVideo.currentTime = 0;
       artlifeVideo.play().catch(function(){});
-    } else if(n === '3'){
-      switchTrack(bgmHome);
-      killedLetters.forEach(function(L){ L.el.style.pointerEvents = 'auto'; });
     } else {
       switchTrack(bgmHome);
     }
@@ -1413,74 +1378,7 @@
     if(e.touches && e.touches[0]) updatePointer(e.touches[0].clientX, e.touches[0].clientY);
   }, {passive:true});
 
-  /* ---------------- page-artifact-3 (page-killed): floating "oleander" in Bodoni Ornaments ---------------- */
-  var killedWord = "OLEANDER";
-  var killedChars = killedWord.split('');
-  var killedStage = document.getElementById('killed-stage');
-  var killedLetters = [];
-
-  function attachKilledDrag(el, L){
-    function down(clientX, clientY){
-      L.dragging = true;
-      el.classList.add('dragging');
-      L.dragOffX = clientX - L.x;
-      L.dragOffY = clientY - L.y;
-    }
-    function move(clientX, clientY){
-      if(!L.dragging) return;
-      var nx = clientX - L.dragOffX;
-      var ny = clientY - L.dragOffY;
-      L.vx = nx - L.x;
-      L.vy = ny - L.y;
-      L.x = nx;
-      L.y = ny;
-    }
-    function up(){
-      if(!L.dragging) return;
-      L.dragging = false;
-      el.classList.remove('dragging');
-    }
-    el.addEventListener('mousedown', function(e){ down(e.clientX, e.clientY); e.preventDefault(); });
-    window.addEventListener('mousemove', function(e){ move(e.clientX, e.clientY); });
-    window.addEventListener('mouseup', up);
-    el.addEventListener('touchstart', function(e){
-      var t = e.touches[0];
-      down(t.clientX, t.clientY);
-    }, {passive:true});
-    window.addEventListener('touchmove', function(e){
-      if(L.dragging && e.touches[0]) move(e.touches[0].clientX, e.touches[0].clientY);
-    }, {passive:true});
-    window.addEventListener('touchend', up);
-  }
-
-  function buildKilledLetters(){
-    killedStage.innerHTML = '';
-    killedLetters = [];
-    var margin = 0.08;
-    killedChars.forEach(function(ch){
-      var el = document.createElement('div');
-      el.className = 'killed-letter';
-      el.textContent = ch;
-      killedStage.appendChild(el);
-
-      var startX = rand(innerWidth * margin, innerWidth * (1 - margin));
-      var startY = rand(innerHeight * margin, innerHeight * (1 - margin));
-
-      var L = {
-        el: el,
-        x: startX, y: startY,
-        vx: rand(-0.4, 0.4), vy: rand(-0.4, 0.4),
-        depth: rand(0.7, 1.3),
-        dragging: false, dragOffX: 0, dragOffY: 0
-      };
-      killedLetters.push(L);
-      attachKilledDrag(el, L);
-      el.style.transform = 'translate(' + L.x + 'px,' + L.y + 'px)';
-    });
-  }
-  buildKilledLetters();
-
-
+  var INFLUENCE = 100;    // px radius of wind effect
   var SPEED_THRESHOLD = 6;   // cursor must move THIS fast to create wind — slow approach = no push, so you can grab
   var STRENGTH = 0.5;    // how hard the wind pushes
   var FRICTION = 0.99;   // very light damping so letters keep gliding
@@ -1531,36 +1429,6 @@
       if(L.y > H - BOX){ L.y = H - BOX; L.vy = -Math.abs(L.vy); }
 
       L.el.style.transform = 'translate(' + L.x + 'px,' + L.y + 'px)';
-    }
-
-    if(currentView === 'artifact-3'){
-      for(var ki=0; ki<killedLetters.length; ki++){
-        var KL = killedLetters[ki];
-        if(KL.dragging){
-          KL.el.style.transform = 'translate(' + KL.x + 'px,' + KL.y + 'px)';
-          continue;
-        }
-        if(hasPointer && speed > SPEED_THRESHOLD){
-          var kdx = KL.x - mouseX;
-          var kdy = KL.y - mouseY;
-          var kdist = Math.sqrt(kdx*kdx + kdy*kdy) + 0.001;
-          if(kdist < INFLUENCE){
-            var kfalloff = 1 - kdist / INFLUENCE;
-            var kforce = speed * STRENGTH * kfalloff * KL.depth;
-            KL.vx += (kdx/kdist) * kforce;
-            KL.vy += (kdy/kdist) * kforce;
-          }
-        }
-        KL.vx *= FRICTION;
-        KL.vy *= FRICTION;
-        KL.x += KL.vx;
-        KL.y += KL.vy;
-        if(KL.x < BOX){ KL.x = BOX; KL.vx = Math.abs(KL.vx); }
-        if(KL.x > W - BOX){ KL.x = W - BOX; KL.vx = -Math.abs(KL.vx); }
-        if(KL.y < BOX){ KL.y = BOX; KL.vy = Math.abs(KL.vy); }
-        if(KL.y > H - BOX){ KL.y = H - BOX; KL.vy = -Math.abs(KL.vy); }
-        KL.el.style.transform = 'translate(' + KL.x + 'px,' + KL.y + 'px)';
-      }
     }
 
     updatePortalState();
