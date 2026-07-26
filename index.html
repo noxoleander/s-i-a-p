@@ -1021,12 +1021,14 @@
     });
   });
 
-  // once "img-autism" is showing, a single click anywhere sends us back to
-  // "please" with the artfact videos already playing (no need to re-click
-  // through the 7 phrases)
+  // once "img-autism" is showing, a single click anywhere else on the page
+  // (not on a note-zone, not on "back") sends us back to "please" with the
+  // artfact videos already playing — this also prevents the very click that
+  // solves the puzzle from instantly triggering this too
   document.getElementById('page-note').addEventListener('click', function(e){
     if(!noteSolved) return;
     if(e.target.closest && e.target.closest('.back')) return;
+    if(e.target.closest && e.target.closest('.note-zone')) return;
     goToPleaseWithArtifactsShown();
   });
 
