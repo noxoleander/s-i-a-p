@@ -829,8 +829,34 @@
   var currentView = 'home';
   var navStack = [];
 
+  var allViewEls = {
+    'secret': document.getElementById('secret-view'),
+    'yes': document.getElementById('view-yes'),
+    'no': document.getElementById('view-no'),
+    'perf': document.getElementById('page-perf'),
+    'please': document.getElementById('page-please'),
+    'artifact-1': document.getElementById('page-artifact-1'),
+    'artifact-2': document.getElementById('page-artifact-2'),
+    'artifact-3': document.getElementById('page-artifact-3'),
+    'note': document.getElementById('page-note')
+  };
+
   function clearAllViewClasses(){
     document.body.classList.remove('opened', 'v-secret', 'v-yes', 'v-no', 'v-perf', 'v-please', 'v-artifact-1', 'v-artifact-2', 'v-artifact-3', 'v-note');
+    // belt-and-braces: force every view fully off with inline styles,
+    // so there is never any ambiguity about which one can receive clicks
+    Object.keys(allViewEls).forEach(function(key){
+      var el = allViewEls[key];
+      el.style.opacity = '0';
+      el.style.pointerEvents = 'none';
+    });
+  }
+
+  function revealView(key){
+    document.body.classList.add('opened', 'v-' + key);
+    var el = allViewEls[key];
+    el.style.opacity = '1';
+    el.style.pointerEvents = 'auto';
   }
 
   function goHome(){
@@ -850,44 +876,47 @@
 
   function showSecret(){
     clearAllViewClasses();
-    document.body.classList.add('opened', 'v-secret');
+    revealView('secret');
     switchTrack(bgmSecret);
     enterSecretPage();
     currentView = 'secret';
   }
   function showYes(){
     clearAllViewClasses();
-    document.body.classList.add('opened', 'v-yes');
+    revealView('yes');
     switchTrack(bgmYes);
     enterYesSequence();
     currentView = 'yes';
   }
   function showNo(){
     clearAllViewClasses();
-    document.body.classList.add('opened', 'v-no');
+    revealView('no');
     switchTrack(bgmSecret);
     currentView = 'no';
   }
   function showPerf(){
     clearAllViewClasses();
-    document.body.classList.add('opened', 'v-perf');
+    revealView('perf');
     enterPerfPage();
     currentView = 'perf';
   }
   function showPlease(){
     clearAllViewClasses();
-    document.body.classList.add('opened', 'v-please');
+    revealView('please');
+    switchTrack(bgmHome);
     enterPleasePage();
     currentView = 'please';
   }
   function showArtifact(n){
     clearAllViewClasses();
-    document.body.classList.add('opened', 'v-artifact-' + n);
+    revealView('artifact-' + n);
+    switchTrack(bgmHome);
     currentView = 'artifact-' + n;
   }
   function showNote(){
     clearAllViewClasses();
-    document.body.classList.add('opened', 'v-note');
+    revealView('note');
+    switchTrack(bgmHome);
     enterNotePage();
     currentView = 'note';
   }
@@ -1381,11 +1410,16 @@
 
   function switchTrack(track){
     if(currentTrack === track) return;
-    if(unlocked){ currentTrack.pause(); currentTrack.currentTime = 0; }
+    if(unlocked && currentTrack){ currentTrack.pause(); currentTrack.currentTime = 0; }
     currentTrack = track;
-    if(unlocked && soundOn){
+    if(unlocked && soundOn && currentTrack){
       currentTrack.play().catch(function(){});
     }
+  }
+
+  function silenceAmbient(){
+    if(currentTrack){ currentTrack.pause(); }
+    currentTrack = null;
   }
 
   function unlockAndPlay(){
