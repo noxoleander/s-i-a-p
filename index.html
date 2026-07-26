@@ -1021,6 +1021,15 @@
     });
   });
 
+  // once "img-autism" is showing, a single click anywhere sends us back to
+  // "please" with the artfact videos already playing (no need to re-click
+  // through the 7 phrases)
+  document.getElementById('page-note').addEventListener('click', function(e){
+    if(!noteSolved) return;
+    if(e.target.closest && e.target.closest('.back')) return;
+    goToPleaseWithArtifactsShown();
+  });
+
   /* ---------------- page-please: click-triggered scattered messages ---------------- */
   var pleaseContainer = document.getElementById('page-please');
   var pleaseMessagesEl = document.getElementById('please-messages');
@@ -1082,6 +1091,27 @@
     return {x:x, y:y};
   }
 
+  function revealPleaseArtifacts(){
+    pleaseArtifactsShown = true;
+    pleaseMessagesEl.innerHTML = '';
+    pleaseArtifactsEl.classList.add('show');
+    artifactVideos.forEach(function(v){
+      v.currentTime = 0;
+      v.play().catch(function(){});
+    });
+    artifactsRevealSound.currentTime = 0;
+    artifactsRevealSound.play().catch(function(){});
+  }
+
+  // shortcut from page-note (once solved): back to please, artifacts already
+  // showing, skipping the 7-phrase click-through entirely
+  function goToPleaseWithArtifactsShown(){
+    navStack.pop(); // consume the stale 'please' entry pushed when we came from please to note
+    showPlease();
+    pleaseMsgIndex = pleasePhrases.length;
+    revealPleaseArtifacts();
+  }
+
   pleaseContainer.addEventListener('click', function(e){
     if(e.target.closest && e.target.closest('.back')) return;
     if(e.target.closest && e.target.closest('.artifact-item')) return;
@@ -1102,15 +1132,7 @@
     }
 
     if(!pleaseArtifactsShown){
-      pleaseArtifactsShown = true;
-      pleaseMessagesEl.innerHTML = '';
-      pleaseArtifactsEl.classList.add('show');
-      artifactVideos.forEach(function(v){
-        v.currentTime = 0;
-        v.play().catch(function(){});
-      });
-      artifactsRevealSound.currentTime = 0;
-      artifactsRevealSound.play().catch(function(){});
+      revealPleaseArtifacts();
     }
   });
 
@@ -1194,9 +1216,11 @@
   var perfIntroEl = document.getElementById('perf-intro');
   var perfIntroTextEl = document.getElementById('perf-intro-text');
   var perfIntroDismissed = false;
+  var perfIntroCanDismiss = false;
 
   function dismissPerfIntro(e){
     if(e){ e.stopPropagation(); }
+    if(!perfIntroCanDismiss) return;
     if(perfIntroDismissed) return;
     perfIntroDismissed = true;
     perfStarted = true;
@@ -1211,6 +1235,7 @@
   function enterPerfPage(){
     // reset: black screen, no message, nothing started yet
     perfIntroDismissed = false;
+    perfIntroCanDismiss = false;
     perfStarted = false;
     perfIntroTextEl.classList.remove('show');
     perfIntroEl.style.opacity = '1';
@@ -1222,6 +1247,12 @@
     setTimeout(function(){
       if(!perfIntroDismissed){
         perfIntroTextEl.classList.add('show');
+        // then wait 1 more second before the click-to-dismiss becomes active
+        setTimeout(function(){
+          if(!perfIntroDismissed){
+            perfIntroCanDismiss = true;
+          }
+        }, 1000);
       }
     }, 4000);
   }
