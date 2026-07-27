@@ -355,6 +355,27 @@
     z-index:5;
   }
 
+  /*
+    Police pour les lettres flottantes de la page artfact-3 ("oleander").
+    "Bodoni Ornaments" est une police système (macOS/Adobe) : si le
+    visiteur ne l'a pas installée, le navigateur retombera sur "serif".
+    Si tu as le fichier de police et le droit de l'utiliser sur le web,
+    tu peux l'auto-héberger avec une règle @font-face juste ici
+    (ex: @font-face{ font-family:'Bodoni Ornaments'; src:url('bodoni-ornaments.woff2') format('woff2'); })
+    pour qu'elle s'affiche pareil chez tout le monde.
+  */
+  .letter.font-orn{
+    font-family:'Bodoni Ornaments', serif;
+    font-weight:400;
+  }
+
+  #stage-killed{
+    position:absolute;
+    inset:0;
+    z-index:1;
+    overflow:hidden;
+  }
+
   @media (prefers-reduced-motion: reduce){
     .letter{ transition:none; }
   }
@@ -568,8 +589,10 @@
   <a class="back" href="#" id="back-link-artifact-2">← retour</a>
 </div>
 <div id="page-artifact-3">
-  <!-- VIDÉO DE FOND — page de l'artfact 3 : remplace "video-artifact-3.mp4" -->
-  <video autoplay muted loop playsinline><source src="video-artifact-3.mp4" type="video/mp4"></video>
+  <!-- VIDÉO DE FOND — page de l'artfact 3 : remplace "vid-killed.mp4" par ton fichier (boucle). -->
+  <video autoplay muted loop playsinline><source src="vid-killed.mp4" type="video/mp4"></video>
+  <!-- lettres flottantes "oleander" en Bodoni Ornaments, même mécanisme que la page d'accueil -->
+  <div id="stage-killed"></div>
   <a class="back" href="#" id="back-link-artifact-3">← retour</a>
 </div>
 
@@ -1449,6 +1472,133 @@
     frameStatic();
   } else {
     requestAnimationFrame(frame);
+  }
+
+  /* ---------------- page artfact-3 ("killed") : lettres flottantes "oleander" ----------------
+     Même mécanisme physique que les lettres de la page d'accueil (vent au passage
+     du curseur, rebond sur les bords, glisser-déposer), mais sans la boîte/portail :
+     ici les lettres flottent juste, pas de puzzle à résoudre. */
+  var killedWord = "oleander";
+  var killedChars = killedWord.split('');
+  var killedStageEl = document.getElementById('stage-killed');
+  var killedLetters = [];
+
+  function buildKilledLetters(){
+    killedStageEl.innerHTML = '';
+    killedLetters = [];
+    var margin = 0.08;
+    var w = innerWidth, h = innerHeight;
+
+    killedChars.forEach(function(ch){
+      var el = document.createElement('div');
+      el.className = 'letter font-orn';
+      el.textContent = ch;
+      killedStageEl.appendChild(el);
+
+      var L = {
+        el: el,
+        x: rand(w*margin, w*(1-margin)),
+        y: rand(h*margin, h*(1-margin)),
+        vx: rand(-0.4, 0.4),
+        vy: rand(-0.4, 0.4),
+        depth: rand(0.7, 1.3),
+        dragging: false,
+        dragOffX: 0,
+        dragOffY: 0
+      };
+      killedLetters.push(L);
+      attachKilledDrag(el, L);
+    });
+  }
+
+  function attachKilledDrag(el, L){
+    function down(clientX, clientY){
+      L.dragging = true;
+      el.classList.add('dragging');
+      L.dragOffX = clientX - L.x;
+      L.dragOffY = clientY - L.y;
+    }
+    function move(clientX, clientY){
+      if(!L.dragging) return;
+      var nx = clientX - L.dragOffX;
+      var ny = clientY - L.dragOffY;
+      L.vx = nx - L.x;
+      L.vy = ny - L.y;
+      L.x = nx;
+      L.y = ny;
+    }
+    function up(){
+      if(!L.dragging) return;
+      L.dragging = false;
+      el.classList.remove('dragging');
+    }
+    el.addEventListener('mousedown', function(e){ down(e.clientX, e.clientY); e.preventDefault(); });
+    window.addEventListener('mousemove', function(e){ move(e.clientX, e.clientY); });
+    window.addEventListener('mouseup', up);
+    el.addEventListener('touchstart', function(e){
+      var t = e.touches[0];
+      down(t.clientX, t.clientY);
+    }, {passive:true});
+    window.addEventListener('touchmove', function(e){
+      if(L.dragging && e.touches[0]) move(e.touches[0].clientX, e.touches[0].clientY);
+    }, {passive:true});
+    window.addEventListener('touchend', up);
+  }
+
+  buildKilledLetters();
+  window.addEventListener('resize', function(){
+    buildKilledLetters();
+  });
+
+  function frameKilled(){
+    var w = innerWidth, h = innerHeight;
+    var speed = Math.sqrt(mvx*mvx + mvy*mvy);
+
+    for(var i=0; i<killedLetters.length; i++){
+      var L = killedLetters[i];
+      if(L.dragging){
+        L.el.style.transform = 'translate(' + L.x + 'px,' + L.y + 'px)';
+        continue;
+      }
+
+      if(hasPointer && speed > SPEED_THRESHOLD){
+        var dx = L.x - mouseX;
+        var dy = L.y - mouseY;
+        var dist = Math.sqrt(dx*dx + dy*dy) + 0.001;
+        if(dist < INFLUENCE){
+          var falloff = 1 - dist / INFLUENCE;
+          var force = speed * STRENGTH * falloff * L.depth;
+          L.vx += (dx/dist) * force;
+          L.vy += (dy/dist) * force;
+        }
+      }
+
+      L.vx *= FRICTION;
+      L.vy *= FRICTION;
+      L.x += L.vx;
+      L.y += L.vy;
+
+      if(L.x < BOX){ L.x = BOX; L.vx = Math.abs(L.vx); }
+      if(L.x > w - BOX){ L.x = w - BOX; L.vx = -Math.abs(L.vx); }
+      if(L.y < BOX){ L.y = BOX; L.vy = Math.abs(L.vy); }
+      if(L.y > h - BOX){ L.y = h - BOX; L.vy = -Math.abs(L.vy); }
+
+      L.el.style.transform = 'translate(' + L.x + 'px,' + L.y + 'px)';
+    }
+    requestAnimationFrame(frameKilled);
+  }
+
+  function frameKilledStatic(){
+    for(var i=0; i<killedLetters.length; i++){
+      killedLetters[i].el.style.transform = 'translate(' + killedLetters[i].x + 'px,' + killedLetters[i].y + 'px)';
+    }
+    requestAnimationFrame(frameKilledStatic);
+  }
+
+  if(reduceMotion){
+    frameKilledStatic();
+  } else {
+    requestAnimationFrame(frameKilled);
   }
 
   /* ---------------- sound ---------------- */
