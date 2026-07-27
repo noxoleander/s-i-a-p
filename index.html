@@ -857,7 +857,10 @@
   var pleaseArtifactsEl = document.getElementById('please-artifacts');
   var pleaseArtifactsShown = false;
   var artifactVideos = [
-    document.querySelector('#artifact-1 video'), document.querySelector('#artifact-3 video'), document.querySelector('#artifact-4 video')
+    document.querySelector('#artifact-1 video'), 
+    document.querySelector('#artifact-2 video'), // CORRECTION : Ajout de l'artifact 2 ici
+    document.querySelector('#artifact-3 video'), 
+    document.querySelector('#artifact-4 video')
   ];
   artifactVideos.forEach(function(v){ if(v){ v.volume = 0.7; v.load(); } });
   var artifactsRevealSound = document.getElementById('artifacts-reveal-sound');
