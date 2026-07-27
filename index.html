@@ -68,13 +68,11 @@
     justify-content:center;
   }
 
-  /* PAGE ARTIFACT 2 - Fond avec .JPG en majuscules */
   #page-artifact-2 {
     background: #000 url('img-artfact-2.JPG') center center / cover no-repeat;
     cursor: pointer;
   }
 
-  /* Image centrale pour page-artifact-2 */
   #light-display-img {
     position: absolute;
     top: 50%; left: 50%;
@@ -83,10 +81,9 @@
     max-height: 75vh;
     z-index: 5;
     display: none;
-    pointer-events: none; /* L'image ne bloque pas le clic */
+    pointer-events: none;
   }
 
-  /* Texte en haut pour page-artifact-2 */
   #light-lose-text {
     position: absolute;
     top: 5%;
@@ -98,7 +95,7 @@
     color: var(--letter-color);
     display: none;
     z-index: 6;
-    pointer-events: none; /* Le texte ne bloque pas le clic */
+    pointer-events: none;
   }
 
   #secret-view video,
@@ -551,6 +548,20 @@
 
 <script>
 (function(){
+  /* ---------------- PRECHARGEMENT DES IMAGES (Anti-Lag) ---------------- */
+  var lightImgSet1 = ['light-1.JPG','light-2.JPG','light-3.JPG','light-4.JPG','light-5.JPG','light-6.JPG'];
+  var lightImgSet2 = ['light-a.JPG','light-b.JPG','light-c.JPG','light-d.JPG','light-f.JPG'];
+  
+  function preloadImages(array) {
+    array.forEach(function(url) {
+      var img = new Image();
+      img.src = url;
+    });
+  }
+  preloadImages(lightImgSet1);
+  preloadImages(lightImgSet2);
+  /* --------------------------------------------------------------------- */
+
   var word = "SUBLIME IN ALL PLACES SUBLIME IN ALL PLACES SUBLIME IN ALL PLACES";
   var chars = word.split('').filter(function(c){ return c !== ' '; });
   var stage = document.getElementById('stage');
@@ -735,7 +746,6 @@
     document.getElementById('artlife-video').pause();
     
     stopKilledSounds();
-    // Arrêter sons artifact-2
     document.getElementById('son-lose').pause();
     document.getElementById('son-lose').currentTime = 0;
   }
@@ -856,10 +866,16 @@
   var PLEASE_MIN_DIST = 170; 
   var pleaseArtifactsEl = document.getElementById('please-artifacts');
   var pleaseArtifactsShown = false;
+
+  /* CORRECTION ICI : Ré-inclusion de artifact-2 dans la liste des vidéos */
   var artifactVideos = [
-    document.querySelector('#artifact-1 video'), document.querySelector('#artifact-3 video'), document.querySelector('#artifact-4 video')
+    document.querySelector('#artifact-1 video'), 
+    document.querySelector('#artifact-2 video'), 
+    document.querySelector('#artifact-3 video'), 
+    document.querySelector('#artifact-4 video')
   ];
   artifactVideos.forEach(function(v){ if(v){ v.volume = 0.7; v.load(); } });
+  
   var artifactsRevealSound = document.getElementById('artifacts-reveal-sound');
   artifactsRevealSound.volume = 0.3; artifactsRevealSound.load();
   artifactsRevealSound.addEventListener('timeupdate', function(){
@@ -1163,176 +1179,4 @@
 
   function attachKilledDrag(el, L){
     var downX = 0, downY = 0, moved = false; var CLICK_TOLERANCE = 5;
-    function down(clientX, clientY){
-      if(L.frozen) return; L.dragging = true; el.classList.add('dragging');
-      L.dragOffX = clientX - L.x; L.dragOffY = clientY - L.y;
-      downX = clientX; downY = clientY; moved = false;
-    }
-    function move(clientX, clientY){
-      if(!L.dragging) return;
-      if(Math.abs(clientX - downX) > CLICK_TOLERANCE || Math.abs(clientY - downY) > CLICK_TOLERANCE){ moved = true; }
-      var nx = clientX - L.dragOffX; var ny = clientY - L.dragOffY;
-      L.vx = nx - L.x; L.vy = ny - L.y; L.x = nx; L.y = ny;
-    }
-    function up(){
-      if(!L.dragging) return; L.dragging = false; el.classList.remove('dragging');
-      if(!moved){ freezeKilledLetter(L); }
-    }
-    el.addEventListener('mousedown', function(e){ down(e.clientX, e.clientY); e.preventDefault(); });
-    window.addEventListener('mousemove', function(e){ move(e.clientX, e.clientY); });
-    window.addEventListener('mouseup', up);
-    el.addEventListener('touchstart', function(e){ var t = e.touches[0]; down(t.clientX, t.clientY); }, {passive:true});
-    window.addEventListener('touchmove', function(e){ if(L.dragging && e.touches[0]) move(e.touches[0].clientX, e.touches[0].clientY); }, {passive:true});
-    window.addEventListener('touchend', up);
-  }
-
-  buildKilledLetters();
-
-  function frameKilled(){
-    var w = innerWidth, h = innerHeight; var speed = Math.sqrt(mvx*mvx + mvy*mvy);
-    for(var i=0; i<killedLetters.length; i++){
-      var L = killedLetters[i]; if(L.frozen) continue;
-      if(L.dragging){ L.el.style.transform = 'translate(' + L.x + 'px,' + L.y + 'px)'; continue; }
-      if(hasPointer && speed > SPEED_THRESHOLD){
-        var dx = L.x - mouseX; var dy = L.y - mouseY; var dist = Math.sqrt(dx*dx + dy*dy) + 0.001;
-        if(dist < INFLUENCE){
-          var falloff = 1 - dist / INFLUENCE; var force = speed * STRENGTH * falloff * L.depth;
-          L.vx += (dx/dist) * force; L.vy += (dy/dist) * force;
-        }
-      }
-      L.vx *= FRICTION; L.vy *= FRICTION; L.x += L.vx; L.y += L.vy;
-      if(L.x < BOX){ L.x = BOX; L.vx = Math.abs(L.vx); }
-      if(L.x > w - BOX){ L.x = w - BOX; L.vx = -Math.abs(L.vx); }
-      if(L.y < BOX){ L.y = BOX; L.vy = Math.abs(L.vy); }
-      if(L.y > h - BOX){ L.y = h - BOX; L.vy = -Math.abs(L.vy); }
-      L.el.style.transform = 'translate(' + L.x + 'px,' + L.y + 'px)';
-    }
-    requestAnimationFrame(frameKilled);
-  }
-
-  function frameKilledStatic(){
-    for(var i=0; i<killedLetters.length; i++){
-      var L = killedLetters[i]; if(L.frozen) continue;
-      L.el.style.transform = 'translate(' + L.x + 'px,' + L.y + 'px)';
-    }
-    requestAnimationFrame(frameKilledStatic);
-  }
-
-  if(reduceMotion){ frameKilledStatic(); } else { requestAnimationFrame(frameKilled); }
-
-  /* ---------------- ARTIFACT-2 LOGIC ---------------- */
-  /* Vérification stricte des extensions .JPG en majuscules */
-  var lightImgSet1 = ['light-1.JPG','light-2.JPG','light-3.JPG','light-4.JPG','light-5.JPG','light-6.JPG'];
-  var lightImgSet2 = ['light-a.JPG','light-b.JPG','light-c.JPG','light-d.JPG','light-f.JPG'];
-  var lightCounter = 0;
-  var lightIsVisible = false;
-  var lightContainer = document.getElementById('page-artifact-2');
-  var lightDisplay = document.getElementById('light-display-img');
-  var lightText = document.getElementById('light-lose-text');
-  var sonLose = document.getElementById('son-lose');
-  var sfxLight1 = document.getElementById('switch-sfx-1');
-  var sfxLight2 = document.getElementById('switch-sfx-2');
-
-  function enterArtifact2(){
-    lightIsVisible = false;
-    lightDisplay.style.display = 'none';
-  }
-
-  lightContainer.addEventListener('click', function(e){
-    // Ne pas déclencher si on clique sur le bouton retour
-    if(e.target.closest && e.target.closest('.back')) return;
-
-    if(!lightIsVisible){
-      // Étape d'affichage de l'image
-      lightIsVisible = true;
-      lightCounter++;
-      
-      // Sélection du set d'images (Set 2 si on a dépassé 26 clics)
-      var currentSet = (lightCounter > 26) ? lightImgSet2 : lightImgSet1;
-      var randomImg = currentSet[Math.floor(Math.random() * currentSet.length)];
-      
-      lightDisplay.src = randomImg;
-      lightDisplay.style.display = 'block';
-      
-      if(soundOn) sfxLight1.cloneNode(true).play().catch(function(){});
-
-      // Seuil de 13 cycles (26 clics) atteint : affichage du texte et musique loop
-      if(lightCounter > 26){
-        lightText.style.display = 'block';
-        if(soundOn) sonLose.play().catch(function(){});
-      }
-    } else {
-      // Étape de disparition de l'image
-      lightIsVisible = false;
-      lightCounter++;
-      lightDisplay.style.display = 'none';
-      if(soundOn) sfxLight2.cloneNode(true).play().catch(function(){});
-    }
-  });
-
-
-  /* ---------------- sound ---------------- */
-  var bgmHome = document.getElementById('bgm-home');
-  var bgmSecret = document.getElementById('bgm-secret');
-  var bgmYes = document.getElementById('bgm-yes');
-  var bgmPerf = document.getElementById('bgm-perf');
-  var soundBtn = document.getElementById('sound-toggle');
-  var soundOn = false;
-  var unlocked = false;
-  var currentTrack = bgmHome;
-
-  bgmHome.volume = 0.6; bgmSecret.volume = 0.6; bgmYes.volume = 0.6; bgmPerf.volume = 0.6;
-
-  function switchTrack(track){
-    if(currentTrack === track) return;
-    if(unlocked && currentTrack){ currentTrack.pause(); currentTrack.currentTime = 0; }
-    currentTrack = track;
-    if(unlocked && soundOn && currentTrack){ currentTrack.play().catch(function(){}); }
-  }
-
-  function silenceAmbient(){ if(currentTrack){ currentTrack.pause(); } currentTrack = null; }
-
-  function unlockAndPlay(){
-    if(unlocked) return;
-    unlocked = true;
-    if(currentTrack) {
-        currentTrack.play().then(function(){
-          soundOn = true; soundBtn.textContent = 'son : on';
-        }).catch(function(){});
-    }
-  }
-  window.addEventListener('mousedown', unlockAndPlay, {once:true});
-  window.addEventListener('touchstart', unlockAndPlay, {once:true});
-
-  soundBtn.addEventListener('click', function(){
-    if(!unlocked){ unlockAndPlay(); return; }
-    if(soundOn){
-      if(currentTrack) currentTrack.pause();
-      kldSounds.forEach(function(s){ if(s) s.pause(); });
-      sonLose.pause();
-      soundOn = false; soundBtn.textContent = 'son : off';
-    } else {
-      if(currentTrack) currentTrack.play();
-      for(var i=0; i<killedRevealCount; i++){ if(kldSounds[i]) kldSounds[i].play(); }
-      if(lightCounter > 26 && currentView === 'artifact-2') sonLose.play();
-      soundOn = true; soundBtn.textContent = 'son : on';
-    }
-  });
-
-  window.addEventListener('keydown', function(e){
-    if(e.key === '1'){ goHome(); }
-    if(e.key === '2'){ solvedSublime = true; goHome(); navStack.push('home'); showSecret(); }
-    if(e.key === '3'){ solvedSublime = true; goHome(); navStack.push('home'); navStack.push('secret'); showYes(); }
-    if(e.key === '4'){ solvedSublime = true; goHome(); navStack.push('home'); navStack.push('secret'); showNo(); }
-    if(e.key === '5'){ solvedSublime = true; goHome(); navStack.push('home'); navStack.push('secret'); navStack.push('yes'); showPerf(); }
-    if(e.key === '6'){ solvedPlease = true; goHome(); navStack.push('home'); showPlease(); }
-    if(e.key === '7'){ goHome(); navStack.push('home'); navStack.push('please'); showArtifact('1'); }
-    if(e.key === '8'){ goHome(); navStack.push('home'); navStack.push('please'); showArtifact('2'); }
-    if(e.key === '9'){ goHome(); navStack.push('home'); navStack.push('please'); showArtifact('3'); }
-    if(e.key === 'n'){ goHome(); navStack.push('home'); navStack.push('please'); showNote(); }
-  });
-})();
-</script>
-
-</body>
-</html>
+    f
