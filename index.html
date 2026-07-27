@@ -506,7 +506,6 @@
 </div>
 
 <div id="page-artlife">
-  <!-- CORRECTION : Suppression de 'autoplay' pour éviter qu'elle se lance au début -->
   <video class="artlife-video" id="artlife-video" loop playsinline disablepictureinpicture disableremoteplayback><source src="vid-artlife.mp4" type="video/mp4"></video>
   <button type="button" class="back-phrase" id="artlife-back-phrase" style="display:block;">i don't care</button>
 </div>
@@ -1228,7 +1227,7 @@
   var lightImgSet1 = ['light-1.JPG','light-2.JPG','light-3.JPG','light-4.JPG','light-5.JPG','light-6.JPG'];
   var lightImgSet2 = ['light-a.JPG','light-b.JPG','light-c.JPG','light-d.JPG','light-f.JPG'];
   
-  /* CORRECTION : Préchargement des images pour éviter le lag */
+  /* Préchargement des images pour éviter le lag */
   [...lightImgSet1, ...lightImgSet2].forEach(function(src){
     var img = new Image();
     img.src = src;
@@ -1254,7 +1253,8 @@
     if(!lightIsVisible){
       lightIsVisible = true;
       lightCounter++;
-      var currentSet = (lightCounter > 26) ? lightImgSet2 : lightImgSet1;
+      // MODIFICATION : passage de 26 clics à 18 clics (9 cycles)
+      var currentSet = (lightCounter > 18) ? lightImgSet2 : lightImgSet1;
       var randomImg = currentSet[Math.floor(Math.random() * currentSet.length)];
       
       lightDisplay.src = randomImg;
@@ -1262,7 +1262,7 @@
       
       if(soundOn) sfxLight1.cloneNode(true).play().catch(function(){});
 
-      if(lightCounter > 26){
+      if(lightCounter > 18){
         lightText.style.display = 'block';
         if(soundOn) sonLose.play().catch(function(){});
       }
@@ -1318,7 +1318,7 @@
     } else {
       if(currentTrack) currentTrack.play();
       for(var i=0; i<killedRevealCount; i++){ if(kldSounds[i]) kldSounds[i].play(); }
-      if(lightCounter > 26 && currentView === 'artifact-2') sonLose.play();
+      if(lightCounter > 18 && currentView === 'artifact-2') sonLose.play();
       soundOn = true; soundBtn.textContent = 'son : on';
     }
   });
