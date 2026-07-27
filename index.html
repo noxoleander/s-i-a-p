@@ -98,10 +98,10 @@
     text-align: center;
   }
   #light-msg-1 { top: 5%; width: 100%; }
-  #light-msg-2 { top: 12%; width: 100%; }
+  #light-msg-2 { bottom: 5%; width: 100%; } /* Déplacé en bas */
   #light-msg-3 { top: 50%; left: 5%; transform: translateY(-50%); text-align: left; }
   #light-msg-4 { top: 50%; right: 5%; transform: translateY(-50%); text-align: right; }
-  #light-msg-5 { top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 1.1rem; }
+  #light-msg-5 { top: 50%; left: 50%; transform: translate(-50%, -50%); } /* Taille remise à 0.95rem */
 
   #secret-view video,
   #view-yes video,
@@ -1258,11 +1258,7 @@
   }
 
   function enterArtifact2(){
-    // On ne reset pas forcément tout pour garder la progression si on revient
-    if(lightCounter > 42){
-      // Sauf si on a déjà tout fini
-      resetLightArtifact();
-    }
+    if(lightCounter > 42){ resetLightArtifact(); }
     lightIsVisible = false;
     lightDisplay.style.display = 'none';
   }
@@ -1274,25 +1270,22 @@
       lightIsVisible = true;
       lightCounter++;
       
-      // État Final (42 clics / 21 cycles)
       if(lightCounter > 42){
         lightDisplay.style.display = 'none';
-        lightContainer.style.background = "#000"; // Tout se coupe (fond noir)
-        sonLose.pause(); // Le son se coupe
+        lightContainer.style.background = "#000";
+        sonLose.pause();
         for(let i=1; i<=4; i++){ document.getElementById('light-msg-' + i).style.display = 'none'; }
-        document.getElementById('light-msg-5').style.display = 'block'; // Juste la phrase au milieu
+        document.getElementById('light-msg-5').style.display = 'block';
         if(soundOn) sfxLight1.cloneNode(true).play().catch(function(){});
         return;
       }
 
-      // Sélection du set d'images
       var currentSet = (lightCounter > 18) ? lightImgSet2 : lightImgSet1;
       var randomImg = currentSet[Math.floor(Math.random() * currentSet.length)];
       lightDisplay.src = randomImg;
       lightDisplay.style.display = 'block';
       if(soundOn) sfxLight1.cloneNode(true).play().catch(function(){});
 
-      // Gestion des paliers de texte
       if(lightCounter > 18){
         document.getElementById('light-msg-1').style.display = 'block';
         if(soundOn && sonLose.paused) sonLose.play().catch(function(){});
@@ -1307,7 +1300,6 @@
       lightDisplay.style.display = 'none';
       if(soundOn) sfxLight2.cloneNode(true).play().catch(function(){});
       
-      // Si on est dans l'état final, on ne réaffiche rien au clic de fermeture
       if(lightCounter > 42){
         lightContainer.style.background = "#000";
       }
@@ -1358,7 +1350,6 @@
     } else {
       if(currentTrack) currentTrack.play();
       for(var i=0; i<killedRevealCount; i++){ if(kldSounds[i]) kldSounds[i].play(); }
-      // On ne relance sonLose que si on n'est pas dans l'état final
       if(lightCounter > 18 && lightCounter <= 42 && currentView === 'artifact-2') sonLose.play();
       soundOn = true; soundBtn.textContent = 'son : on';
     }
