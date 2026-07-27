@@ -68,9 +68,37 @@
     justify-content:center;
   }
 
-  /* Style spécifique pour le fond de la page artifact-2 */
+  /* PAGE ARTIFACT 2 - Fond avec .JPG en majuscules */
   #page-artifact-2 {
     background: #000 url('img-artfact-2.JPG') center center / cover no-repeat;
+    cursor: pointer;
+  }
+
+  /* Image centrale pour page-artifact-2 */
+  #light-display-img {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    max-width: 75vw;
+    max-height: 75vh;
+    z-index: 5;
+    display: none;
+    pointer-events: none; /* L'image ne bloque pas le clic */
+  }
+
+  /* Texte en haut pour page-artifact-2 */
+  #light-lose-text {
+    position: absolute;
+    top: 5%;
+    width: 100%;
+    text-align: center;
+    font-family: Arial, sans-serif;
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--letter-color);
+    display: none;
+    z-index: 6;
+    pointer-events: none; /* Le texte ne bloque pas le clic */
   }
 
   #secret-view video,
@@ -424,6 +452,11 @@
 <audio id="kld-7" loop preload="auto"><source src="kld-7.mp3" type="audio/mpeg"></audio>
 <audio id="kld-8" loop preload="auto"><source src="kld-8.mp3" type="audio/mpeg"></audio>
 
+<!-- SONS ARTIFACT-2 -->
+<audio id="switch-sfx-1" preload="auto"><source src="switch-sfx-1.mp3" type="audio/mpeg"></audio>
+<audio id="switch-sfx-2" preload="auto"><source src="switch-sfx-2.mp3" type="audio/mpeg"></audio>
+<audio id="son-lose" loop preload="auto"><source src="son-lose.mp3" type="audio/mpeg"></audio>
+
 <div id="secret-view">
   <video autoplay muted loop playsinline><source src="video-suite.mp4" type="video/mp4"></video>
   <div class="options" id="yesno-options">
@@ -478,7 +511,8 @@
 </div>
 
 <div id="page-artifact-2">
-  <!-- Cette page utilise désormais une image de fond définie dans le CSS -->
+  <p id="light-lose-text">you made me lose my mind</p>
+  <img id="light-display-img" src="" alt="">
   <a class="back" href="#" id="back-link-artifact-2">← retour</a>
 </div>
 
@@ -657,9 +691,8 @@
 
   function clearBox(){
     for(var i=0; i<letters.length; i++){
-      var L = i;
-      var currentL = letters[i];
-      if(currentL.inBox){ currentL.inBox = false; currentL.vx = rand(-3, 3); currentL.vy = rand(-3, 3); }
+      var L = letters[i];
+      if(L.inBox){ L.inBox = false; L.vx = rand(-3, 3); L.vy = rand(-3, 3); }
     }
   }
 
@@ -702,6 +735,9 @@
     document.getElementById('artlife-video').pause();
     
     stopKilledSounds();
+    // Arrêter sons artifact-2
+    document.getElementById('son-lose').pause();
+    document.getElementById('son-lose').currentTime = 0;
   }
 
   function revealView(key){
@@ -737,6 +773,9 @@
     } else if(n === '3'){
       switchTrack(bgmHome);
       enterKilledPage(); 
+    } else if(n === '2'){
+      switchTrack(bgmHome);
+      enterArtifact2();
     } else {
       switchTrack(bgmHome);
     }
@@ -818,8 +857,7 @@
   var pleaseArtifactsEl = document.getElementById('please-artifacts');
   var pleaseArtifactsShown = false;
   var artifactVideos = [
-    document.querySelector('#artifact-1 video'), document.querySelector('#artifact-2 video'),
-    document.querySelector('#artifact-3 video'), document.querySelector('#artifact-4 video')
+    document.querySelector('#artifact-1 video'), document.querySelector('#artifact-3 video'), document.querySelector('#artifact-4 video')
   ];
   artifactVideos.forEach(function(v){ if(v){ v.volume = 0.7; v.load(); } });
   var artifactsRevealSound = document.getElementById('artifacts-reveal-sound');
@@ -1080,21 +1118,14 @@
     if(killedRevealCount < groups.length){
       var el = groups[killedRevealCount];
       if(el) el.style.opacity = '1';
-      
       var snd = kldSounds[killedRevealCount];
-      if(snd && soundOn){
-        snd.currentTime = 0;
-        snd.play().catch(function(){});
-      }
-      
+      if(snd && soundOn){ snd.currentTime = 0; snd.play().catch(function(){}); }
       killedRevealCount++;
     }
   }
   
   function stopKilledSounds(){
-    kldSounds.forEach(function(snd){
-      if(snd){ snd.pause(); snd.currentTime = 0; }
-    });
+    kldSounds.forEach(function(snd){ if(snd){ snd.pause(); snd.currentTime = 0; } });
   }
   
   function enterKilledPage(){
@@ -1116,8 +1147,7 @@
   }
 
   function buildKilledLetters(){
-    killedStageEl.innerHTML = '';
-    killedLetters = [];
+    killedStageEl.innerHTML = ''; killedLetters = [];
     var margin = 0.08; var w = innerWidth, h = innerHeight;
     killedChars.forEach(function(ch){
       var el = document.createElement('div'); el.className = 'letter'; el.textContent = ch;
@@ -1190,6 +1220,57 @@
 
   if(reduceMotion){ frameKilledStatic(); } else { requestAnimationFrame(frameKilled); }
 
+  /* ---------------- ARTIFACT-2 LOGIC ---------------- */
+  /* Vérification stricte des extensions .JPG en majuscules */
+  var lightImgSet1 = ['light-1.JPG','light-2.JPG','light-3.JPG','light-4.JPG','light-5.JPG','light-6.JPG'];
+  var lightImgSet2 = ['light-a.JPG','light-b.JPG','light-c.JPG','light-d.JPG','light-f.JPG'];
+  var lightCounter = 0;
+  var lightIsVisible = false;
+  var lightContainer = document.getElementById('page-artifact-2');
+  var lightDisplay = document.getElementById('light-display-img');
+  var lightText = document.getElementById('light-lose-text');
+  var sonLose = document.getElementById('son-lose');
+  var sfxLight1 = document.getElementById('switch-sfx-1');
+  var sfxLight2 = document.getElementById('switch-sfx-2');
+
+  function enterArtifact2(){
+    lightIsVisible = false;
+    lightDisplay.style.display = 'none';
+  }
+
+  lightContainer.addEventListener('click', function(e){
+    // Ne pas déclencher si on clique sur le bouton retour
+    if(e.target.closest && e.target.closest('.back')) return;
+
+    if(!lightIsVisible){
+      // Étape d'affichage de l'image
+      lightIsVisible = true;
+      lightCounter++;
+      
+      // Sélection du set d'images (Set 2 si on a dépassé 26 clics)
+      var currentSet = (lightCounter > 26) ? lightImgSet2 : lightImgSet1;
+      var randomImg = currentSet[Math.floor(Math.random() * currentSet.length)];
+      
+      lightDisplay.src = randomImg;
+      lightDisplay.style.display = 'block';
+      
+      if(soundOn) sfxLight1.cloneNode(true).play().catch(function(){});
+
+      // Seuil de 13 cycles (26 clics) atteint : affichage du texte et musique loop
+      if(lightCounter > 26){
+        lightText.style.display = 'block';
+        if(soundOn) sonLose.play().catch(function(){});
+      }
+    } else {
+      // Étape de disparition de l'image
+      lightIsVisible = false;
+      lightCounter++;
+      lightDisplay.style.display = 'none';
+      if(soundOn) sfxLight2.cloneNode(true).play().catch(function(){});
+    }
+  });
+
+
   /* ---------------- sound ---------------- */
   var bgmHome = document.getElementById('bgm-home');
   var bgmSecret = document.getElementById('bgm-secret');
@@ -1228,12 +1309,12 @@
     if(soundOn){
       if(currentTrack) currentTrack.pause();
       kldSounds.forEach(function(s){ if(s) s.pause(); });
+      sonLose.pause();
       soundOn = false; soundBtn.textContent = 'son : off';
     } else {
       if(currentTrack) currentTrack.play();
-      for(var i=0; i<killedRevealCount; i++){
-        if(kldSounds[i]) kldSounds[i].play();
-      }
+      for(var i=0; i<killedRevealCount; i++){ if(kldSounds[i]) kldSounds[i].play(); }
+      if(lightCounter > 26 && currentView === 'artifact-2') sonLose.play();
       soundOn = true; soundBtn.textContent = 'son : on';
     }
   });
