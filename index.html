@@ -68,13 +68,12 @@
     justify-content:center;
   }
 
-  /* PAGE ARTIFACT 2 - Fond avec .JPG en majuscules */
+  /* PAGE ARTIFACT 2 */
   #page-artifact-2 {
     background: #000 url('img-artfact-2.JPG') center center / cover no-repeat;
     cursor: pointer;
   }
 
-  /* Image centrale pour page-artifact-2 */
   #light-display-img {
     position: absolute;
     top: 50%; left: 50%;
@@ -83,23 +82,26 @@
     max-height: 75vh;
     z-index: 5;
     display: none;
-    pointer-events: none; /* L'image ne bloque pas le clic */
+    pointer-events: none;
   }
 
-  /* Texte en haut pour page-artifact-2 */
-  #light-lose-text {
+  /* Styles pour les messages de l'artefact 2 */
+  .light-msg {
     position: absolute;
-    top: 5%;
-    width: 100%;
-    text-align: center;
     font-family: Arial, sans-serif;
     font-weight: 700;
     font-size: 0.95rem;
     color: var(--letter-color);
     display: none;
     z-index: 6;
-    pointer-events: none; /* Le texte ne bloque pas le clic */
+    pointer-events: none;
+    text-align: center;
   }
+  #light-msg-1 { top: 5%; width: 100%; }
+  #light-msg-2 { top: 12%; width: 100%; }
+  #light-msg-3 { top: 50%; left: 5%; transform: translateY(-50%); text-align: left; }
+  #light-msg-4 { top: 50%; right: 5%; transform: translateY(-50%); text-align: right; }
+  #light-msg-5 { top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 1.1rem; }
 
   #secret-view video,
   #view-yes video,
@@ -511,7 +513,13 @@
 </div>
 
 <div id="page-artifact-2">
-  <p id="light-lose-text">you made me lose my mind</p>
+  <!-- Nouveaux messages pour l'artefact 2 -->
+  <p class="light-msg" id="light-msg-1">you made me lose my mind</p>
+  <p class="light-msg" id="light-msg-2">now I will cry forever</p>
+  <p class="light-msg" id="light-msg-3">stop hurting me</p>
+  <p class="light-msg" id="light-msg-4">somebody help me i'm trapped</p>
+  <p class="light-msg" id="light-msg-5">why is my face looking so wierd</p>
+  
   <img id="light-display-img" src="" alt="">
   <a class="back" href="#" id="back-link-artifact-2">← retour</a>
 </div>
@@ -735,7 +743,6 @@
     document.getElementById('artlife-video').pause();
     
     stopKilledSounds();
-    // Arrêter sons artifact-2
     document.getElementById('son-lose').pause();
     document.getElementById('son-lose').currentTime = 0;
   }
@@ -1227,7 +1234,6 @@
   var lightImgSet1 = ['light-1.JPG','light-2.JPG','light-3.JPG','light-4.JPG','light-5.JPG','light-6.JPG'];
   var lightImgSet2 = ['light-a.JPG','light-b.JPG','light-c.JPG','light-d.JPG','light-f.JPG'];
   
-  /* Préchargement des images pour éviter le lag */
   [...lightImgSet1, ...lightImgSet2].forEach(function(src){
     var img = new Image();
     img.src = src;
@@ -1237,12 +1243,26 @@
   var lightIsVisible = false;
   var lightContainer = document.getElementById('page-artifact-2');
   var lightDisplay = document.getElementById('light-display-img');
-  var lightText = document.getElementById('light-lose-text');
   var sonLose = document.getElementById('son-lose');
   var sfxLight1 = document.getElementById('switch-sfx-1');
   var sfxLight2 = document.getElementById('switch-sfx-2');
 
+  function resetLightArtifact(){
+    lightCounter = 0;
+    lightIsVisible = false;
+    lightDisplay.style.display = 'none';
+    lightContainer.style.background = "#000 url('img-artfact-2.JPG') center center / cover no-repeat";
+    for(let i=1; i<=5; i++){ document.getElementById('light-msg-' + i).style.display = 'none'; }
+    sonLose.pause();
+    sonLose.currentTime = 0;
+  }
+
   function enterArtifact2(){
+    // On ne reset pas forcément tout pour garder la progression si on revient
+    if(lightCounter > 42){
+      // Sauf si on a déjà tout fini
+      resetLightArtifact();
+    }
     lightIsVisible = false;
     lightDisplay.style.display = 'none';
   }
@@ -1253,24 +1273,44 @@
     if(!lightIsVisible){
       lightIsVisible = true;
       lightCounter++;
-      // MODIFICATION : passage de 26 clics à 18 clics (9 cycles)
+      
+      // État Final (42 clics / 21 cycles)
+      if(lightCounter > 42){
+        lightDisplay.style.display = 'none';
+        lightContainer.style.background = "#000"; // Tout se coupe (fond noir)
+        sonLose.pause(); // Le son se coupe
+        for(let i=1; i<=4; i++){ document.getElementById('light-msg-' + i).style.display = 'none'; }
+        document.getElementById('light-msg-5').style.display = 'block'; // Juste la phrase au milieu
+        if(soundOn) sfxLight1.cloneNode(true).play().catch(function(){});
+        return;
+      }
+
+      // Sélection du set d'images
       var currentSet = (lightCounter > 18) ? lightImgSet2 : lightImgSet1;
       var randomImg = currentSet[Math.floor(Math.random() * currentSet.length)];
-      
       lightDisplay.src = randomImg;
       lightDisplay.style.display = 'block';
-      
       if(soundOn) sfxLight1.cloneNode(true).play().catch(function(){});
 
+      // Gestion des paliers de texte
       if(lightCounter > 18){
-        lightText.style.display = 'block';
-        if(soundOn) sonLose.play().catch(function(){});
+        document.getElementById('light-msg-1').style.display = 'block';
+        if(soundOn && sonLose.paused) sonLose.play().catch(function(){});
       }
+      if(lightCounter > 24) document.getElementById('light-msg-2').style.display = 'block';
+      if(lightCounter > 30) document.getElementById('light-msg-3').style.display = 'block';
+      if(lightCounter > 36) document.getElementById('light-msg-4').style.display = 'block';
+
     } else {
       lightIsVisible = false;
       lightCounter++;
       lightDisplay.style.display = 'none';
       if(soundOn) sfxLight2.cloneNode(true).play().catch(function(){});
+      
+      // Si on est dans l'état final, on ne réaffiche rien au clic de fermeture
+      if(lightCounter > 42){
+        lightContainer.style.background = "#000";
+      }
     }
   });
 
@@ -1318,7 +1358,8 @@
     } else {
       if(currentTrack) currentTrack.play();
       for(var i=0; i<killedRevealCount; i++){ if(kldSounds[i]) kldSounds[i].play(); }
-      if(lightCounter > 18 && currentView === 'artifact-2') sonLose.play();
+      // On ne relance sonLose que si on n'est pas dans l'état final
+      if(lightCounter > 18 && lightCounter <= 42 && currentView === 'artifact-2') sonLose.play();
       soundOn = true; soundBtn.textContent = 'son : on';
     }
   });
