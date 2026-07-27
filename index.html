@@ -67,12 +67,17 @@
     align-items:center;
     justify-content:center;
   }
+
+  /* Style spécifique pour le fond de la page artifact-2 */
+  #page-artifact-2 {
+    background: #000 url('img-artfact-2.JPG') center center / cover no-repeat;
+  }
+
   #secret-view video,
   #view-yes video,
   #view-no video,
   #page-perf video,
   #page-please video,
-  #page-artifact-2 video,
   #page-artifact-3 video{
     position:absolute;
     top:50%; left:50%;
@@ -473,7 +478,7 @@
 </div>
 
 <div id="page-artifact-2">
-  <video autoplay muted loop playsinline><source src="video-artifact-2.mp4" type="video/mp4"></video>
+  <!-- Cette page utilise désormais une image de fond définie dans le CSS -->
   <a class="back" href="#" id="back-link-artifact-2">← retour</a>
 </div>
 
@@ -652,8 +657,9 @@
 
   function clearBox(){
     for(var i=0; i<letters.length; i++){
-      var L = letters[i];
-      if(L.inBox){ L.inBox = false; L.vx = rand(-3, 3); L.vy = rand(-3, 3); }
+      var L = i;
+      var currentL = letters[i];
+      if(currentL.inBox){ currentL.inBox = false; currentL.vx = rand(-3, 3); currentL.vy = rand(-3, 3); }
     }
   }
 
@@ -695,7 +701,6 @@
     document.getElementById('perf-intro').style.pointerEvents = 'none';
     document.getElementById('artlife-video').pause();
     
-    // Arrêter tous les sons "Killed" si on quitte la page
     stopKilledSounds();
   }
 
@@ -731,7 +736,7 @@
       artlifeVideo.muted = false; artlifeVideo.currentTime = 0; artlifeVideo.play().catch(function(){});
     } else if(n === '3'){
       switchTrack(bgmHome);
-      enterKilledPage(); // Réinitialiser l'état de la page Killed
+      enterKilledPage(); 
     } else {
       switchTrack(bgmHome);
     }
@@ -816,7 +821,7 @@
     document.querySelector('#artifact-1 video'), document.querySelector('#artifact-2 video'),
     document.querySelector('#artifact-3 video'), document.querySelector('#artifact-4 video')
   ];
-  artifactVideos.forEach(function(v){ v.volume = 0.7; v.load(); });
+  artifactVideos.forEach(function(v){ if(v){ v.volume = 0.7; v.load(); } });
   var artifactsRevealSound = document.getElementById('artifacts-reveal-sound');
   artifactsRevealSound.volume = 0.3; artifactsRevealSound.load();
   artifactsRevealSound.addEventListener('timeupdate', function(){
@@ -829,7 +834,7 @@
     pleaseMsgIndex = 0; pleaseMessagesEl.innerHTML = '';
     pleasePlacedPositions = []; pleaseArtifactsShown = false;
     pleaseArtifactsEl.classList.remove('show');
-    artifactVideos.forEach(function(v){ v.pause(); v.currentTime = 0; });
+    artifactVideos.forEach(function(v){ if(v){ v.pause(); v.currentTime = 0; } });
     artifactsRevealSound.pause(); artifactsRevealSound.currentTime = 0;
   }
 
@@ -849,7 +854,7 @@
   function revealPleaseArtifacts(){
     pleaseArtifactsShown = true; pleaseMessagesEl.innerHTML = '';
     pleaseArtifactsEl.classList.add('show');
-    artifactVideos.forEach(function(v){ v.currentTime = 0; v.play().catch(function(){}); });
+    artifactVideos.forEach(function(v){ if(v){ v.currentTime = 0; v.play().catch(function(){}); } });
     artifactsRevealSound.currentTime = 0; artifactsRevealSound.play().catch(function(){});
   }
 
@@ -1054,7 +1059,6 @@
   var killedGroupEls = null;
   var killedRevealCount = 0;
   
-  // Tableau des audios pour artifact-3
   var kldSounds = [
     document.getElementById('kld-1'), document.getElementById('kld-2'),
     document.getElementById('kld-3'), document.getElementById('kld-4'),
@@ -1077,7 +1081,6 @@
       var el = groups[killedRevealCount];
       if(el) el.style.opacity = '1';
       
-      // LANCEMENT DU SON CORRESPONDANT (EN BOUCLE)
       var snd = kldSounds[killedRevealCount];
       if(snd && soundOn){
         snd.currentTime = 0;
@@ -1224,12 +1227,10 @@
     if(!unlocked){ unlockAndPlay(); return; }
     if(soundOn){
       if(currentTrack) currentTrack.pause();
-      // On coupe aussi les boucles Killed
       kldSounds.forEach(function(s){ if(s) s.pause(); });
       soundOn = false; soundBtn.textContent = 'son : off';
     } else {
       if(currentTrack) currentTrack.play();
-      // On relance les boucles Killed déjà actives
       for(var i=0; i<killedRevealCount; i++){
         if(kldSounds[i]) kldSounds[i].play();
       }
