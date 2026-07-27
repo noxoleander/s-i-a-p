@@ -397,7 +397,6 @@
   }
   .killed-group{
     opacity:0;
-    transition:opacity 1s;
   }
 
   @media (prefers-reduced-motion: reduce){
@@ -1522,12 +1521,13 @@
   var killedStageEl = document.getElementById('stage-killed');
   var killedLetters = [];
 
-  // 8 groupes de mots pour les 8 lettres de "oleander" (ordre libre au clic,
-  // chaque lettre est reliée à un groupe fixe qui s'affiche à sa place dans
-  // l'une des deux phrases, quel que soit l'ordre dans lequel on clique) :
+  // 8 groupes de mots pour les 8 lettres de "oleander". Peu importe QUELLE lettre
+  // est cliquée : chaque clic révèle le PROCHAIN groupe dans l'ordre logique de la
+  // phrase (compteur global), donc l'affichage suit toujours :
   // Phrase 1 : "I can't recall" / "what a horse" / "looks like"
   // Phrase 2 : "Maybe" / "we've already" / "killed" / "them" / "all"
   var killedGroupEls = null; // rempli au premier clic (les éléments existent déjà dans le DOM)
+  var killedRevealCount = 0;
 
   function getKilledGroupEls(){
     if(!killedGroupEls){
@@ -1539,10 +1539,13 @@
     return killedGroupEls;
   }
 
-  function revealKilledGroup(groupIndex){
+  function revealNextKilledGroup(){
     var groups = getKilledGroupEls();
-    var el = groups[groupIndex];
-    if(el) el.style.opacity = '1';
+    if(killedRevealCount < groups.length){
+      var el = groups[killedRevealCount];
+      if(el) el.style.opacity = '1'; // affichage net, sans fondu (pas de transition CSS)
+      killedRevealCount++;
+    }
   }
 
   function freezeKilledLetter(L){
@@ -1554,7 +1557,7 @@
     L.el.classList.remove('dragging');
     L.el.style.transition = 'opacity 1s';
     L.el.style.opacity = '0';
-    revealKilledGroup(L.groupIndex);
+    revealNextKilledGroup();
     setTimeout(function(){
       L.el.style.display = 'none';
     }, 1000);
@@ -1566,9 +1569,9 @@
     var margin = 0.08;
     var w = innerWidth, h = innerHeight;
 
-    killedChars.forEach(function(ch, index){
+    killedChars.forEach(function(ch){
       var el = document.createElement('div');
-      el.className = 'letter font-orn';
+      el.className = 'letter'; // Arial jaune habituel, comme les autres lettres du site
       el.textContent = ch;
       killedStageEl.appendChild(el);
 
@@ -1582,8 +1585,7 @@
         dragging: false,
         dragOffX: 0,
         dragOffY: 0,
-        frozen: false,
-        groupIndex: index // chaque lettre est fixement reliée à son groupe de mots
+        frozen: false
       };
       killedLetters.push(L);
       attachKilledDrag(el, L);
@@ -1591,9 +1593,8 @@
   }
 
   function attachKilledDrag(el, L){
-    var downX = 0, downY = 0, downTime = 0, moved = false;
-    var CLICK_TOLERANCE = 5; // px : en dessous, on considère que c'est un clic, pas un glisser
-    var CLICK_MAX_DURATION = 400; // ms
+    var downX = 0, downY = 0, moved = false;
+    var CLICK_TOLERANCE = 5; // px : en dessous, on considère que c'est un clic (même tenu longtemps), pas un glisser
 
     function down(clientX, clientY){
       if(L.frozen) return;
@@ -1603,7 +1604,6 @@
       L.dragOffY = clientY - L.y;
       downX = clientX;
       downY = clientY;
-      downTime = Date.now();
       moved = false;
     }
     function move(clientX, clientY){
@@ -1622,7 +1622,7 @@
       if(!L.dragging) return;
       L.dragging = false;
       el.classList.remove('dragging');
-      if(!moved && (Date.now() - downTime) < CLICK_MAX_DURATION){
+      if(!moved){
         freezeKilledLetter(L);
       }
     }
