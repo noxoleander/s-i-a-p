@@ -17,14 +17,6 @@
     background:#000;
   }
 
-  /*
-    FOND (au choix) :
-    - pour une PHOTO : remplace background:#000; ci-dessous par
-      background:#000 url('ta-photo.jpg') center center / cover no-repeat;
-      (et tu peux alors supprimer la balise <video> dans le HTML)
-    - pour une VIDÉO : laisse background:#000; ici et va voir
-      la balise <video> juste en dessous dans le HTML.
-  */
   #bg{
     position:fixed;
     inset:0;
@@ -113,7 +105,6 @@
     opacity:0;
     pointer-events:none;
     transition:opacity 1.1s;
-    /* fichier attendu : img-note.JPG (majuscules, comme sur ton disque) */
     background:#000 url('img-note.JPG') center center / cover no-repeat;
   }
   .note-zone{
@@ -355,20 +346,6 @@
     z-index:5;
   }
 
-  /*
-    Police pour les lettres flottantes de la page artfact-3 ("oleander").
-    "Bodoni Ornaments" est une police système (macOS/Adobe) : si le
-    visiteur ne l'a pas installée, le navigateur retombera sur "serif".
-    Si tu as le fichier de police et le droit de l'utiliser sur le web,
-    tu peux l'auto-héberger avec une règle @font-face juste ici
-    (ex: @font-face{ font-family:'Bodoni Ornaments'; src:url('bodoni-ornaments.woff2') format('woff2'); })
-    pour qu'elle s'affiche pareil chez tout le monde.
-  */
-  .letter.font-orn{
-    font-family:'Bodoni Ornaments', serif;
-    font-weight:400;
-  }
-
   #stage-killed{
     position:absolute;
     inset:0;
@@ -376,7 +353,6 @@
     overflow:hidden;
   }
 
-  /* phrase centrale qui se compose groupe par groupe (page artfact-3) */
   #killed-sentence{
     position:relative;
     z-index:2;
@@ -407,14 +383,6 @@
 <body>
 
 <div id="bg">
-  <!--
-    VIDÉO DE FOND :
-    remplace "ta-video.mp4" par le nom de ton fichier vidéo,
-    placé dans le même dossier que ce fichier html.
-    muted + autoplay + loop = elle démarre et boucle toute seule,
-    sans son (le son de la vidéo elle-même reste coupé,
-    ça n'a pas de rapport avec le bouton "son" du site).
-  -->
   <video autoplay muted loop playsinline>
     <source src="ta-video.mp4" type="video/mp4">
   </video>
@@ -424,76 +392,35 @@
 
 <button id="sound-toggle" type="button">son : off</button>
 
-<!--
-  BOUCLE SONORE — PAGE D'ACCUEIL :
-  remplace la valeur "src" ci-dessous par le nom de ton fichier audio
-  (mp3 ou ogg), placé dans le même dossier que ce fichier html.
-  Le son se lance au premier clic/drag sur la page (contrainte des
-  navigateurs : impossible de jouer du son avant une interaction).
--->
-<audio id="bgm-home" loop preload="auto">
-  <source src="ta-boucle.mp3" type="audio/mpeg">
-</audio>
+<audio id="bgm-home" loop preload="auto"><source src="ta-boucle.mp3" type="audio/mpeg"></audio>
+<audio id="bgm-secret" loop preload="auto"><source src="boucle-page2.mp3" type="audio/mpeg"></audio>
+<audio id="bgm-yes" loop preload="auto"><source src="boucle-yes.mp3" type="audio/mpeg"></audio>
+<audio id="bgm-perf" loop preload="auto"><source src="boucle-perf.mp3" type="audio/mpeg"></audio>
 
-<!--
-  BOUCLE SONORE — PAGE "YES / NO" :
-  même principe, fichier différent. Elle prend le relais
-  automatiquement quand on arrive sur cette page, et la boucle
-  d'accueil se coupe.
--->
-<audio id="bgm-secret" loop preload="auto">
-  <source src="boucle-page2.mp3" type="audio/mpeg">
-</audio>
-
-<!--
-  BOUCLE SONORE — PAGE "YES" (2.1) :
-  même principe, encore un fichier différent. Elle prend le relais
-  dès qu'on clique sur "yes".
--->
-<audio id="bgm-yes" loop preload="auto">
-  <source src="boucle-yes.mp3" type="audio/mpeg">
-</audio>
-
-<!--
-  BOUCLE SONORE — "PAGE PERF" :
-  se lance juste après le 5ème clic sur l'image de la page "yes",
-  en coupant net la boucle précédente (pas de fondu).
--->
-<audio id="bgm-perf" loop preload="auto">
-  <source src="boucle-perf.mp3" type="audio/mpeg">
-</audio>
-
-<!--
-  EFFETS SONORES — dépôt d'une lettre dans la boîte :
-  remplace ces 5 noms par tes fichiers .mp3 (courts).
-  Si tu en as moins de 5, tu peux réutiliser les mêmes fichiers
-  sur plusieurs emplacements — ça marche très bien aussi.
-  Un des cinq est choisi au hasard à chaque lettre posée.
--->
 <audio id="sfx-1" preload="auto"><source src="sfx-pose-1.mp3" type="audio/mpeg"></audio>
 <audio id="sfx-2" preload="auto"><source src="sfx-pose-2.mp3" type="audio/mpeg"></audio>
 <audio id="sfx-3" preload="auto"><source src="sfx-pose-3.mp3" type="audio/mpeg"></audio>
 <audio id="sfx-4" preload="auto"><source src="sfx-pose-4.mp3" type="audio/mpeg"></audio>
 <audio id="sfx-5" preload="auto"><source src="sfx-pose-5.mp3" type="audio/mpeg"></audio>
 
-<!--
-  SONS — image cliquable de la page "yes" :
-  un son différent pour chacune des 5 images, dans l'ordre.
--->
 <audio id="yes-click-1" preload="auto"><source src="yes-click-1.mp3" type="audio/mpeg"></audio>
 <audio id="yes-click-2" preload="auto"><source src="yes-click-2.mp3" type="audio/mpeg"></audio>
 <audio id="yes-click-3" preload="auto"><source src="yes-click-3.mp3" type="audio/mpeg"></audio>
 <audio id="yes-click-4" preload="auto"><source src="yes-click-4.mp3" type="audio/mpeg"></audio>
 <audio id="yes-click-5" preload="auto"><source src="yes-click-5.mp3" type="audio/mpeg"></audio>
 
+<!-- SONS ARTIFACT-3 (KILLED) -->
+<audio id="kld-1" loop preload="auto"><source src="kld-1.mp3" type="audio/mpeg"></audio>
+<audio id="kld-2" loop preload="auto"><source src="kld-2.mp3" type="audio/mpeg"></audio>
+<audio id="kld-3" loop preload="auto"><source src="kld-3.mp3" type="audio/mpeg"></audio>
+<audio id="kld-4" loop preload="auto"><source src="kld-4.mp3" type="audio/mpeg"></audio>
+<audio id="kld-5" loop preload="auto"><source src="kld-5.mp3" type="audio/mpeg"></audio>
+<audio id="kld-6" loop preload="auto"><source src="kld-6.mp3" type="audio/mpeg"></audio>
+<audio id="kld-7" loop preload="auto"><source src="kld-7.mp3" type="audio/mpeg"></audio>
+<audio id="kld-8" loop preload="auto"><source src="kld-8.mp3" type="audio/mpeg"></audio>
+
 <div id="secret-view">
-  <!--
-    VIDÉO DE FOND DE CETTE VUE :
-    remplace "video-suite.mp4" par le nom de ton fichier vidéo.
-  -->
-  <video autoplay muted loop playsinline>
-    <source src="video-suite.mp4" type="video/mp4">
-  </video>
+  <video autoplay muted loop playsinline><source src="video-suite.mp4" type="video/mp4"></video>
   <div class="options" id="yesno-options">
     <button type="button" class="opt" id="opt-yes">yes</button>
     <button type="button" class="opt" id="opt-no">no</button>
@@ -502,121 +429,57 @@
 </div>
 
 <div id="view-yes">
-  <!--
-    VIDÉO DE FOND — page "yes" (2.1) :
-    remplace "video-yes.mp4" par le nom de ton fichier vidéo.
-  -->
-  <video autoplay muted loop playsinline>
-    <source src="video-yes.mp4" type="video/mp4">
-  </video>
-  <!--
-    IMAGE CLIQUABLE — remplace yes-img-1.png à yes-img-5.png
-    par tes 5 images.
-  -->
+  <video autoplay muted loop playsinline><source src="video-yes.mp4" type="video/mp4"></video>
   <img id="yes-img" src="yes-img-1.png" alt="">
   <button type="button" class="back-phrase" id="yes-undo">sorry, didn't mean to do that.</button>
   <a class="back" href="#" id="back-link-yes">← retour</a>
 </div>
 
 <div id="view-no">
-  <!--
-    VIDÉO DE FOND — page "no" (2.2) :
-    remplace "video-no.mp4" par le nom de ton fichier vidéo.
-  -->
-  <video autoplay muted loop playsinline>
-    <source src="video-no.mp4" type="video/mp4">
-  </video>
+  <video autoplay muted loop playsinline><source src="video-no.mp4" type="video/mp4"></video>
   <a class="back" href="#" id="back-link-no">← retour</a>
 </div>
 
 <div id="page-perf">
-  <!--
-    VIDÉO DE FOND (avec son) — "page perf" :
-    remplace "video-perf.mp4" par ton fichier.
-    Pas de "muted" ici : c'est volontaire, tu veux le son de cette vidéo.
-    Pas d'"autoplay" non plus : elle démarre au clic qui ferme l'intro.
-  -->
-  <video id="perf-bg-video" loop playsinline>
-    <source src="video-perf.mp4" type="video/mp4">
-  </video>
-  <!--
-    4 VIDÉOS "CLIC MAINTENU" — remplace video-perf-hold-1.mp4 à
-    video-perf-hold-4.mp4 par tes fichiers. Une est choisie au hasard
-    à chaque nouveau clic, et s'affiche brutalement (sans fondu)
-    par-dessus la vidéo de fond, aux mêmes dimensions. Muettes par
-    défaut ; dis-moi si tu veux aussi du son dessus.
-  -->
+  <video id="perf-bg-video" loop playsinline><source src="video-perf.mp4" type="video/mp4"></video>
   <video class="perf-hold-video" id="perf-hold-1" muted loop playsinline preload="auto"><source src="video-perf-hold-1.mp4" type="video/mp4"></video>
   <video class="perf-hold-video" id="perf-hold-2" muted loop playsinline preload="auto"><source src="video-perf-hold-2.mp4" type="video/mp4"></video>
   <video class="perf-hold-video" id="perf-hold-3" muted loop playsinline preload="auto"><source src="video-perf-hold-3.mp4" type="video/mp4"></video>
   <video class="perf-hold-video" id="perf-hold-4" muted loop playsinline preload="auto"><source src="video-perf-hold-4.mp4" type="video/mp4"></video>
-
-  <!--
-    SON — pendant le clic maintenu : boucle qui ne joue que tant que
-    le clic est enfoncé, et démarre à un point aléatoire de la boucle
-    à chaque nouvelle pression.
-  -->
   <audio id="perf-hold-sound" loop preload="auto"><source src="son-hold.mp3" type="audio/mpeg"></audio>
-
   <div id="perf-intro">
     <p id="perf-intro-text">I think there's someone in the garden</p>
   </div>
-
   <button type="button" class="back-phrase" id="perf-please-msg">If you want him to go away, you're gonna have to say "please".</button>
-
   <a class="back" href="#" id="back-link-perf">← retour</a>
 </div>
 
 <div id="page-please">
-  <!--
-    VIDÉO DE FOND — "page please" :
-    remplace "video-please.mp4" par ton fichier, ou supprime
-    la balise si tu ne veux pas de vidéo ici.
-  -->
-  <video autoplay muted loop playsinline>
-    <source src="video-please.mp4" type="video/mp4">
-  </video>
+  <video autoplay muted loop playsinline><source src="video-please.mp4" type="video/mp4"></video>
   <div id="please-messages"></div>
-
-  <!--
-    4 VIDÉOS "ARTFACT" — remplace artfact-1.mp4 à artfact-4.mp4 par tes
-    fichiers. Elles apparaissent toutes les 4 après la 7ème phrase,
-    chacune joue en boucle avec son propre son, indépendamment des autres.
-    Cliquer sur l'une d'elles ouvre sa page dédiée.
-  -->
-  <!--
-    SON SUPPLÉMENTAIRE — se joue une fois, au moment où les 4 vidéos
-    "artfact" apparaissent (en plus du son propre à chaque vidéo).
-    Remplace "son-artfacts.mp3" par ton fichier.
-  -->
   <audio id="artifacts-reveal-sound" preload="auto"><source src="son-artfacts.mp3" type="audio/mpeg"></audio>
-
   <div id="please-artifacts">
     <div class="artifact-item" id="artifact-4"><video loop playsinline><source src="artfact-4.mp4" type="video/mp4"></video></div>
     <div class="artifact-item" id="artifact-3"><video loop playsinline><source src="artfact-3.mp4" type="video/mp4"></video></div>
     <div class="artifact-item" id="artifact-1"><video loop playsinline><source src="artfact-1.mp4" type="video/mp4"></video></div>
     <div class="artifact-item" id="artifact-2"><video loop playsinline><source src="artfact-2.mp4" type="video/mp4"></video></div>
   </div>
-
   <a class="back" href="#" id="back-link-please">← retour</a>
 </div>
 
 <div id="page-artlife">
-  <!-- VIDÉO — remplace "vid-artlife.mp4" par ton fichier. Centrée, prend 3/4 de l'écran max. -->
   <video class="artlife-video" id="artlife-video" autoplay loop playsinline disablepictureinpicture disableremoteplayback><source src="vid-artlife.mp4" type="video/mp4"></video>
   <button type="button" class="back-phrase" id="artlife-back-phrase" style="display:block;">i don't care</button>
 </div>
+
 <div id="page-artifact-2">
-  <!-- VIDÉO DE FOND — page de l'artfact 2 : remplace "video-artifact-2.mp4" -->
   <video autoplay muted loop playsinline><source src="video-artifact-2.mp4" type="video/mp4"></video>
   <a class="back" href="#" id="back-link-artifact-2">← retour</a>
 </div>
+
 <div id="page-artifact-3">
-  <!-- VIDÉO DE FOND — page de l'artfact 3 : remplace "vid-killed.mp4" par ton fichier (boucle). -->
   <video autoplay muted loop playsinline><source src="vid-killed.mp4" type="video/mp4"></video>
-  <!-- lettres flottantes "oleander" en Bodoni Ornaments, même mécanisme que la page d'accueil -->
   <div id="stage-killed"></div>
-  <!-- phrase qui se révèle groupe par groupe au clic sur chaque lettre -->
   <div id="killed-sentence">
     <p class="killed-line">
       <span class="killed-group" id="killed-g0">I can't recall</span>
@@ -635,31 +498,15 @@
 </div>
 
 <div id="page-note">
-  <!--
-    IMAGE DE FOND — "img-note" : remplace "img-note.JPG" (dans le CSS
-    plus haut, règle #page-note) par ton fichier si le nom diffère.
-
-    4 ZONES CLIQUABLES invisibles, positionnées sur les 4 photos :
-    note-zone-4 (personne, haut-gauche)   -> son note-4
-    note-zone-1 (CD, haut-droite)         -> son note-1
-    note-zone-2 (tunnel, bas-gauche)      -> son note-2
-    note-zone-3 (arbre, bas-droite)       -> son note-3
-    Cliquer dans l'ordre note-1 > note-2 > note-3 > note-4 révèle
-    "img-autism" au centre. Un autre ordre ne fait rien.
-  -->
   <div class="note-zone" id="note-zone-1" data-note="note-1"></div>
   <div class="note-zone" id="note-zone-2" data-note="note-2"></div>
   <div class="note-zone" id="note-zone-3" data-note="note-3"></div>
   <div class="note-zone" id="note-zone-4" data-note="note-4"></div>
-
   <audio id="sound-note-1" preload="auto"><source src="note-1.mp3" type="audio/mpeg"></audio>
   <audio id="sound-note-2" preload="auto"><source src="note-2.mp3" type="audio/mpeg"></audio>
   <audio id="sound-note-3" preload="auto"><source src="note-3.mp3" type="audio/mpeg"></audio>
   <audio id="sound-note-4" preload="auto"><source src="note-4.mp3" type="audio/mpeg"></audio>
-
-  <!-- fichier attendu : img-autism.JPG (majuscules) -->
   <img id="img-autism" src="img-autism.JPG" alt="">
-
   <a class="back" href="#" id="back-link-note">← retour</a>
 </div>
 
@@ -675,8 +522,7 @@
 
   function rand(min, max){ return min + Math.random() * (max - min); }
 
-  var BOX = 12; // half-size used for edge bounce, roughly matches the fixed font-size
-
+  var BOX = 12; 
   var portalEl = document.getElementById('portal');
 
   var sfxEls = [
@@ -688,7 +534,6 @@
   ];
   function playDropSfx(){
     var base = sfxEls[Math.floor(Math.random() * sfxEls.length)];
-    // clone so overlapping drops don't cut each other off
     var clip = base.cloneNode(true);
     clip.volume = 0.8;
     clip.play().catch(function(){});
@@ -703,131 +548,82 @@
     stage.innerHTML = '';
     letters = [];
     W = innerWidth; H = innerHeight;
-
-    var margin = 0.08; // keep letters away from the very edge
-
+    var margin = 0.08;
     chars.forEach(function(ch){
       var el = document.createElement('div');
       el.className = 'letter';
       el.textContent = ch;
       stage.appendChild(el);
-
       var startX, startY, tries = 0;
       do{
         startX = rand(W*margin, W*(1-margin));
         startY = rand(H*margin, H*(1-margin));
         tries++;
       } while(insideBox(startX, startY, 12) && tries < 20);
-
       var L = {
-        el: el,
-        x: startX,
-        y: startY,
-        vx: rand(-0.4, 0.4),
-        vy: rand(-0.4, 0.4),
-        depth: rand(0.7, 1.3), // affects how strongly wind pushes it
-        dragging: false,
-        inBox: false,
-        dragOffX: 0,
-        dragOffY: 0,
-        lastDragX: 0,
-        lastDragY: 0
+        el: el, x: startX, y: startY, vx: rand(-0.4, 0.4), vy: rand(-0.4, 0.4),
+        depth: rand(0.7, 1.3), dragging: false, inBox: false, dragOffX: 0, dragOffY: 0,
+        lastDragX: 0, lastDragY: 0
       };
       letters.push(L);
-
       attachDrag(el, L);
     });
   }
 
   function attachDrag(el, L){
     function down(clientX, clientY){
-      L.dragging = true;
-      L.inBox = false;
+      L.dragging = true; L.inBox = false;
       el.classList.add('dragging');
-      L.dragOffX = clientX - L.x;
-      L.dragOffY = clientY - L.y;
-      L.lastDragX = clientX;
-      L.lastDragY = clientY;
+      L.dragOffX = clientX - L.x; L.dragOffY = clientY - L.y;
+      L.lastDragX = clientX; L.lastDragY = clientY;
     }
     function move(clientX, clientY){
       if(!L.dragging) return;
-      var nx = clientX - L.dragOffX;
-      var ny = clientY - L.dragOffY;
-      L.vx = nx - L.x;
-      L.vy = ny - L.y;
-      L.x = nx;
-      L.y = ny;
+      var nx = clientX - L.dragOffX; var ny = clientY - L.dragOffY;
+      L.vx = nx - L.x; L.vy = ny - L.y;
+      L.x = nx; L.y = ny;
     }
     function up(){
       if(!L.dragging) return;
-      L.dragging = false;
-      el.classList.remove('dragging');
-      // only letters manually dropped inside the box come to rest there
+      L.dragging = false; el.classList.remove('dragging');
       var cx = L.x + 7, cy = L.y + 7;
       if(insideBox(cx, cy, 0)){
-        L.inBox = true;
-        L.vx = 0;
-        L.vy = 0;
-        if(needed.indexOf(L.el.textContent) !== -1){
-          playDropSfx();
-        }
-      } else {
-        L.inBox = false;
-      }
+        L.inBox = true; L.vx = 0; L.vy = 0;
+        if(needed.indexOf(L.el.textContent) !== -1){ playDropSfx(); }
+      } else { L.inBox = false; }
     }
-
     el.addEventListener('mousedown', function(e){ down(e.clientX, e.clientY); e.preventDefault(); });
     window.addEventListener('mousemove', function(e){ move(e.clientX, e.clientY); });
     window.addEventListener('mouseup', up);
-
-    el.addEventListener('touchstart', function(e){
-      var t = e.touches[0];
-      down(t.clientX, t.clientY);
-    }, {passive:true});
-    window.addEventListener('touchmove', function(e){
-      if(L.dragging && e.touches[0]) move(e.touches[0].clientX, e.touches[0].clientY);
-    }, {passive:true});
+    el.addEventListener('touchstart', function(e){ var t = e.touches[0]; down(t.clientX, t.clientY); }, {passive:true});
+    window.addEventListener('touchmove', function(e){ if(L.dragging && e.touches[0]) move(e.touches[0].clientX, e.touches[0].clientY); }, {passive:true});
     window.addEventListener('touchend', up);
   }
 
   buildLetters();
-  window.addEventListener('resize', function(){
-    W = innerWidth; H = innerHeight;
-  });
+  window.addEventListener('resize', function(){ W = innerWidth; H = innerHeight; });
 
-  /* ---------------- portal: only manually-dropped letters can rest inside ---------------- */
   var solvedSublime = false;
   var solvedPlease = false;
-  var needed = ['S','U','B','L','I','M','E']; // used elsewhere (sfx trigger) — kept as a flat list
-
-  // required letter counts for each word the box can recognise
+  var needed = ['S','U','B','L','I','M','E']; 
   var sublimeCounts = { S:1, U:1, B:1, L:1, I:1, M:1, E:1 };
   var pleaseCounts  = { P:1, L:1, E:2, A:1, S:1 };
 
   function bounceOffBox(L){
     var r = portalEl.getBoundingClientRect();
-    var radius = 8; // approx letter half-size
-    var cx = L.x + 7, cy = L.y + 7;
-
+    var radius = 8; var cx = L.x + 7, cy = L.y + 7;
     var closestX = Math.min(Math.max(cx, r.left), r.right);
     var closestY = Math.min(Math.max(cy, r.top), r.bottom);
     var dx = cx - closestX, dy = cy - closestY;
     var distSq = dx*dx + dy*dy;
-
     if(distSq >= radius*radius) return;
-
     var dist = Math.sqrt(distSq);
     if(dist > 0.0001){
       var nx = dx/dist, ny = dy/dist;
-      L.x = closestX + nx*radius - 7;
-      L.y = closestY + ny*radius - 7;
+      L.x = closestX + nx*radius - 7; L.y = closestY + ny*radius - 7;
       var vDotN = L.vx*nx + L.vy*ny;
-      if(vDotN < 0){
-        L.vx = (L.vx - 2*vDotN*nx) * 0.7;
-        L.vy = (L.vy - 2*vDotN*ny) * 0.7;
-      }
+      if(vDotN < 0){ L.vx = (L.vx - 2*vDotN*nx) * 0.7; L.vy = (L.vy - 2*vDotN*ny) * 0.7; }
     } else {
-      // center landed exactly inside the box (rare) — eject along shortest side
       var leftPen = cx - r.left, rightPen = r.right - cx;
       var topPen = cy - r.top, bottomPen = r.bottom - cy;
       var minPen = Math.min(leftPen, rightPen, topPen, bottomPen);
@@ -850,53 +646,33 @@
   }
 
   function satisfiesCounts(counts, required){
-    for(var ch in required){
-      if((counts[ch] || 0) < required[ch]) return false;
-    }
+    for(var ch in required){ if((counts[ch] || 0) < required[ch]) return false; }
     return true;
   }
 
-  // pops every letter currently resting in the box back out into the wind,
-  // so the box is empty and ready for the next word
   function clearBox(){
     for(var i=0; i<letters.length; i++){
       var L = letters[i];
-      if(L.inBox){
-        L.inBox = false;
-        L.vx = rand(-3, 3);
-        L.vy = rand(-3, 3);
-      }
+      if(L.inBox){ L.inBox = false; L.vx = rand(-3, 3); L.vy = rand(-3, 3); }
     }
   }
 
   function updatePortalState(){
     if(solvedSublime && solvedPlease) return;
     var counts = boxLetterCounts();
-
     if(!solvedSublime && satisfiesCounts(counts, sublimeCounts)){
-      solvedSublime = true;
-      clearBox();
-      setTimeout(function(){
-        navStack.push(currentView);
-        showSecret();
-      }, 400);
+      solvedSublime = true; clearBox();
+      setTimeout(function(){ navStack.push(currentView); showSecret(); }, 400);
       return;
     }
-
     if(!solvedPlease && satisfiesCounts(counts, pleaseCounts)){
-      solvedPlease = true;
-      clearBox();
-      setTimeout(function(){
-        navStack.push(currentView);
-        showPlease();
-      }, 400);
+      solvedPlease = true; clearBox();
+      setTimeout(function(){ navStack.push(currentView); showPlease(); }, 400);
     }
   }
 
-  /* ---------------- navigation stack: "back" returns to the previous screen ---------------- */
   var currentView = 'home';
   var navStack = [];
-
   var allViewEls = {
     'secret': document.getElementById('secret-view'),
     'yes': document.getElementById('view-yes'),
@@ -911,100 +687,59 @@
 
   function clearAllViewClasses(){
     document.body.classList.remove('opened', 'v-secret', 'v-yes', 'v-no', 'v-perf', 'v-please', 'v-artifact-1', 'v-artifact-2', 'v-artifact-3', 'v-note');
-    // belt-and-braces: force every view fully off with inline styles,
-    // so there is never any ambiguity about which one can receive clicks
     Object.keys(allViewEls).forEach(function(key){
       var el = allViewEls[key];
-      el.style.opacity = '0';
-      el.style.pointerEvents = 'none';
+      el.style.opacity = '0'; el.style.pointerEvents = 'none';
     });
-    // some elements inside a view manage their own pointer-events
-    // independently (they can override a hidden parent) — neutralise
-    // them here too, the relevant enter*() function re-enables them
-    // at the right moment if that view is the one being shown
     document.getElementById('yes-img').style.pointerEvents = 'none';
     document.getElementById('perf-intro').style.pointerEvents = 'none';
     document.getElementById('artlife-video').pause();
+    
+    // Arrêter tous les sons "Killed" si on quitte la page
+    stopKilledSounds();
   }
 
   function revealView(key){
     document.body.classList.add('opened', 'v-' + key);
     var el = allViewEls[key];
-    el.style.opacity = '1';
-    el.style.pointerEvents = 'auto';
+    el.style.opacity = '1'; el.style.pointerEvents = 'auto';
   }
 
   function goHome(){
     clearAllViewClasses();
-    solvedSublime = false;
-    solvedPlease = false;
-    resetYesSequence();
-    switchTrack(bgmHome);
-    perfBgVideo.pause();
-    perfHideOverlay();
+    solvedSublime = false; solvedPlease = false;
+    resetYesSequence(); switchTrack(bgmHome);
+    perfBgVideo.pause(); perfHideOverlay();
     clearTimeout(perfHoldTimer);
     perfPleaseMsg.style.display = 'none';
     artifactsRevealSound.pause();
-    currentView = 'home';
-    navStack = [];
+    currentView = 'home'; navStack = [];
   }
 
-  function showSecret(){
-    clearAllViewClasses();
-    revealView('secret');
-    switchTrack(bgmSecret);
-    enterSecretPage();
-    currentView = 'secret';
-  }
-  function showYes(){
-    clearAllViewClasses();
-    revealView('yes');
-    switchTrack(bgmYes);
-    enterYesSequence();
-    currentView = 'yes';
-  }
-  function showNo(){
-    clearAllViewClasses();
-    revealView('no');
-    switchTrack(bgmSecret);
-    currentView = 'no';
-  }
-  function showPerf(){
-    clearAllViewClasses();
-    revealView('perf');
-    enterPerfPage();
-    currentView = 'perf';
-  }
-  function showPlease(){
-    clearAllViewClasses();
-    revealView('please');
-    switchTrack(bgmHome);
-    enterPleasePage();
-    currentView = 'please';
-  }
+  function showSecret(){ clearAllViewClasses(); revealView('secret'); switchTrack(bgmSecret); enterSecretPage(); currentView = 'secret'; }
+  function showYes(){ clearAllViewClasses(); revealView('yes'); switchTrack(bgmYes); enterYesSequence(); currentView = 'yes'; }
+  function showNo(){ clearAllViewClasses(); revealView('no'); switchTrack(bgmSecret); currentView = 'no'; }
+  function showPerf(){ clearAllViewClasses(); revealView('perf'); enterPerfPage(); currentView = 'perf'; }
+  function showPlease(){ clearAllViewClasses(); revealView('please'); switchTrack(bgmHome); enterPleasePage(); currentView = 'please'; }
+  
   function showArtifact(n){
     clearAllViewClasses();
     revealView('artifact-' + n);
     if(n === '1'){
       silenceAmbient();
       var artlifeVideo = document.getElementById('artlife-video');
-      artlifeVideo.muted = false;
-      artlifeVideo.currentTime = 0;
-      artlifeVideo.play().catch(function(){});
+      artlifeVideo.muted = false; artlifeVideo.currentTime = 0; artlifeVideo.play().catch(function(){});
+    } else if(n === '3'){
+      switchTrack(bgmHome);
+      enterKilledPage(); // Réinitialiser l'état de la page Killed
     } else {
       switchTrack(bgmHome);
     }
     currentView = 'artifact-' + n;
   }
-  function showNote(){
-    clearAllViewClasses();
-    revealView('note');
-    switchTrack(bgmHome);
-    enterNotePage();
-    currentView = 'note';
-  }
+  
+  function showNote(){ clearAllViewClasses(); revealView('note'); switchTrack(bgmHome); enterNotePage(); currentView = 'note'; }
 
-  // used by every "← retour" link: pop the stack and show whatever came before
   function goBack(){
     var prev = navStack.pop();
     switch(prev){
@@ -1021,46 +756,20 @@
     }
   }
 
-  document.getElementById('back-link').addEventListener('click', function(e){
-    e.preventDefault();
-    goBack();
-  });
-  document.getElementById('back-link-yes').addEventListener('click', function(e){
-    e.preventDefault();
-    goBack();
-  });
-  document.getElementById('back-link-no').addEventListener('click', function(e){
-    e.preventDefault();
-    goBack();
-  });
-  document.getElementById('back-link-perf').addEventListener('click', function(e){
-    e.preventDefault();
-    goBack();
-  });
-  document.getElementById('back-link-please').addEventListener('click', function(e){
-    e.preventDefault();
-    goBack();
-  });
-  document.getElementById('back-link-note').addEventListener('click', function(e){
-    e.preventDefault();
-    goBack();
-  });
+  document.getElementById('back-link').addEventListener('click', function(e){ e.preventDefault(); goBack(); });
+  document.getElementById('back-link-yes').addEventListener('click', function(e){ e.preventDefault(); goBack(); });
+  document.getElementById('back-link-no').addEventListener('click', function(e){ e.preventDefault(); goBack(); });
+  document.getElementById('back-link-perf').addEventListener('click', function(e){ e.preventDefault(); goBack(); });
+  document.getElementById('back-link-please').addEventListener('click', function(e){ e.preventDefault(); goBack(); });
+  document.getElementById('back-link-note').addEventListener('click', function(e){ e.preventDefault(); goBack(); });
   ['2','3'].forEach(function(n){
-    document.getElementById('back-link-artifact-' + n).addEventListener('click', function(e){
-      e.preventDefault();
-      goBack();
-    });
+    document.getElementById('back-link-artifact-' + n).addEventListener('click', function(e){ e.preventDefault(); goBack(); });
   });
-  document.getElementById('artlife-back-phrase').addEventListener('click', function(){
-    goToPleaseWithArtifactsShown();
-  });
+  document.getElementById('artlife-back-phrase').addEventListener('click', function(){ goToPleaseWithArtifactsShown(); });
 
-  /* ---------------- page-note: click photos in the right order ---------------- */
   var noteSounds = {
-    'note-1': document.getElementById('sound-note-1'),
-    'note-2': document.getElementById('sound-note-2'),
-    'note-3': document.getElementById('sound-note-3'),
-    'note-4': document.getElementById('sound-note-4')
+    'note-1': document.getElementById('sound-note-1'), 'note-2': document.getElementById('sound-note-2'),
+    'note-3': document.getElementById('sound-note-3'), 'note-4': document.getElementById('sound-note-4')
   };
   Object.keys(noteSounds).forEach(function(k){ noteSounds[k].load(); });
 
@@ -1069,42 +778,21 @@
   var noteSolved = false;
   var imgAutismEl = document.getElementById('img-autism');
 
-  function enterNotePage(){
-    noteClickHistory = [];
-    noteSolved = false;
-    imgAutismEl.style.display = 'none';
-  }
+  function enterNotePage(){ noteClickHistory = []; noteSolved = false; imgAutismEl.style.display = 'none'; }
 
   document.querySelectorAll('.note-zone').forEach(function(zone){
     zone.addEventListener('click', function(){
       var id = zone.getAttribute('data-note');
-
-      // one-shot sound: clone so rapid repeated clicks can overlap
-      var clip = noteSounds[id].cloneNode(true);
-      clip.volume = 0.8;
-      clip.play().catch(function(){});
-
+      var clip = noteSounds[id].cloneNode(true); clip.volume = 0.8; clip.play().catch(function(){});
       if(noteSolved) return;
-
       noteClickHistory.push(id);
-      if(noteClickHistory.length > noteWinningSequence.length){
-        noteClickHistory.shift();
-      }
-
+      if(noteClickHistory.length > noteWinningSequence.length){ noteClickHistory.shift(); }
       var matches = noteClickHistory.length === noteWinningSequence.length &&
         noteClickHistory.every(function(v, i){ return v === noteWinningSequence[i]; });
-
-      if(matches){
-        noteSolved = true;
-        imgAutismEl.style.display = 'block';
-      }
+      if(matches){ noteSolved = true; imgAutismEl.style.display = 'block'; }
     });
   });
 
-  // once "img-autism" is showing, a single click anywhere else on the page
-  // (not on a note-zone, not on "back") sends us back to "please" with the
-  // artfact videos already playing — this also prevents the very click that
-  // solves the puzzle from instantly triggering this too
   document.getElementById('page-note').addEventListener('click', function(e){
     if(!noteSolved) return;
     if(e.target.closest && e.target.closest('.back')) return;
@@ -1112,50 +800,37 @@
     goToPleaseWithArtifactsShown();
   });
 
-  /* ---------------- page-please: click-triggered scattered messages ---------------- */
   var pleaseContainer = document.getElementById('page-please');
   var pleaseMessagesEl = document.getElementById('please-messages');
   var pleasePhrases = [
-    "I think we're safe here",
-    "The temperature is perfect. It's like being indoors",
+    "I think we're safe here", "The temperature is perfect. It's like being indoors",
     "No wind. No sound. Nothing. I can't even feel the grass beneath my feet.",
-    "Something's off.",
-    "I hope to see a horse.",
-    "I can't remember how I got here.",
-    "How long have I been here?"
+    "Something's off.", "I hope to see a horse.", "I can't remember how I got here.", "How long have I been here?"
   ];
   var pleaseMsgIndex = 0;
   var pleasePlacedPositions = [];
-  var PLEASE_MIN_DIST = 170; // minimum distance (px) between message centers
+  var PLEASE_MIN_DIST = 170; 
   var pleaseArtifactsEl = document.getElementById('please-artifacts');
   var pleaseArtifactsShown = false;
   var artifactVideos = [
-    document.querySelector('#artifact-1 video'),
-    document.querySelector('#artifact-2 video'),
-    document.querySelector('#artifact-3 video'),
-    document.querySelector('#artifact-4 video')
+    document.querySelector('#artifact-1 video'), document.querySelector('#artifact-2 video'),
+    document.querySelector('#artifact-3 video'), document.querySelector('#artifact-4 video')
   ];
   artifactVideos.forEach(function(v){ v.volume = 0.7; v.load(); });
   var artifactsRevealSound = document.getElementById('artifacts-reveal-sound');
-  artifactsRevealSound.volume = 0.3;
-  artifactsRevealSound.load();
-  // manual loop that cuts 0.20s off the tail, since the source loop point isn't seamless
+  artifactsRevealSound.volume = 0.3; artifactsRevealSound.load();
   artifactsRevealSound.addEventListener('timeupdate', function(){
     if(artifactsRevealSound.duration && artifactsRevealSound.currentTime >= artifactsRevealSound.duration - 0.20){
-      artifactsRevealSound.currentTime = 0;
-      artifactsRevealSound.play().catch(function(){});
+      artifactsRevealSound.currentTime = 0; artifactsRevealSound.play().catch(function(){});
     }
   });
 
   function enterPleasePage(){
-    pleaseMsgIndex = 0;
-    pleaseMessagesEl.innerHTML = '';
-    pleasePlacedPositions = [];
-    pleaseArtifactsShown = false;
+    pleaseMsgIndex = 0; pleaseMessagesEl.innerHTML = '';
+    pleasePlacedPositions = []; pleaseArtifactsShown = false;
     pleaseArtifactsEl.classList.remove('show');
     artifactVideos.forEach(function(v){ v.pause(); v.currentTime = 0; });
-    artifactsRevealSound.pause();
-    artifactsRevealSound.currentTime = 0;
+    artifactsRevealSound.pause(); artifactsRevealSound.currentTime = 0;
   }
 
   function pickPleasePosition(){
@@ -1164,190 +839,117 @@
       x = innerWidth * 0.5 + (Math.random() - 0.5) * innerWidth * 0.5;
       y = innerHeight * 0.5 + (Math.random() - 0.5) * innerHeight * 0.5;
       ok = pleasePlacedPositions.every(function(p){
-        var dx = p.x - x, dy = p.y - y;
-        return Math.sqrt(dx*dx + dy*dy) >= PLEASE_MIN_DIST;
+        var dx = p.x - x, dy = p.y - y; return Math.sqrt(dx*dx + dy*dy) >= PLEASE_MIN_DIST;
       });
       tries++;
     }
-    pleasePlacedPositions.push({x:x, y:y});
-    return {x:x, y:y};
+    pleasePlacedPositions.push({x:x, y:y}); return {x:x, y:y};
   }
 
   function revealPleaseArtifacts(){
-    pleaseArtifactsShown = true;
-    pleaseMessagesEl.innerHTML = '';
+    pleaseArtifactsShown = true; pleaseMessagesEl.innerHTML = '';
     pleaseArtifactsEl.classList.add('show');
-    artifactVideos.forEach(function(v){
-      v.currentTime = 0;
-      v.play().catch(function(){});
-    });
-    artifactsRevealSound.currentTime = 0;
-    artifactsRevealSound.play().catch(function(){});
+    artifactVideos.forEach(function(v){ v.currentTime = 0; v.play().catch(function(){}); });
+    artifactsRevealSound.currentTime = 0; artifactsRevealSound.play().catch(function(){});
   }
 
-  // shortcut from page-note (once solved): back to please, artifacts already
-  // showing, skipping the 7-phrase click-through entirely
   function goToPleaseWithArtifactsShown(){
-    navStack.pop(); // consume the stale 'please' entry pushed when we came from please to note
-    showPlease();
-    pleaseMsgIndex = pleasePhrases.length;
-    revealPleaseArtifacts();
+    navStack.pop(); showPlease(); pleaseMsgIndex = pleasePhrases.length; revealPleaseArtifacts();
   }
 
   pleaseContainer.addEventListener('click', function(e){
     if(e.target.closest && e.target.closest('.back')) return;
     if(e.target.closest && e.target.closest('.artifact-item')) return;
-
     if(pleaseMsgIndex < pleasePhrases.length){
-      var phrase = pleasePhrases[pleaseMsgIndex];
-      pleaseMsgIndex++;
-
+      var phrase = pleasePhrases[pleaseMsgIndex]; pleaseMsgIndex++;
       var pos = pickPleasePosition();
-
-      var el = document.createElement('p');
-      el.className = 'please-msg';
-      el.textContent = phrase;
-      el.style.left = pos.x + 'px';
-      el.style.top = pos.y + 'px';
-      pleaseMessagesEl.appendChild(el);
-      return;
+      var el = document.createElement('p'); el.className = 'please-msg'; el.textContent = phrase;
+      el.style.left = pos.x + 'px'; el.style.top = pos.y + 'px';
+      pleaseMessagesEl.appendChild(el); return;
     }
-
-    if(!pleaseArtifactsShown){
-      revealPleaseArtifacts();
-    }
+    if(!pleaseArtifactsShown){ revealPleaseArtifacts(); }
   });
 
   ['1','2','3','4'].forEach(function(n){
     document.getElementById('artifact-' + n).addEventListener('click', function(e){
-      e.stopPropagation();
-      artifactsRevealSound.pause();
-      navStack.push(currentView);
-      if(n === '4'){
-        showNote();
-      } else {
-        showArtifact(n);
-      }
+      e.stopPropagation(); artifactsRevealSound.pause(); navStack.push(currentView);
+      if(n === '4'){ showNote(); } else { showArtifact(n); }
     });
   });
 
-  /* ---------------- page-perf: press-and-hold overlay video ---------------- */
   var perfContainer = document.getElementById('page-perf');
   var perfBgVideo = document.getElementById('perf-bg-video');
   var perfHoldVideos = [
-    document.getElementById('perf-hold-1'),
-    document.getElementById('perf-hold-2'),
-    document.getElementById('perf-hold-3'),
-    document.getElementById('perf-hold-4')
+    document.getElementById('perf-hold-1'), document.getElementById('perf-hold-2'),
+    document.getElementById('perf-hold-3'), document.getElementById('perf-hold-4')
   ];
   var perfHoldSound = document.getElementById('perf-hold-sound');
   perfHoldSound.volume = 0.7;
   var perfActiveHold = null;
-  var perfStarted = false; // true only once the intro message has been dismissed
-  var perfHoldTimer = null;
+  var perfStarted = false; var perfHoldTimer = null;
   var perfPleaseMsg = document.getElementById('perf-please-msg');
 
-  // force an early metadata load so the browser knows each video's real
-  // dimensions before the first press — avoids a wrong-size flash/crop
-  perfHoldVideos.forEach(function(v){ v.load(); });
-  perfHoldSound.load();
+  perfHoldVideos.forEach(function(v){ v.load(); }); perfHoldSound.load();
 
   function perfShowOverlay(e){
     if(!perfStarted) return;
     if(e.target.closest && e.target.closest('.back')) return;
     if(e.target === perfPleaseMsg) return;
     perfActiveHold = perfHoldVideos[Math.floor(Math.random() * perfHoldVideos.length)];
-    perfActiveHold.classList.add('active');
-    perfActiveHold.currentTime = 0;
-    perfActiveHold.play().catch(function(){});
-
-    // start the hold-sound from a random point in its loop each press
+    perfActiveHold.classList.add('active'); perfActiveHold.currentTime = 0; perfActiveHold.play().catch(function(){});
     if(perfHoldSound.duration && isFinite(perfHoldSound.duration) && perfHoldSound.duration > 0){
       perfHoldSound.currentTime = Math.random() * perfHoldSound.duration;
     }
     perfHoldSound.play().catch(function(){});
-
-    // if the click is held for 5 straight seconds, reveal the "please" message
     clearTimeout(perfHoldTimer);
-    perfHoldTimer = setTimeout(function(){
-      perfPleaseMsg.style.display = 'block';
-    }, 5000);
+    perfHoldTimer = setTimeout(function(){ perfPleaseMsg.style.display = 'block'; }, 5000);
   }
   function perfHideOverlay(){
-    if(perfActiveHold){
-      perfActiveHold.classList.remove('active');
-      perfActiveHold.pause();
-      perfActiveHold = null;
-    }
-    perfHoldSound.pause();
-    clearTimeout(perfHoldTimer);
+    if(perfActiveHold){ perfActiveHold.classList.remove('active'); perfActiveHold.pause(); perfActiveHold = null; }
+    perfHoldSound.pause(); clearTimeout(perfHoldTimer);
   }
   perfContainer.addEventListener('mousedown', perfShowOverlay);
   window.addEventListener('mouseup', perfHideOverlay);
   perfContainer.addEventListener('touchstart', perfShowOverlay, {passive:true});
   window.addEventListener('touchend', perfHideOverlay);
 
-  function goHomeFromPleaseMsg(e){
-    e.stopPropagation();
-    goHome();
-  }
+  function goHomeFromPleaseMsg(e){ e.stopPropagation(); goHome(); }
   perfPleaseMsg.addEventListener('mousedown', goHomeFromPleaseMsg);
   perfPleaseMsg.addEventListener('touchstart', goHomeFromPleaseMsg, {passive:false});
 
-  /* ---------------- page-perf: black-screen intro message ---------------- */
   var perfIntroEl = document.getElementById('perf-intro');
   var perfIntroTextEl = document.getElementById('perf-intro-text');
-  var perfIntroDismissed = false;
-  var perfIntroCanDismiss = false;
+  var perfIntroDismissed = false; var perfIntroCanDismiss = false;
 
   function dismissPerfIntro(e){
     if(e){ e.stopPropagation(); }
     if(!perfIntroCanDismiss) return;
     if(perfIntroDismissed) return;
-    perfIntroDismissed = true;
-    perfStarted = true;
-    perfIntroEl.style.opacity = '0';
-    perfIntroEl.style.pointerEvents = 'none';
-    perfBgVideo.currentTime = 0;
-    perfBgVideo.play().catch(function(){});
+    perfIntroDismissed = true; perfStarted = true;
+    perfIntroEl.style.opacity = '0'; perfIntroEl.style.pointerEvents = 'none';
+    perfBgVideo.currentTime = 0; perfBgVideo.play().catch(function(){});
   }
   perfIntroEl.addEventListener('mousedown', dismissPerfIntro);
   perfIntroEl.addEventListener('touchstart', dismissPerfIntro, {passive:true});
 
   function enterPerfPage(){
-    // reset: black screen, no message, nothing started yet
-    perfIntroDismissed = false;
-    perfIntroCanDismiss = false;
-    perfStarted = false;
-    perfIntroTextEl.classList.remove('show');
-    perfIntroEl.style.opacity = '1';
-    perfIntroEl.style.pointerEvents = 'auto';
-    perfPleaseMsg.style.display = 'none';
-    clearTimeout(perfHoldTimer);
-
-    // after 4s of pure black, reveal the message (instantly, no fade)
+    perfIntroDismissed = false; perfIntroCanDismiss = false; perfStarted = false;
+    perfIntroTextEl.classList.remove('show'); perfIntroEl.style.opacity = '1'; perfIntroEl.style.pointerEvents = 'auto';
+    perfPleaseMsg.style.display = 'none'; clearTimeout(perfHoldTimer);
     setTimeout(function(){
       if(!perfIntroDismissed){
         perfIntroTextEl.classList.add('show');
-        // then wait 1 more second before the click-to-dismiss becomes active
-        setTimeout(function(){
-          if(!perfIntroDismissed){
-            perfIntroCanDismiss = true;
-          }
-        }, 1000);
+        setTimeout(function(){ if(!perfIntroDismissed){ perfIntroCanDismiss = true; } }, 1000);
       }
     }, 4000);
   }
 
-  /* ---------------- yes-page: clickable image sequence ---------------- */
   var yesImgEl = document.getElementById('yes-img');
   var yesUndoBtn = document.getElementById('yes-undo');
   var yesImages = ['yes-img-1.png','yes-img-2.png','yes-img-3.png','yes-img-4.png','yes-img-5.png'];
   var yesSoundEls = [
-    document.getElementById('yes-click-1'),
-    document.getElementById('yes-click-2'),
-    document.getElementById('yes-click-3'),
-    document.getElementById('yes-click-4'),
+    document.getElementById('yes-click-1'), document.getElementById('yes-click-2'),
+    document.getElementById('yes-click-3'), document.getElementById('yes-click-4'),
     document.getElementById('yes-click-5')
   ];
   var yesIndex = 0;
@@ -1355,186 +957,116 @@
   function updateUndoPhrase(){
     if(yesIndex >= 1 && yesIndex <= 4){
       yesUndoBtn.style.display = 'block';
-      yesUndoBtn.textContent = (yesIndex === 4)
-        ? 'almost killed you, sorry.'
-        : "sorry, didn't mean to do that.";
-    } else {
-      yesUndoBtn.style.display = 'none';
-    }
+      yesUndoBtn.textContent = (yesIndex === 4) ? 'almost killed you, sorry.' : "sorry, didn't mean to do that.";
+    } else { yesUndoBtn.style.display = 'none'; }
   }
 
   function resetYesSequence(){
-    yesIndex = 0;
-    yesImgEl.src = yesImages[0];
-    yesImgEl.style.opacity = '0';
-    yesImgEl.style.pointerEvents = 'none';
+    yesIndex = 0; yesImgEl.src = yesImages[0];
+    yesImgEl.style.opacity = '0'; yesImgEl.style.pointerEvents = 'none';
     updateUndoPhrase();
   }
 
   function enterYesSequence(){
     resetYesSequence();
-    // wait 2s before the first image appears
-    setTimeout(function(){
-      yesImgEl.style.opacity = '1';
-      yesImgEl.style.pointerEvents = 'auto';
-    }, 2000);
+    setTimeout(function(){ yesImgEl.style.opacity = '1'; yesImgEl.style.pointerEvents = 'auto'; }, 2000);
   }
 
   yesImgEl.addEventListener('click', function(){
-    // play the sound tied to the image currently showing
-    var snd = yesSoundEls[yesIndex].cloneNode(true);
-    snd.volume = 0.8;
-    snd.play().catch(function(){});
-
+    var snd = yesSoundEls[yesIndex].cloneNode(true); snd.volume = 0.8; snd.play().catch(function(){});
     yesIndex++;
-    if(yesIndex < yesImages.length){
-      yesImgEl.src = yesImages[yesIndex];
-      updateUndoPhrase();
-    } else {
-      // 5th click: cut the yes-page loop dead and hand off to the perf-page loop
+    if(yesIndex < yesImages.length){ yesImgEl.src = yesImages[yesIndex]; updateUndoPhrase(); }
+    else {
       switchTrack(bgmPerf);
-      setTimeout(function(){
-        navStack.push(currentView);
-        showPerf();
-      }, 300);
+      setTimeout(function(){ navStack.push(currentView); showPerf(); }, 300);
     }
   });
 
   yesUndoBtn.addEventListener('click', function(){
     if(yesIndex <= 0) return;
-    yesIndex--;
-    yesImgEl.src = yesImages[yesIndex];
-    updateUndoPhrase();
+    yesIndex--; yesImgEl.src = yesImages[yesIndex]; updateUndoPhrase();
   });
 
-  document.getElementById('opt-yes').addEventListener('click', function(){
-    navStack.push(currentView);
-    showYes();
-  });
-  document.getElementById('opt-no').addEventListener('click', function(){
-    navStack.push(currentView);
-    showNo();
-  });
+  document.getElementById('opt-yes').addEventListener('click', function(){ navStack.push(currentView); showYes(); });
+  document.getElementById('opt-no').addEventListener('click', function(){ navStack.push(currentView); showNo(); });
 
   var yesnoOptionsEl = document.getElementById('yesno-options');
   function enterSecretPage(){
     yesnoOptionsEl.classList.remove('show');
-    setTimeout(function(){
-      yesnoOptionsEl.classList.add('show');
-    }, 3000);
+    setTimeout(function(){ yesnoOptionsEl.classList.add('show'); }, 3000);
   }
 
-  /* ---------------- pointer velocity tracking (wind) ---------------- */
-  var mouseX = W/2, mouseY = H/2;
-  var lastMouseX = mouseX, lastMouseY = mouseY;
-  var mvx = 0, mvy = 0;
-  var hasPointer = false;
+  var mouseX = W/2, mouseY = H/2; var lastMouseX = mouseX, lastMouseY = mouseY;
+  var mvx = 0, mvy = 0; var hasPointer = false;
 
-  function updatePointer(x, y){
-    mouseX = x; mouseY = y;
-    hasPointer = true;
-  }
+  function updatePointer(x, y){ mouseX = x; mouseY = y; hasPointer = true; }
   window.addEventListener('mousemove', function(e){ updatePointer(e.clientX, e.clientY); });
   window.addEventListener('touchmove', function(e){
     if(e.touches && e.touches[0]) updatePointer(e.touches[0].clientX, e.touches[0].clientY);
   }, {passive:true});
 
-  var INFLUENCE = 100;    // px radius of wind effect
-  var SPEED_THRESHOLD = 6;   // cursor must move THIS fast to create wind — slow approach = no push, so you can grab
-  var STRENGTH = 0.5;    // how hard the wind pushes
-  var FRICTION = 0.99;   // very light damping so letters keep gliding
+  var INFLUENCE = 100; var SPEED_THRESHOLD = 6; var STRENGTH = 0.5; var FRICTION = 0.99;
 
   function frame(){
-    // smooth pointer velocity
     mvx = mvx * 0.8 + (mouseX - lastMouseX) * 0.2;
     mvy = mvy * 0.8 + (mouseY - lastMouseY) * 0.2;
     lastMouseX = mouseX; lastMouseY = mouseY;
-
     var speed = Math.sqrt(mvx*mvx + mvy*mvy);
-
     for(var i=0; i<letters.length; i++){
       var L = letters[i];
-      if(L.dragging){
-        L.el.style.transform = 'translate(' + L.x + 'px,' + L.y + 'px)';
-        continue;
-      }
-      if(L.inBox){
-        // at rest inside the box — no wind, no drift, just sits there until dragged again
-        continue;
-      }
-
+      if(L.dragging){ L.el.style.transform = 'translate(' + L.x + 'px,' + L.y + 'px)'; continue; }
+      if(L.inBox){ continue; }
       if(hasPointer && speed > SPEED_THRESHOLD){
-        var dx = L.x - mouseX;
-        var dy = L.y - mouseY;
+        var dx = L.x - mouseX; var dy = L.y - mouseY;
         var dist = Math.sqrt(dx*dx + dy*dy) + 0.001;
         if(dist < INFLUENCE){
-          var falloff = 1 - dist / INFLUENCE;
-          var force = speed * STRENGTH * falloff * L.depth;
-          L.vx += (dx/dist) * force;
-          L.vy += (dy/dist) * force;
+          var falloff = 1 - dist / INFLUENCE; var force = speed * STRENGTH * falloff * L.depth;
+          L.vx += (dx/dist) * force; L.vy += (dy/dist) * force;
         }
       }
-
-      L.vx *= FRICTION;
-      L.vy *= FRICTION;
-
-      L.x += L.vx;
-      L.y += L.vy;
-
+      L.vx *= FRICTION; L.vy *= FRICTION; L.x += L.vx; L.y += L.vy;
       bounceOffBox(L);
-
-      // bounce off the edges of the screen
       if(L.x < BOX){ L.x = BOX; L.vx = Math.abs(L.vx); }
       if(L.x > W - BOX){ L.x = W - BOX; L.vx = -Math.abs(L.vx); }
       if(L.y < BOX){ L.y = BOX; L.vy = Math.abs(L.vy); }
       if(L.y > H - BOX){ L.y = H - BOX; L.vy = -Math.abs(L.vy); }
-
       L.el.style.transform = 'translate(' + L.x + 'px,' + L.y + 'px)';
     }
-
     updatePortalState();
     requestAnimationFrame(frame);
   }
 
   function frameStatic(){
-    // reduced motion: place letters at rest, no animation loop, drag still works
     for(var i=0; i<letters.length; i++){
-      var L = letters[i];
-      L.el.style.transform = 'translate(' + L.x + 'px,' + L.y + 'px)';
+      var L = letters[i]; L.el.style.transform = 'translate(' + L.x + 'px,' + L.y + 'px)';
     }
     updatePortalState();
     requestAnimationFrame(frameStatic);
   }
 
-  if(reduceMotion){
-    frameStatic();
-  } else {
-    requestAnimationFrame(frame);
-  }
+  if(reduceMotion){ frameStatic(); } else { requestAnimationFrame(frame); }
 
-  /* ---------------- page artfact-3 ("killed") : lettres flottantes "oleander" ----------------
-     Même mécanisme physique que les lettres de la page d'accueil (vent au passage
-     du curseur, rebond sur les bords, glisser-déposer), mais sans la boîte/portail :
-     ici les lettres flottent juste, pas de puzzle à résoudre. */
+  /* ---------------- page artfact-3 ("killed") ---------------- */
   var killedWord = "oleander";
   var killedChars = killedWord.split('');
   var killedStageEl = document.getElementById('stage-killed');
   var killedLetters = [];
-
-  // 8 groupes de mots pour les 8 lettres de "oleander". Peu importe QUELLE lettre
-  // est cliquée : chaque clic révèle le PROCHAIN groupe dans l'ordre logique de la
-  // phrase (compteur global), donc l'affichage suit toujours :
-  // Phrase 1 : "I can't recall" / "what a horse" / "looks like"
-  // Phrase 2 : "Maybe" / "we've already" / "killed" / "them" / "all"
-  var killedGroupEls = null; // rempli au premier clic (les éléments existent déjà dans le DOM)
+  var killedGroupEls = null;
   var killedRevealCount = 0;
+  
+  // Tableau des audios pour artifact-3
+  var kldSounds = [
+    document.getElementById('kld-1'), document.getElementById('kld-2'),
+    document.getElementById('kld-3'), document.getElementById('kld-4'),
+    document.getElementById('kld-5'), document.getElementById('kld-6'),
+    document.getElementById('kld-7'), document.getElementById('kld-8')
+  ];
+  kldSounds.forEach(function(s){ if(s) s.volume = 0.6; });
 
   function getKilledGroupEls(){
     if(!killedGroupEls){
       killedGroupEls = [];
-      for(var i=0; i<8; i++){
-        killedGroupEls.push(document.getElementById('killed-g' + i));
-      }
+      for(var i=0; i<8; i++){ killedGroupEls.push(document.getElementById('killed-g' + i)); }
     }
     return killedGroupEls;
   }
@@ -1543,141 +1075,103 @@
     var groups = getKilledGroupEls();
     if(killedRevealCount < groups.length){
       var el = groups[killedRevealCount];
-      if(el) el.style.opacity = '1'; // affichage net, sans fondu (pas de transition CSS)
+      if(el) el.style.opacity = '1';
+      
+      // LANCEMENT DU SON CORRESPONDANT (EN BOUCLE)
+      var snd = kldSounds[killedRevealCount];
+      if(snd && soundOn){
+        snd.currentTime = 0;
+        snd.play().catch(function(){});
+      }
+      
       killedRevealCount++;
     }
+  }
+  
+  function stopKilledSounds(){
+    kldSounds.forEach(function(snd){
+      if(snd){ snd.pause(); snd.currentTime = 0; }
+    });
+  }
+  
+  function enterKilledPage(){
+    killedRevealCount = 0;
+    var groups = getKilledGroupEls();
+    groups.forEach(function(g){ if(g) g.style.opacity = '0'; });
+    stopKilledSounds();
+    buildKilledLetters();
   }
 
   function freezeKilledLetter(L){
     if(L.frozen) return;
-    L.frozen = true;
-    L.dragging = false;
-    L.vx = 0;
-    L.vy = 0;
+    L.frozen = true; L.dragging = false; L.vx = 0; L.vy = 0;
     L.el.classList.remove('dragging');
     L.el.style.transition = 'opacity 1s';
     L.el.style.opacity = '0';
     revealNextKilledGroup();
-    setTimeout(function(){
-      L.el.style.display = 'none';
-    }, 1000);
+    setTimeout(function(){ L.el.style.display = 'none'; }, 1000);
   }
 
   function buildKilledLetters(){
     killedStageEl.innerHTML = '';
     killedLetters = [];
-    var margin = 0.08;
-    var w = innerWidth, h = innerHeight;
-
+    var margin = 0.08; var w = innerWidth, h = innerHeight;
     killedChars.forEach(function(ch){
-      var el = document.createElement('div');
-      el.className = 'letter'; // Arial jaune habituel, comme les autres lettres du site
-      el.textContent = ch;
+      var el = document.createElement('div'); el.className = 'letter'; el.textContent = ch;
       killedStageEl.appendChild(el);
-
       var L = {
-        el: el,
-        x: rand(w*margin, w*(1-margin)),
-        y: rand(h*margin, h*(1-margin)),
-        vx: rand(-0.4, 0.4),
-        vy: rand(-0.4, 0.4),
-        depth: rand(0.7, 1.3),
-        dragging: false,
-        dragOffX: 0,
-        dragOffY: 0,
-        frozen: false
+        el: el, x: rand(w*margin, w*(1-margin)), y: rand(h*margin, h*(1-margin)),
+        vx: rand(-0.4, 0.4), vy: rand(-0.4, 0.4), depth: rand(0.7, 1.3),
+        dragging: false, dragOffX: 0, dragOffY: 0, frozen: false
       };
-      killedLetters.push(L);
-      attachKilledDrag(el, L);
+      killedLetters.push(L); attachKilledDrag(el, L);
     });
   }
 
   function attachKilledDrag(el, L){
-    var downX = 0, downY = 0, moved = false;
-    var CLICK_TOLERANCE = 5; // px : en dessous, on considère que c'est un clic (même tenu longtemps), pas un glisser
-
+    var downX = 0, downY = 0, moved = false; var CLICK_TOLERANCE = 5;
     function down(clientX, clientY){
-      if(L.frozen) return;
-      L.dragging = true;
-      el.classList.add('dragging');
-      L.dragOffX = clientX - L.x;
-      L.dragOffY = clientY - L.y;
-      downX = clientX;
-      downY = clientY;
-      moved = false;
+      if(L.frozen) return; L.dragging = true; el.classList.add('dragging');
+      L.dragOffX = clientX - L.x; L.dragOffY = clientY - L.y;
+      downX = clientX; downY = clientY; moved = false;
     }
     function move(clientX, clientY){
       if(!L.dragging) return;
-      if(Math.abs(clientX - downX) > CLICK_TOLERANCE || Math.abs(clientY - downY) > CLICK_TOLERANCE){
-        moved = true;
-      }
-      var nx = clientX - L.dragOffX;
-      var ny = clientY - L.dragOffY;
-      L.vx = nx - L.x;
-      L.vy = ny - L.y;
-      L.x = nx;
-      L.y = ny;
+      if(Math.abs(clientX - downX) > CLICK_TOLERANCE || Math.abs(clientY - downY) > CLICK_TOLERANCE){ moved = true; }
+      var nx = clientX - L.dragOffX; var ny = clientY - L.dragOffY;
+      L.vx = nx - L.x; L.vy = ny - L.y; L.x = nx; L.y = ny;
     }
     function up(){
-      if(!L.dragging) return;
-      L.dragging = false;
-      el.classList.remove('dragging');
-      if(!moved){
-        freezeKilledLetter(L);
-      }
+      if(!L.dragging) return; L.dragging = false; el.classList.remove('dragging');
+      if(!moved){ freezeKilledLetter(L); }
     }
     el.addEventListener('mousedown', function(e){ down(e.clientX, e.clientY); e.preventDefault(); });
     window.addEventListener('mousemove', function(e){ move(e.clientX, e.clientY); });
     window.addEventListener('mouseup', up);
-    el.addEventListener('touchstart', function(e){
-      var t = e.touches[0];
-      down(t.clientX, t.clientY);
-    }, {passive:true});
-    window.addEventListener('touchmove', function(e){
-      if(L.dragging && e.touches[0]) move(e.touches[0].clientX, e.touches[0].clientY);
-    }, {passive:true});
+    el.addEventListener('touchstart', function(e){ var t = e.touches[0]; down(t.clientX, t.clientY); }, {passive:true});
+    window.addEventListener('touchmove', function(e){ if(L.dragging && e.touches[0]) move(e.touches[0].clientX, e.touches[0].clientY); }, {passive:true});
     window.addEventListener('touchend', up);
   }
 
   buildKilledLetters();
-  window.addEventListener('resize', function(){
-    buildKilledLetters();
-  });
 
   function frameKilled(){
-    var w = innerWidth, h = innerHeight;
-    var speed = Math.sqrt(mvx*mvx + mvy*mvy);
-
+    var w = innerWidth, h = innerHeight; var speed = Math.sqrt(mvx*mvx + mvy*mvy);
     for(var i=0; i<killedLetters.length; i++){
-      var L = killedLetters[i];
-      if(L.frozen) continue; // lettre figée : plus aucune physique, elle disparaît via son fade CSS
-      if(L.dragging){
-        L.el.style.transform = 'translate(' + L.x + 'px,' + L.y + 'px)';
-        continue;
-      }
-
+      var L = killedLetters[i]; if(L.frozen) continue;
+      if(L.dragging){ L.el.style.transform = 'translate(' + L.x + 'px,' + L.y + 'px)'; continue; }
       if(hasPointer && speed > SPEED_THRESHOLD){
-        var dx = L.x - mouseX;
-        var dy = L.y - mouseY;
-        var dist = Math.sqrt(dx*dx + dy*dy) + 0.001;
+        var dx = L.x - mouseX; var dy = L.y - mouseY; var dist = Math.sqrt(dx*dx + dy*dy) + 0.001;
         if(dist < INFLUENCE){
-          var falloff = 1 - dist / INFLUENCE;
-          var force = speed * STRENGTH * falloff * L.depth;
-          L.vx += (dx/dist) * force;
-          L.vy += (dy/dist) * force;
+          var falloff = 1 - dist / INFLUENCE; var force = speed * STRENGTH * falloff * L.depth;
+          L.vx += (dx/dist) * force; L.vy += (dy/dist) * force;
         }
       }
-
-      L.vx *= FRICTION;
-      L.vy *= FRICTION;
-      L.x += L.vx;
-      L.y += L.vy;
-
+      L.vx *= FRICTION; L.vy *= FRICTION; L.x += L.vx; L.y += L.vy;
       if(L.x < BOX){ L.x = BOX; L.vx = Math.abs(L.vx); }
       if(L.x > w - BOX){ L.x = w - BOX; L.vx = -Math.abs(L.vx); }
       if(L.y < BOX){ L.y = BOX; L.vy = Math.abs(L.vy); }
       if(L.y > h - BOX){ L.y = h - BOX; L.vy = -Math.abs(L.vy); }
-
       L.el.style.transform = 'translate(' + L.x + 'px,' + L.y + 'px)';
     }
     requestAnimationFrame(frameKilled);
@@ -1685,18 +1179,13 @@
 
   function frameKilledStatic(){
     for(var i=0; i<killedLetters.length; i++){
-      var L = killedLetters[i];
-      if(L.frozen) continue;
+      var L = killedLetters[i]; if(L.frozen) continue;
       L.el.style.transform = 'translate(' + L.x + 'px,' + L.y + 'px)';
     }
     requestAnimationFrame(frameKilledStatic);
   }
 
-  if(reduceMotion){
-    frameKilledStatic();
-  } else {
-    requestAnimationFrame(frameKilled);
-  }
+  if(reduceMotion){ frameKilledStatic(); } else { requestAnimationFrame(frameKilled); }
 
   /* ---------------- sound ---------------- */
   var bgmHome = document.getElementById('bgm-home');
@@ -1708,67 +1197,46 @@
   var unlocked = false;
   var currentTrack = bgmHome;
 
-  bgmHome.volume = 0.6;
-  bgmSecret.volume = 0.6;
-  bgmYes.volume = 0.6;
-  bgmPerf.volume = 0.6;
+  bgmHome.volume = 0.6; bgmSecret.volume = 0.6; bgmYes.volume = 0.6; bgmPerf.volume = 0.6;
 
   function switchTrack(track){
     if(currentTrack === track) return;
     if(unlocked && currentTrack){ currentTrack.pause(); currentTrack.currentTime = 0; }
     currentTrack = track;
-    if(unlocked && soundOn && currentTrack){
-      currentTrack.play().catch(function(){});
-    }
+    if(unlocked && soundOn && currentTrack){ currentTrack.play().catch(function(){}); }
   }
 
-  function silenceAmbient(){
-    if(currentTrack){ currentTrack.pause(); }
-    currentTrack = null;
-  }
+  function silenceAmbient(){ if(currentTrack){ currentTrack.pause(); } currentTrack = null; }
 
   function unlockAndPlay(){
     if(unlocked) return;
     unlocked = true;
-    currentTrack.play().then(function(){
-      soundOn = true;
-      soundBtn.textContent = 'son : on';
-    }).catch(function(){
-      // playback blocked or file missing — button still lets the user retry
-    });
+    if(currentTrack) {
+        currentTrack.play().then(function(){
+          soundOn = true; soundBtn.textContent = 'son : on';
+        }).catch(function(){});
+    }
   }
-  // first interaction anywhere on the page unlocks sound
   window.addEventListener('mousedown', unlockAndPlay, {once:true});
   window.addEventListener('touchstart', unlockAndPlay, {once:true});
 
   soundBtn.addEventListener('click', function(){
     if(!unlocked){ unlockAndPlay(); return; }
     if(soundOn){
-      currentTrack.pause();
-      soundOn = false;
-      soundBtn.textContent = 'son : off';
+      if(currentTrack) currentTrack.pause();
+      // On coupe aussi les boucles Killed
+      kldSounds.forEach(function(s){ if(s) s.pause(); });
+      soundOn = false; soundBtn.textContent = 'son : off';
     } else {
-      currentTrack.play();
-      soundOn = true;
-      soundBtn.textContent = 'son : on';
+      if(currentTrack) currentTrack.play();
+      // On relance les boucles Killed déjà actives
+      for(var i=0; i<killedRevealCount; i++){
+        if(kldSounds[i]) kldSounds[i].play();
+      }
+      soundOn = true; soundBtn.textContent = 'son : on';
     }
   });
 
-  /* ================================================================
-     RACCOURCIS TEMPORAIRES DE TEST — À SUPPRIMER avant la mise en ligne finale.
-     Permettent de sauter directement sur une vue sans refaire le geste
-     "sublime dans la boîte" à chaque fois.
-     touche 1 : accueil
-     touche 2 : vue "yes / no" (celle après le puzzle)
-     touche 3 : vue "yes"
-     touche 4 : vue "no"
-     touche 5 : "page perf"
-     touche 6 : "page please"
-     touche 7 : "page artfact 1"
-     touche 8 : "page artfact 2"
-     touche 9 : "page artfact 3"
-     touche n : "page note" (accessible via artfact-4 sur la page please)
-     ================================================================ */
   window.addEventListener('keydown', function(e){
     if(e.key === '1'){ goHome(); }
     if(e.key === '2'){ solvedSublime = true; goHome(); navStack.push('home'); showSecret(); }
@@ -1781,7 +1249,6 @@
     if(e.key === '9'){ goHome(); navStack.push('home'); navStack.push('please'); showArtifact('3'); }
     if(e.key === 'n'){ goHome(); navStack.push('home'); navStack.push('please'); showNote(); }
   });
-  /* ================================================================ */
 })();
 </script>
 
