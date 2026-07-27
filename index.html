@@ -85,7 +85,6 @@
     pointer-events: none;
   }
 
-  /* Styles pour les messages de l'artefact 2 */
   .light-msg {
     position: absolute;
     font-family: Arial, sans-serif;
@@ -98,10 +97,10 @@
     text-align: center;
   }
   #light-msg-1 { top: 5%; width: 100%; }
-  #light-msg-2 { bottom: 5%; width: 100%; } /* Déplacé en bas */
+  #light-msg-2 { bottom: 5%; width: 100%; }
   #light-msg-3 { top: 50%; left: 5%; transform: translateY(-50%); text-align: left; }
   #light-msg-4 { top: 50%; right: 5%; transform: translateY(-50%); text-align: right; }
-  #light-msg-5 { top: 50%; left: 50%; transform: translate(-50%, -50%); } /* Taille remise à 0.95rem */
+  #light-msg-5 { top: 50%; left: 50%; transform: translate(-50%, -50%); }
 
   #secret-view video,
   #view-yes video,
@@ -513,7 +512,6 @@
 </div>
 
 <div id="page-artifact-2">
-  <!-- Nouveaux messages pour l'artefact 2 -->
   <p class="light-msg" id="light-msg-1">you made me lose my mind</p>
   <p class="light-msg" id="light-msg-2">now I will cry forever</p>
   <p class="light-msg" id="light-msg-3">stop hurting me</p>
@@ -1274,9 +1272,10 @@
         lightDisplay.style.display = 'none';
         lightContainer.style.background = "#000";
         sonLose.pause();
+        silenceAmbient(); // Coupe le son de fond (bgm-home)
         for(let i=1; i<=4; i++){ document.getElementById('light-msg-' + i).style.display = 'none'; }
         document.getElementById('light-msg-5').style.display = 'block';
-        if(soundOn) sfxLight1.cloneNode(true).play().catch(function(){});
+        // On ne joue PAS sfxLight1 ici
         return;
       }
 
@@ -1284,6 +1283,7 @@
       var randomImg = currentSet[Math.floor(Math.random() * currentSet.length)];
       lightDisplay.src = randomImg;
       lightDisplay.style.display = 'block';
+      
       if(soundOn) sfxLight1.cloneNode(true).play().catch(function(){});
 
       if(lightCounter > 18){
@@ -1298,7 +1298,11 @@
       lightIsVisible = false;
       lightCounter++;
       lightDisplay.style.display = 'none';
-      if(soundOn) sfxLight2.cloneNode(true).play().catch(function(){});
+      
+      // On ne joue PAS sfxLight2 si on a déjà atteint l'état final
+      if(lightCounter <= 42) {
+        if(soundOn) sfxLight2.cloneNode(true).play().catch(function(){});
+      }
       
       if(lightCounter > 42){
         lightContainer.style.background = "#000";
