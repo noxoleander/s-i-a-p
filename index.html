@@ -53,7 +53,7 @@
   }
 
   #secret-view, #view-yes, #view-no, #page-perf, #page-please,
-  #page-artlife, #page-artifact-2, #page-artifact-3{
+  #page-artlife, #page-artifact-2, #page-artifact-3, #page-being, #page-here{
     position:fixed;
     inset:0;
     z-index:3;
@@ -107,7 +107,9 @@
   #view-no video,
   #page-perf video,
   #page-please video,
-  #page-artifact-3 video{
+  #page-artifact-3 video,
+  #page-being video,
+  #page-here video{
     position:absolute;
     top:50%; left:50%;
     min-width:100%; min-height:100%;
@@ -117,8 +119,8 @@
     z-index:0;
   }
 
-  /* NOUVELLE VIDEO CORRIDOR DANS VIEW-NO */
-  #corridor-video {
+  /* VIDEOS CORRIDOR */
+  #corridor-video, #corridor-video-2 {
     position: absolute !important;
     top: 50% !important;
     left: 50% !important;
@@ -131,6 +133,21 @@
     z-index: 5 !important;
     display: none;
   }
+
+  /* MESSAGES CORRIDOR */
+  .corridor-msg {
+    position: absolute;
+    z-index: 10;
+    font-family: Arial, sans-serif;
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--letter-color);
+    cursor: pointer;
+    display: none;
+    text-decoration: none;
+  }
+  #msg-being { left: 5%; top: 50%; transform: translateY(-50%); }
+  #msg-here { right: 5%; top: 50%; transform: translateY(-50%); }
 
   body.opened #stage,
   body.opened #portal{
@@ -147,6 +164,8 @@
   body.v-artifact-2 #page-artifact-2{ opacity:1; pointer-events:auto; }
   body.v-artifact-3 #page-artifact-3{ opacity:1; pointer-events:auto; }
   body.v-note #page-note{ opacity:1; pointer-events:auto; }
+  body.v-being #page-being{ opacity:1; pointer-events:auto; }
+  body.v-here #page-here{ opacity:1; pointer-events:auto; }
 
   #page-note{
     position:fixed;
@@ -281,7 +300,9 @@
   #page-please .back,
   #page-artifact-2 .back,
   #page-artifact-3 .back,
-  #page-note .back{
+  #page-note .back,
+  #page-being .back,
+  #page-here .back{
     position:absolute;
     bottom:0; left:0;
     z-index:1;
@@ -495,9 +516,26 @@
 
 <div id="view-no">
   <video autoplay muted loop playsinline><source src="video-no.mp4" type="video/mp4"></video>
-  <!-- VIDEO CORRIDOR -->
+  
+  <!-- VIDEOS CORRIDOR -->
   <video id="corridor-video" playsinline preload="auto"><source src="corridor-1.mp4" type="video/mp4"></video>
+  <video id="corridor-video-2" muted loop playsinline preload="auto"><source src="corridor-2.mp4" type="video/mp4"></video>
+  
+  <!-- TEXTES CLICABLES -->
+  <div id="msg-being" class="corridor-msg">I don't like being here</div>
+  <div id="msg-here" class="corridor-msg">there's something here</div>
+  
   <a class="back" href="#" id="back-link-no">← retour</a>
+</div>
+
+<div id="page-being">
+  <!-- AJOUTER VIDEO OU IMAGE SI BESOIN -->
+  <a class="back" href="#" id="back-link-being">← retour</a>
+</div>
+
+<div id="page-here">
+  <!-- AJOUTER VIDEO OU IMAGE SI BESOIN -->
+  <a class="back" href="#" id="back-link-here">← retour</a>
 </div>
 
 <div id="page-perf">
@@ -748,11 +786,13 @@
     'artifact-1': document.getElementById('page-artlife'),
     'artifact-2': document.getElementById('page-artifact-2'),
     'artifact-3': document.getElementById('page-artifact-3'),
-    'note': document.getElementById('page-note')
+    'note': document.getElementById('page-note'),
+    'being': document.getElementById('page-being'),
+    'here': document.getElementById('page-here')
   };
 
   function clearAllViewClasses(){
-    document.body.classList.remove('opened', 'v-secret', 'v-yes', 'v-no', 'v-perf', 'v-please', 'v-artifact-1', 'v-artifact-2', 'v-artifact-3', 'v-note');
+    document.body.classList.remove('opened', 'v-secret', 'v-yes', 'v-no', 'v-perf', 'v-please', 'v-artifact-1', 'v-artifact-2', 'v-artifact-3', 'v-note', 'v-being', 'v-here');
     Object.keys(allViewEls).forEach(function(key){
       var el = allViewEls[key];
       el.style.opacity = '0'; el.style.pointerEvents = 'none';
@@ -768,7 +808,11 @@
     // Reset corridor
     document.getElementById('corridor-video').pause();
     document.getElementById('corridor-video').style.display = 'none';
+    document.getElementById('corridor-video-2').pause();
+    document.getElementById('corridor-video-2').style.display = 'none';
     document.getElementById('corridor-audio').pause();
+    document.getElementById('msg-being').style.display = 'none';
+    document.getElementById('msg-here').style.display = 'none';
   }
 
   function revealView(key){
@@ -791,32 +835,53 @@
   function showSecret(){ clearAllViewClasses(); revealView('secret'); switchTrack(bgmSecret); enterSecretPage(); currentView = 'secret'; }
   function showYes(){ clearAllViewClasses(); revealView('yes'); switchTrack(bgmYes); enterYesSequence(); currentView = 'yes'; }
   
-  /* LOGIQUE SHOW NO AVEC VIDEO CORRIDOR */
   function showNo(){ 
     clearAllViewClasses(); 
     revealView('no'); 
-    switchTrack(bgmSecret); 
+    silenceAmbient(); // Coupe le son secret
     currentView = 'no'; 
 
-    var corrVid = document.getElementById('corridor-video');
+    var corrVid1 = document.getElementById('corridor-video');
+    var corrVid2 = document.getElementById('corridor-video-2');
     var corrAud = document.getElementById('corridor-audio');
+    var msgBeing = document.getElementById('msg-being');
+    var msgHere = document.getElementById('msg-here');
     
-    corrVid.style.display = 'block';
-    corrVid.currentTime = 0;
-    corrVid.play().catch(function(){});
+    // Reset
+    msgBeing.style.display = 'none';
+    msgHere.style.display = 'none';
+    corrVid2.style.display = 'none';
+
+    corrVid1.style.display = 'block';
+    corrVid1.currentTime = 0;
+    corrVid1.play().catch(function(){});
     
     if(soundOn){
       corrAud.currentTime = 0;
       corrAud.play().catch(function(){});
     }
 
-    // Arrêt net à la fin de la vidéo
-    corrVid.onended = function(){
-      corrVid.style.display = 'none';
+    corrVid1.onended = function(){
+      corrVid1.style.display = 'none';
       corrAud.pause();
-      corrAud.currentTime = 0;
+      
+      // Lancer Corridor 2
+      corrVid2.style.display = 'block';
+      corrVid2.currentTime = 0;
+      corrVid2.play().catch(function(){});
+      
+      // Afficher messages après 3 secondes
+      setTimeout(function(){
+        if(currentView === 'no'){
+            msgBeing.style.display = 'block';
+            msgHere.style.display = 'block';
+        }
+      }, 3000);
     };
   }
+
+  function showBeing(){ clearAllViewClasses(); revealView('being'); currentView = 'being'; }
+  function showHere(){ clearAllViewClasses(); revealView('here'); currentView = 'here'; }
 
   function showPerf(){ clearAllViewClasses(); revealView('perf'); enterPerfPage(); currentView = 'perf'; }
   function showPlease(){ clearAllViewClasses(); revealView('please'); switchTrack(bgmHome); enterPleasePage(); currentView = 'please'; }
@@ -854,6 +919,8 @@
       case 'artifact-2': showArtifact('2'); break;
       case 'artifact-3': showArtifact('3'); break;
       case 'note': showNote(); break;
+      case 'being': showBeing(); break;
+      case 'here': showHere(); break;
       default: goHome();
     }
   }
@@ -864,6 +931,13 @@
   document.getElementById('back-link-perf').addEventListener('click', function(e){ e.preventDefault(); goBack(); });
   document.getElementById('back-link-please').addEventListener('click', function(e){ e.preventDefault(); goBack(); });
   document.getElementById('back-link-note').addEventListener('click', function(e){ e.preventDefault(); goBack(); });
+  document.getElementById('back-link-being').addEventListener('click', function(e){ e.preventDefault(); goBack(); });
+  document.getElementById('back-link-here').addEventListener('click', function(e){ e.preventDefault(); goBack(); });
+
+  // Navigation vers Being et Here
+  document.getElementById('msg-being').addEventListener('click', function(){ navStack.push(currentView); showBeing(); });
+  document.getElementById('msg-here').addEventListener('click', function(){ navStack.push(currentView); showHere(); });
+
   ['2','3'].forEach(function(n){
     document.getElementById('back-link-artifact-' + n).addEventListener('click', function(e){ e.preventDefault(); goBack(); });
   });
