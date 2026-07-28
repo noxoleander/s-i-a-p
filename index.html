@@ -116,6 +116,22 @@
     object-fit:cover;
     z-index:0;
   }
+
+  /* NOUVELLE VIDEO CORRIDOR DANS VIEW-NO */
+  #corridor-video {
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
+    width: 75vw !important;
+    height: 75vh !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    transform: translate(-50%, -50%) !important;
+    object-fit: cover !important;
+    z-index: 5 !important;
+    display: none;
+  }
+
   body.opened #stage,
   body.opened #portal{
     opacity:0;
@@ -458,6 +474,9 @@
 <audio id="switch-sfx-2" preload="auto"><source src="switch-sfx-2.mp3" type="audio/mpeg"></audio>
 <audio id="son-lose" loop preload="auto"><source src="son-lose.mp3" type="audio/mpeg"></audio>
 
+<!-- SON CORRIDOR -->
+<audio id="corridor-audio" preload="auto"><source src="corridor-son.mp3" type="audio/mpeg"></audio>
+
 <div id="secret-view">
   <video autoplay muted loop playsinline><source src="video-suite.mp4" type="video/mp4"></video>
   <div class="options" id="yesno-options">
@@ -476,6 +495,8 @@
 
 <div id="view-no">
   <video autoplay muted loop playsinline><source src="video-no.mp4" type="video/mp4"></video>
+  <!-- VIDEO CORRIDOR -->
+  <video id="corridor-video" playsinline preload="auto"><source src="corridor-1.mp4" type="video/mp4"></video>
   <a class="back" href="#" id="back-link-no">← retour</a>
 </div>
 
@@ -743,6 +764,11 @@
     stopKilledSounds();
     document.getElementById('son-lose').pause();
     document.getElementById('son-lose').currentTime = 0;
+
+    // Reset corridor
+    document.getElementById('corridor-video').pause();
+    document.getElementById('corridor-video').style.display = 'none';
+    document.getElementById('corridor-audio').pause();
   }
 
   function revealView(key){
@@ -764,7 +790,34 @@
 
   function showSecret(){ clearAllViewClasses(); revealView('secret'); switchTrack(bgmSecret); enterSecretPage(); currentView = 'secret'; }
   function showYes(){ clearAllViewClasses(); revealView('yes'); switchTrack(bgmYes); enterYesSequence(); currentView = 'yes'; }
-  function showNo(){ clearAllViewClasses(); revealView('no'); switchTrack(bgmSecret); currentView = 'no'; }
+  
+  /* LOGIQUE SHOW NO AVEC VIDEO CORRIDOR */
+  function showNo(){ 
+    clearAllViewClasses(); 
+    revealView('no'); 
+    switchTrack(bgmSecret); 
+    currentView = 'no'; 
+
+    var corrVid = document.getElementById('corridor-video');
+    var corrAud = document.getElementById('corridor-audio');
+    
+    corrVid.style.display = 'block';
+    corrVid.currentTime = 0;
+    corrVid.play().catch(function(){});
+    
+    if(soundOn){
+      corrAud.currentTime = 0;
+      corrAud.play().catch(function(){});
+    }
+
+    // Arrêt net à la fin de la vidéo
+    corrVid.onended = function(){
+      corrVid.style.display = 'none';
+      corrAud.pause();
+      corrAud.currentTime = 0;
+    };
+  }
+
   function showPerf(){ clearAllViewClasses(); revealView('perf'); enterPerfPage(); currentView = 'perf'; }
   function showPlease(){ clearAllViewClasses(); revealView('please'); switchTrack(bgmHome); enterPleasePage(); currentView = 'please'; }
   
@@ -1272,10 +1325,9 @@
         lightDisplay.style.display = 'none';
         lightContainer.style.background = "#000";
         sonLose.pause();
-        silenceAmbient(); // Coupe le son de fond (bgm-home)
+        silenceAmbient(); 
         for(let i=1; i<=4; i++){ document.getElementById('light-msg-' + i).style.display = 'none'; }
         document.getElementById('light-msg-5').style.display = 'block';
-        // On ne joue PAS sfxLight1 ici
         return;
       }
 
@@ -1299,7 +1351,6 @@
       lightCounter++;
       lightDisplay.style.display = 'none';
       
-      // On ne joue PAS sfxLight2 si on a déjà atteint l'état final
       if(lightCounter <= 42) {
         if(soundOn) sfxLight2.cloneNode(true).play().catch(function(){});
       }
@@ -1350,11 +1401,13 @@
       if(currentTrack) currentTrack.pause();
       kldSounds.forEach(function(s){ if(s) s.pause(); });
       sonLose.pause();
+      document.getElementById('corridor-audio').pause();
       soundOn = false; soundBtn.textContent = 'son : off';
     } else {
       if(currentTrack) currentTrack.play();
       for(var i=0; i<killedRevealCount; i++){ if(kldSounds[i]) kldSounds[i].play(); }
       if(lightCounter > 18 && lightCounter <= 42 && currentView === 'artifact-2') sonLose.play();
+      if(currentView === 'no' && document.getElementById('corridor-video').style.display !== 'none') document.getElementById('corridor-audio').play();
       soundOn = true; soundBtn.textContent = 'son : on';
     }
   });
