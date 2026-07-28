@@ -529,12 +529,10 @@
 </div>
 
 <div id="page-being">
-  <!-- AJOUTER VIDEO OU IMAGE SI BESOIN -->
   <a class="back" href="#" id="back-link-being">← retour</a>
 </div>
 
 <div id="page-here">
-  <!-- AJOUTER VIDEO OU IMAGE SI BESOIN -->
   <a class="back" href="#" id="back-link-here">← retour</a>
 </div>
 
@@ -838,7 +836,7 @@
   function showNo(){ 
     clearAllViewClasses(); 
     revealView('no'); 
-    silenceAmbient(); // Coupe le son secret
+    silenceAmbient(); 
     currentView = 'no'; 
 
     var corrVid1 = document.getElementById('corridor-video');
@@ -847,7 +845,6 @@
     var msgBeing = document.getElementById('msg-being');
     var msgHere = document.getElementById('msg-here');
     
-    // Reset
     msgBeing.style.display = 'none';
     msgHere.style.display = 'none';
     corrVid2.style.display = 'none';
@@ -865,12 +862,10 @@
       corrVid1.style.display = 'none';
       corrAud.pause();
       
-      // Lancer Corridor 2
       corrVid2.style.display = 'block';
       corrVid2.currentTime = 0;
       corrVid2.play().catch(function(){});
       
-      // Afficher messages après 3 secondes
       setTimeout(function(){
         if(currentView === 'no'){
             msgBeing.style.display = 'block';
@@ -934,7 +929,6 @@
   document.getElementById('back-link-being').addEventListener('click', function(e){ e.preventDefault(); goBack(); });
   document.getElementById('back-link-here').addEventListener('click', function(e){ e.preventDefault(); goBack(); });
 
-  // Navigation vers Being et Here
   document.getElementById('msg-being').addEventListener('click', function(){ navStack.push(currentView); showBeing(); });
   document.getElementById('msg-here').addEventListener('click', function(){ navStack.push(currentView); showHere(); });
 
@@ -1207,7 +1201,7 @@
       if(L.x < BOX){ L.x = BOX; L.vx = Math.abs(L.vx); }
       if(L.x > W - BOX){ L.x = W - BOX; L.vx = -Math.abs(L.vx); }
       if(L.y < BOX){ L.y = BOX; L.vy = Math.abs(L.vy); }
-      if(L.y > H - BOX){ L.y = H - BOX; L.vy = -Math.abs(L.vy); }
+      if(L.y > H - BOX){ L.y = H - BOX; L.vx = -Math.abs(L.vx); }
       L.el.style.transform = 'translate(' + L.x + 'px,' + L.y + 'px)';
     }
     updatePortalState();
@@ -1441,12 +1435,17 @@
   var bgmSecret = document.getElementById('bgm-secret');
   var bgmYes = document.getElementById('bgm-yes');
   var bgmPerf = document.getElementById('bgm-perf');
+  var corridorAudio = document.getElementById('corridor-audio');
   var soundBtn = document.getElementById('sound-toggle');
   var soundOn = false;
   var unlocked = false;
   var currentTrack = bgmHome;
 
-  bgmHome.volume = 0.6; bgmSecret.volume = 0.6; bgmYes.volume = 0.6; bgmPerf.volume = 0.6;
+  bgmHome.volume = 0.6; 
+  bgmSecret.volume = 0.6; 
+  bgmYes.volume = 0.6; 
+  bgmPerf.volume = 0.6;
+  corridorAudio.volume = 0.3; // VOLUME RÉDUIT ICI
 
   function switchTrack(track){
     if(currentTrack === track) return;
@@ -1475,13 +1474,13 @@
       if(currentTrack) currentTrack.pause();
       kldSounds.forEach(function(s){ if(s) s.pause(); });
       sonLose.pause();
-      document.getElementById('corridor-audio').pause();
+      corridorAudio.pause();
       soundOn = false; soundBtn.textContent = 'son : off';
     } else {
       if(currentTrack) currentTrack.play();
       for(var i=0; i<killedRevealCount; i++){ if(kldSounds[i]) kldSounds[i].play(); }
       if(lightCounter > 18 && lightCounter <= 42 && currentView === 'artifact-2') sonLose.play();
-      if(currentView === 'no' && document.getElementById('corridor-video').style.display !== 'none') document.getElementById('corridor-audio').play();
+      if(currentView === 'no' && document.getElementById('corridor-video').style.display !== 'none') corridorAudio.play();
       soundOn = true; soundBtn.textContent = 'son : on';
     }
   });
