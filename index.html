@@ -69,9 +69,7 @@
   }
 
   /* PAGE BEING - LOGIQUE CADRE ET LAMPE */
-  #page-being {
-    background: #000;
-  }
+  #page-being { background: #000; }
   #being-img-frame {
     position: relative;
     width: min(100vw, calc(100vh * 2304 / 1728));
@@ -95,22 +93,49 @@
     position: absolute;
     color: var(--letter-color);
     font-size: 1.5rem;
-    font-weight: bold; /* En gras */
+    font-weight: bold;
     cursor: pointer;
     z-index: 1;
     user-select: none;
     opacity: 0.9;
-    /* Animation retirée */
   }
-  
   #key-1 { top: 22%; left: 35%; }
   #key-2 { top: 68%; left: 20%; }
   #key-3 { top: 35%; right: 25%; }
   #key-4 { bottom: 18%; right: 40%; }
 
-  /* PAGE CLEFS (Vide pour l'instant) */
-  #page-clefs {
+  /* PAGE CLEFS - INTRO ET CONTENU */
+  #page-clefs { background: #000; }
+  #clefs-intro-overlay {
+    position: absolute;
+    inset: 0;
     background: #000;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  #clefs-msg {
+    font-family: Arial, sans-serif;
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--letter-color);
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 1s;
+    pointer-events: none;
+    text-align: center;
+  }
+  #clefs-msg.show { opacity: 1; pointer-events: auto; }
+  
+  #clefs-video {
+    position: absolute;
+    top: 50%; left: 50%;
+    min-width: 100%; min-height: 100%;
+    transform: translate(-50%, -50%);
+    object-fit: cover;
+    z-index: 0;
+    display: none;
   }
 
   /* PAGE ARTIFACT 2 */
@@ -245,9 +270,7 @@
     opacity:0;
     transition:none;
   }
-  #page-perf .perf-hold-video.active{
-    opacity:1;
-  }
+  #page-perf .perf-hold-video.active{ opacity:1; }
 
   #perf-intro{
     position:absolute;
@@ -270,9 +293,7 @@
     color:var(--letter-color);
     opacity:0;
   }
-  #perf-intro-text.show{
-    opacity:1;
-  }
+  #perf-intro-text.show{ opacity:1; }
 
   #yes-img{
     position:relative;
@@ -305,9 +326,7 @@
     text-align:center;
   }
   .back-phrase:hover{ opacity:1; }
-  #perf-please-msg{
-    z-index:6;
-  }
+  #perf-please-msg{ z-index:6; }
 
   .options{
     position:absolute;
@@ -320,10 +339,7 @@
     opacity:0;
     pointer-events:none;
   }
-  .options.show{
-    opacity:1;
-    pointer-events:auto;
-  }
+  .options.show{ opacity:1; pointer-events:auto; }
   .opt{
     background:transparent;
     border:none;
@@ -370,9 +386,7 @@
     display:none;
     pointer-events:none;
   }
-  #please-artifacts.show{
-    display:block;
-  }
+  #please-artifacts.show{ display:block; }
   .artifact-item{
     position:absolute;
     height:80px;
@@ -458,43 +472,7 @@
     will-change:transform;
     line-height:1;
   }
-  .letter.dragging{
-    cursor:grabbing;
-    z-index:5;
-  }
-
-  #stage-killed{
-    position:absolute;
-    inset:0;
-    z-index:1;
-    overflow:hidden;
-  }
-
-  #killed-sentence{
-    position:relative;
-    z-index:2;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    gap:0.4em;
-    text-align:center;
-    pointer-events:none;
-    padding:0 8vw;
-  }
-  .killed-line{
-    margin:0;
-    font-family:Arial, sans-serif;
-    font-weight:700;
-    font-size:0.95rem;
-    color:var(--letter-color);
-  }
-  .killed-group{
-    opacity:0;
-  }
-
-  @media (prefers-reduced-motion: reduce){
-    .letter{ transition:none; }
-  }
+  .letter.dragging{ cursor:grabbing; z-index:5; }
 </style>
 </head>
 <body>
@@ -526,7 +504,6 @@
 <audio id="yes-click-4" preload="auto"><source src="yes-click-4.mp3" type="audio/mpeg"></audio>
 <audio id="yes-click-5" preload="auto"><source src="yes-click-5.mp3" type="audio/mpeg"></audio>
 
-<!-- SONS ARTIFACT-3 (KILLED) -->
 <audio id="kld-1" loop preload="auto"><source src="kld-1.mp3" type="audio/mpeg"></audio>
 <audio id="kld-2" loop preload="auto"><source src="kld-2.mp3" type="audio/mpeg"></audio>
 <audio id="kld-3" loop preload="auto"><source src="kld-3.mp3" type="audio/mpeg"></audio>
@@ -536,12 +513,9 @@
 <audio id="kld-7" loop preload="auto"><source src="kld-7.mp3" type="audio/mpeg"></audio>
 <audio id="kld-8" loop preload="auto"><source src="kld-8.mp3" type="audio/mpeg"></audio>
 
-<!-- SONS ARTIFACT-2 -->
 <audio id="switch-sfx-1" preload="auto"><source src="switch-sfx-1.mp3" type="audio/mpeg"></audio>
 <audio id="switch-sfx-2" preload="auto"><source src="switch-sfx-2.mp3" type="audio/mpeg"></audio>
 <audio id="son-lose" loop preload="auto"><source src="son-lose.mp3" type="audio/mpeg"></audio>
-
-<!-- SON CORRIDOR -->
 <audio id="corridor-audio" preload="auto"><source src="corridor-son.mp3" type="audio/mpeg"></audio>
 
 <!-- SONS DES CLEFS -->
@@ -568,33 +542,30 @@
 
 <div id="view-no">
   <video autoplay muted loop playsinline><source src="video-no.mp4" type="video/mp4"></video>
-  
-  <!-- VIDEOS CORRIDOR -->
   <video id="corridor-video" playsinline preload="auto"><source src="corridor-1.mp4" type="video/mp4"></video>
   <video id="corridor-video-2" muted loop playsinline preload="auto"><source src="corridor-2.mp4" type="video/mp4"></video>
-  
-  <!-- TEXTES CLICABLES -->
   <div id="msg-being" class="corridor-msg">I don't like being here</div>
   <div id="msg-here" class="corridor-msg">there's something here</div>
-  
   <a class="back" href="#" id="back-link-no">← retour</a>
 </div>
 
 <div id="page-being">
   <div id="being-img-frame">
-    <!-- LES CLEFS CACHÉES -->
-    <div class="being-key" id="key-1" data-key="1">✥</div>
-    <div class="being-key" id="key-2" data-key="2">✧</div>
-    <div class="being-key" id="key-3" data-key="3">◈</div>
-    <div class="being-key" id="key-4" data-key="4">☙</div>
-    
+    <div class="being-key" id="key-1">✥</div>
+    <div class="being-key" id="key-2">✧</div>
+    <div class="being-key" id="key-3">◈</div>
+    <div class="being-key" id="key-4">☙</div>
     <div id="flashlight-overlay"></div>
   </div>
   <a class="back" href="#" id="back-link-being">← retour</a>
 </div>
 
 <div id="page-clefs">
-  <a class="back" href="#" id="back-link-clefs">← retour</a>
+    <div id="clefs-intro-overlay">
+        <p id="clefs-msg">need to understand?</p>
+    </div>
+    <video id="clefs-video" loop playsinline><source src="cheval-bois-vid.mp4" type="video/mp4"></video>
+    <a class="back" href="#" id="back-link-clefs">← retour</a>
 </div>
 
 <div id="page-here">
@@ -629,7 +600,7 @@
 </div>
 
 <div id="page-artlife">
-  <video class="artlife-video" id="artlife-video" loop playsinline disablepictureinpicture disableremoteplayback><source src="vid-artlife.mp4" type="video/mp4"></video>
+  <video class="artlife-video" id="artlife-video" loop playsinline><source src="vid-artlife.mp4" type="video/mp4"></video>
   <button type="button" class="back-phrase" id="artlife-back-phrase" style="display:block;">i don't care</button>
 </div>
 
@@ -639,7 +610,6 @@
   <p class="light-msg" id="light-msg-3">stop hurting me</p>
   <p class="light-msg" id="light-msg-4">somebody help me i'm trapped</p>
   <p class="light-msg" id="light-msg-5">why is my face looking so wierd</p>
-  
   <img id="light-display-img" src="" alt="">
   <a class="back" href="#" id="back-link-artifact-2">← retour</a>
 </div>
@@ -648,18 +618,8 @@
   <video autoplay muted loop playsinline><source src="vid-killed.mp4" type="video/mp4"></video>
   <div id="stage-killed"></div>
   <div id="killed-sentence">
-    <p class="killed-line">
-      <span class="killed-group" id="killed-g0">I can't recall</span>
-      <span class="killed-group" id="killed-g1">what a horse</span>
-      <span class="killed-group" id="killed-g2">looks like</span>
-    </p>
-    <p class="killed-line">
-      <span class="killed-group" id="killed-g3">Maybe</span>
-      <span class="killed-group" id="killed-g4">we've already</span>
-      <span class="killed-group" id="killed-g5">killed</span>
-      <span class="killed-group" id="killed-g6">them</span>
-      <span class="killed-group" id="killed-g7">all</span>
-    </p>
+    <p class="killed-line"><span class="killed-group" id="killed-g0">I can't recall</span> <span class="killed-group" id="killed-g1">what a horse</span> <span class="killed-group" id="killed-g2">looks like</span></p>
+    <p class="killed-line"><span class="killed-group" id="killed-g3">Maybe</span> <span class="killed-group" id="killed-g4">we've already</span> <span class="killed-group" id="killed-g5">killed</span> <span class="killed-group" id="killed-g6">them</span> <span class="killed-group" id="killed-g7">all</span></p>
   </div>
   <a class="back" href="#" id="back-link-artifact-3">← retour</a>
 </div>
@@ -683,82 +643,35 @@
   var chars = word.split('').filter(function(c){ return c !== ' '; });
   var stage = document.getElementById('stage');
   var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
   var W = innerWidth, H = innerHeight;
   var letters = [];
-
   function rand(min, max){ return min + Math.random() * (max - min); }
-
   var BOX = 12; 
   var portalEl = document.getElementById('portal');
-
-  var sfxEls = [
-    document.getElementById('sfx-1'),
-    document.getElementById('sfx-2'),
-    document.getElementById('sfx-3'),
-    document.getElementById('sfx-4'),
-    document.getElementById('sfx-5')
-  ];
+  var sfxEls = [document.getElementById('sfx-1'), document.getElementById('sfx-2'), document.getElementById('sfx-3'), document.getElementById('sfx-4'), document.getElementById('sfx-5')];
   function playDropSfx(){
     var base = sfxEls[Math.floor(Math.random() * sfxEls.length)];
-    var clip = base.cloneNode(true);
-    clip.volume = 0.8;
-    clip.play().catch(function(){});
+    var clip = base.cloneNode(true); clip.volume = 0.8; clip.play().catch(function(){});
   }
-
   function insideBox(x, y, pad){
     var r = portalEl.getBoundingClientRect();
     return x > r.left - pad && x < r.right + pad && y > r.top - pad && y < r.bottom + pad;
   }
-
   function buildLetters(){
-    stage.innerHTML = '';
-    letters = [];
-    W = innerWidth; H = innerHeight;
+    stage.innerHTML = ''; letters = []; W = innerWidth; H = innerHeight;
     var margin = 0.08;
     chars.forEach(function(ch){
-      var el = document.createElement('div');
-      el.className = 'letter';
-      el.textContent = ch;
-      stage.appendChild(el);
+      var el = document.createElement('div'); el.className = 'letter'; el.textContent = ch; stage.appendChild(el);
       var startX, startY, tries = 0;
-      do{
-        startX = rand(W*margin, W*(1-margin));
-        startY = rand(H*margin, H*(1-margin));
-        tries++;
-      } while(insideBox(startX, startY, 12) && tries < 20);
-      var L = {
-        el: el, x: startX, y: startY, vx: rand(-0.4, 0.4), vy: rand(-0.4, 0.4),
-        depth: rand(0.7, 1.3), dragging: false, inBox: false, dragOffX: 0, dragOffY: 0,
-        lastDragX: 0, lastDragY: 0
-      };
-      letters.push(L);
-      attachDrag(el, L);
+      do{ startX = rand(W*margin, W*(1-margin)); startY = rand(H*margin, H*(1-margin)); tries++; } while(insideBox(startX, startY, 12) && tries < 20);
+      var L = { el: el, x: startX, y: startY, vx: rand(-0.4, 0.4), vy: rand(-0.4, 0.4), depth: rand(0.7, 1.3), dragging: false, inBox: false, dragOffX: 0, dragOffY: 0 };
+      letters.push(L); attachDrag(el, L);
     });
   }
-
   function attachDrag(el, L){
-    function down(clientX, clientY){
-      L.dragging = true; L.inBox = false;
-      el.classList.add('dragging');
-      L.dragOffX = clientX - L.x; L.dragOffY = clientY - L.y;
-      L.lastDragX = clientX; L.lastDragY = clientY;
-    }
-    function move(clientX, clientY){
-      if(!L.dragging) return;
-      var nx = clientX - L.dragOffX; var ny = clientY - L.dragOffY;
-      L.vx = nx - L.x; L.vy = ny - L.y;
-      L.x = nx; L.y = ny;
-    }
-    function up(){
-      if(!L.dragging) return;
-      L.dragging = false; el.classList.remove('dragging');
-      var cx = L.x + 7, cy = L.y + 7;
-      if(insideBox(cx, cy, 0)){
-        L.inBox = true; L.vx = 0; L.vy = 0;
-        if(needed.indexOf(L.el.textContent) !== -1){ playDropSfx(); }
-      } else { L.inBox = false; }
-    }
+    function down(clientX, clientY){ L.dragging = true; L.inBox = false; el.classList.add('dragging'); L.dragOffX = clientX - L.x; L.dragOffY = clientY - L.y; }
+    function move(clientX, clientY){ if(!L.dragging) return; var nx = clientX - L.dragOffX; var ny = clientY - L.dragOffY; L.vx = nx - L.x; L.vy = ny - L.y; L.x = nx; L.y = ny; }
+    function up(){ if(!L.dragging) return; L.dragging = false; el.classList.remove('dragging'); var cx = L.x + 7, cy = L.y + 7; if(insideBox(cx, cy, 0)){ L.inBox = true; L.vx = 0; L.vy = 0; if(needed.indexOf(L.el.textContent) !== -1){ playDropSfx(); } } }
     el.addEventListener('mousedown', function(e){ down(e.clientX, e.clientY); e.preventDefault(); });
     window.addEventListener('mousemove', function(e){ move(e.clientX, e.clientY); });
     window.addEventListener('mouseup', up);
@@ -766,207 +679,69 @@
     window.addEventListener('touchmove', function(e){ if(L.dragging && e.touches[0]) move(e.touches[0].clientX, e.touches[0].clientY); }, {passive:true});
     window.addEventListener('touchend', up);
   }
-
   buildLetters();
   window.addEventListener('resize', function(){ W = innerWidth; H = innerHeight; });
 
-  var solvedSublime = false;
-  var solvedPlease = false;
+  var solvedSublime = false, solvedPlease = false;
   var needed = ['S','U','B','L','I','M','E']; 
   var sublimeCounts = { S:1, U:1, B:1, L:1, I:1, M:1, E:1 };
-  var pleaseCounts  = { P:1, L:1, E:2, A:1, S:1 };
+  var pleaseCounts = { P:1, L:1, E:2, A:1, S:1 };
 
   function bounceOffBox(L){
-    var r = portalEl.getBoundingClientRect();
-    var radius = 8; var cx = L.x + 7, cy = L.y + 7;
-    var closestX = Math.min(Math.max(cx, r.left), r.right);
-    var closestY = Math.min(Math.max(cy, r.top), r.bottom);
-    var dx = cx - closestX, dy = cy - closestY;
-    var distSq = dx*dx + dy*dy;
+    var r = portalEl.getBoundingClientRect(); var radius = 8; var cx = L.x + 7, cy = L.y + 7;
+    var closestX = Math.min(Math.max(cx, r.left), r.right); var closestY = Math.min(Math.max(cy, r.top), r.bottom);
+    var dx = cx - closestX, dy = cy - closestY; var distSq = dx*dx + dy*dy;
     if(distSq >= radius*radius) return;
     var dist = Math.sqrt(distSq);
-    if(dist > 0.0001){
-      var nx = dx/dist, ny = dy/dist;
-      L.x = closestX + nx*radius - 7; L.y = closestY + ny*radius - 7;
-      var vDotN = L.vx*nx + L.vy*ny;
-      if(vDotN < 0){ L.vx = (L.vx - 2*vDotN*nx) * 0.7; L.vy = (L.vy - 2*vDotN*ny) * 0.7; }
-    } else {
-      var leftPen = cx - r.left, rightPen = r.right - cx;
-      var topPen = cy - r.top, bottomPen = r.bottom - cy;
-      var minPen = Math.min(leftPen, rightPen, topPen, bottomPen);
-      if(minPen === leftPen){ L.x = r.left - radius - 7; L.vx = -Math.abs(L.vx) - 0.5; }
-      else if(minPen === rightPen){ L.x = r.right + radius - 7; L.vx = Math.abs(L.vx) + 0.5; }
-      else if(minPen === topPen){ L.y = r.top - radius - 7; L.vy = -Math.abs(L.vy) - 0.5; }
-      else { L.y = r.bottom + radius - 7; L.vy = Math.abs(L.vy) + 0.5; }
-    }
+    if(dist > 0.0001){ var nx = dx/dist, ny = dy/dist; L.x = closestX + nx*radius - 7; L.y = closestY + ny*radius - 7; var vDotN = L.vx*nx + L.vy*ny; if(vDotN < 0){ L.vx = (L.vx - 2*vDotN*nx) * 0.7; L.vy = (L.vy - 2*vDotN*ny) * 0.7; } }
   }
-
   function boxLetterCounts(){
-    var counts = {};
-    for(var i=0; i<letters.length; i++){
-      if(letters[i].inBox){
-        var ch = letters[i].el.textContent;
-        counts[ch] = (counts[ch] || 0) + 1;
-      }
-    }
-    return counts;
+    var counts = {}; for(var i=0; i<letters.length; i++){ if(letters[i].inBox){ var ch = letters[i].el.textContent; counts[ch] = (counts[ch] || 0) + 1; } } return counts;
   }
-
-  function satisfiesCounts(counts, required){
-    for(var ch in required){ if((counts[ch] || 0) < required[ch]) return false; }
-    return true;
-  }
-
-  function clearBox(){
-    for(var i=0; i<letters.length; i++){
-      var L = letters[i];
-      if(L.inBox){ L.inBox = false; L.vx = rand(-3, 3); L.vy = rand(-3, 3); }
-    }
-  }
+  function satisfiesCounts(counts, required){ for(var ch in required){ if((counts[ch] || 0) < required[ch]) return false; } return true; }
+  function clearBox(){ for(var i=0; i<letters.length; i++){ var L = letters[i]; if(L.inBox){ L.inBox = false; L.vx = rand(-3, 3); L.vy = rand(-3, 3); } } }
 
   function updatePortalState(){
     if(solvedSublime && solvedPlease) return;
     var counts = boxLetterCounts();
-    if(!solvedSublime && satisfiesCounts(counts, sublimeCounts)){
-      solvedSublime = true; clearBox();
-      setTimeout(function(){ navStack.push(currentView); showSecret(); }, 400);
-      return;
-    }
-    if(!solvedPlease && satisfiesCounts(counts, pleaseCounts)){
-      solvedPlease = true; clearBox();
-      setTimeout(function(){ navStack.push(currentView); showPlease(); }, 400);
-    }
+    if(!solvedSublime && satisfiesCounts(counts, sublimeCounts)){ solvedSublime = true; clearBox(); setTimeout(function(){ navStack.push(currentView); showSecret(); }, 400); return; }
+    if(!solvedPlease && satisfiesCounts(counts, pleaseCounts)){ solvedPlease = true; clearBox(); setTimeout(function(){ navStack.push(currentView); showPlease(); }, 400); }
   }
 
   var currentView = 'home';
   var navStack = [];
-  var allViewEls = {
-    'secret': document.getElementById('secret-view'),
-    'yes': document.getElementById('view-yes'),
-    'no': document.getElementById('view-no'),
-    'perf': document.getElementById('page-perf'),
-    'please': document.getElementById('page-please'),
-    'artifact-1': document.getElementById('page-artlife'),
-    'artifact-2': document.getElementById('page-artifact-2'),
-    'artifact-3': document.getElementById('page-artifact-3'),
-    'note': document.getElementById('page-note'),
-    'being': document.getElementById('page-being'),
-    'here': document.getElementById('page-here'),
-    'clefs': document.getElementById('page-clefs')
-  };
+  var allViewEls = { 'secret': document.getElementById('secret-view'), 'yes': document.getElementById('view-yes'), 'no': document.getElementById('view-no'), 'perf': document.getElementById('page-perf'), 'please': document.getElementById('page-please'), 'artifact-1': document.getElementById('page-artlife'), 'artifact-2': document.getElementById('page-artifact-2'), 'artifact-3': document.getElementById('page-artifact-3'), 'note': document.getElementById('page-note'), 'being': document.getElementById('page-being'), 'here': document.getElementById('page-here'), 'clefs': document.getElementById('page-clefs') };
 
   function clearAllViewClasses(){
     document.body.classList.remove('opened', 'v-secret', 'v-yes', 'v-no', 'v-perf', 'v-please', 'v-artifact-1', 'v-artifact-2', 'v-artifact-3', 'v-note', 'v-being', 'v-here', 'v-clefs');
-    Object.keys(allViewEls).forEach(function(key){
-      var el = allViewEls[key];
-      el.style.opacity = '0'; el.style.pointerEvents = 'none';
-    });
+    Object.keys(allViewEls).forEach(function(key){ var el = allViewEls[key]; el.style.opacity = '0'; el.style.pointerEvents = 'none'; });
     document.getElementById('yes-img').style.pointerEvents = 'none';
     document.getElementById('perf-intro').style.pointerEvents = 'none';
     document.getElementById('artlife-video').pause();
-    
     stopKilledSounds();
     document.getElementById('son-lose').pause();
-    document.getElementById('son-lose').currentTime = 0;
-
-    // Reset corridor
-    document.getElementById('corridor-video').pause();
-    document.getElementById('corridor-video').style.display = 'none';
-    document.getElementById('corridor-video-2').pause();
-    document.getElementById('corridor-video-2').style.display = 'none';
+    document.getElementById('corridor-video').pause(); document.getElementById('corridor-video').style.display = 'none';
+    document.getElementById('corridor-video-2').pause(); document.getElementById('corridor-video-2').style.display = 'none';
     document.getElementById('corridor-audio').pause();
-    document.getElementById('msg-being').style.display = 'none';
-    document.getElementById('msg-here').style.display = 'none';
+    document.getElementById('clefs-video').pause(); document.getElementById('clefs-video').style.display = 'none';
   }
 
-  function revealView(key){
-    document.body.classList.add('opened', 'v-' + key);
-    var el = allViewEls[key];
-    el.style.opacity = '1'; el.style.pointerEvents = 'auto';
-  }
+  function revealView(key){ document.body.classList.add('opened', 'v-' + key); var el = allViewEls[key]; el.style.opacity = '1'; el.style.pointerEvents = 'auto'; }
 
-  function goHome(){
-    clearAllViewClasses();
-    solvedSublime = false; solvedPlease = false;
-    resetYesSequence(); switchTrack(bgmHome);
-    perfBgVideo.pause(); perfHideOverlay();
-    clearTimeout(perfHoldTimer);
-    perfPleaseMsg.style.display = 'none';
-    artifactsRevealSound.pause();
-    currentView = 'home'; navStack = [];
-  }
+  function goHome(){ clearAllViewClasses(); solvedSublime = false; solvedPlease = false; resetYesSequence(); switchTrack(bgmHome); perfBgVideo.pause(); perfHideOverlay(); clearTimeout(perfHoldTimer); document.getElementById('perf-please-msg').style.display = 'none'; artifactsRevealSound.pause(); currentView = 'home'; navStack = []; }
 
   function showSecret(){ clearAllViewClasses(); revealView('secret'); switchTrack(bgmSecret); enterSecretPage(); currentView = 'secret'; }
   function showYes(){ clearAllViewClasses(); revealView('yes'); switchTrack(bgmYes); enterYesSequence(); currentView = 'yes'; }
-  
-  function showNo(){ 
-    clearAllViewClasses(); 
-    revealView('no'); 
-    silenceAmbient(); 
-    currentView = 'no'; 
-
-    var corrVid1 = document.getElementById('corridor-video');
-    var corrVid2 = document.getElementById('corridor-video-2');
-    var corrAud = document.getElementById('corridor-audio');
-    var msgBeing = document.getElementById('msg-being');
-    var msgHere = document.getElementById('msg-here');
-    
-    msgBeing.style.display = 'none';
-    msgHere.style.display = 'none';
-    corrVid2.style.display = 'none';
-
-    corrVid1.style.display = 'block';
-    corrVid1.currentTime = 0;
-    corrVid1.play().catch(function(){});
-    
-    if(soundOn){
-      corrAud.currentTime = 0;
-      corrAud.play().catch(function(){});
-    }
-
-    corrVid1.onended = function(){
-      corrVid1.style.display = 'none';
-      corrAud.pause();
-      
-      corrVid2.style.display = 'block';
-      corrVid2.currentTime = 0;
-      corrVid2.play().catch(function(){});
-      
-      setTimeout(function(){
-        if(currentView === 'no'){
-            msgBeing.style.display = 'block';
-            msgHere.style.display = 'block';
-        }
-      }, 3000);
-    };
-  }
+  function showNo(){ clearAllViewClasses(); revealView('no'); silenceAmbient(); currentView = 'no'; var v1 = document.getElementById('corridor-video'); var v2 = document.getElementById('corridor-video-2'); var aud = document.getElementById('corridor-audio'); document.getElementById('msg-being').style.display = 'none'; document.getElementById('msg-here').style.display = 'none'; v2.style.display = 'none'; v1.style.display = 'block'; v1.currentTime = 0; v1.play().catch(function(){}); if(soundOn){ aud.currentTime = 0; aud.play().catch(function(){}); } v1.onended = function(){ v1.style.display = 'none'; aud.pause(); v2.style.display = 'block'; v2.currentTime = 0; v2.play().catch(function(){}); setTimeout(function(){ if(currentView === 'no'){ document.getElementById('msg-being').style.display = 'block'; document.getElementById('msg-here').style.display = 'block'; } }, 3000); }; }
 
   function showBeing(){ clearAllViewClasses(); revealView('being'); enterBeingPage(); currentView = 'being'; }
-  function showClefs(){ clearAllViewClasses(); revealView('clefs'); currentView = 'clefs'; }
+  
+  function showClefs(){ clearAllViewClasses(); revealView('clefs'); enterClefsPage(); currentView = 'clefs'; }
+  
   function showHere(){ clearAllViewClasses(); revealView('here'); currentView = 'here'; }
-
   function showPerf(){ clearAllViewClasses(); revealView('perf'); enterPerfPage(); currentView = 'perf'; }
   function showPlease(){ clearAllViewClasses(); revealView('please'); switchTrack(bgmHome); enterPleasePage(); currentView = 'please'; }
-  
-  function showArtifact(n){
-    clearAllViewClasses();
-    revealView('artifact-' + n);
-    if(n === '1'){
-      silenceAmbient();
-      var artlifeVideo = document.getElementById('artlife-video');
-      artlifeVideo.muted = false; artlifeVideo.currentTime = 0; artlifeVideo.play().catch(function(){});
-    } else if(n === '3'){
-      switchTrack(bgmHome);
-      enterKilledPage(); 
-    } else if(n === '2'){
-      switchTrack(bgmHome);
-      enterArtifact2();
-    } else {
-      switchTrack(bgmHome);
-    }
-    currentView = 'artifact-' + n;
-  }
-  
+  function showArtifact(n){ clearAllViewClasses(); revealView('artifact-' + n); if(n==='1'){ silenceAmbient(); var v = document.getElementById('artlife-video'); v.muted = false; v.currentTime = 0; v.play().catch(function(){}); } else if(n==='3'){ switchTrack(bgmHome); enterKilledPage(); } else if(n==='2'){ switchTrack(bgmHome); enterArtifact2(); } else { switchTrack(bgmHome); } currentView = 'artifact-' + n; }
   function showNote(){ clearAllViewClasses(); revealView('note'); switchTrack(bgmHome); enterNotePage(); currentView = 'note'; }
 
   function goBack(){
@@ -982,636 +757,192 @@
       case 'artifact-3': showArtifact('3'); break;
       case 'note': showNote(); break;
       case 'being': showBeing(); break;
-      case 'here': showHere(); break;
       case 'clefs': showClefs(); break;
+      case 'here': showHere(); break;
       default: goHome();
     }
   }
 
-  document.getElementById('back-link').addEventListener('click', function(e){ e.preventDefault(); goBack(); });
-  document.getElementById('back-link-yes').addEventListener('click', function(e){ e.preventDefault(); goBack(); });
-  document.getElementById('back-link-no').addEventListener('click', function(e){ e.preventDefault(); goBack(); });
-  document.getElementById('back-link-perf').addEventListener('click', function(e){ e.preventDefault(); goBack(); });
-  document.getElementById('back-link-please').addEventListener('click', function(e){ e.preventDefault(); goBack(); });
-  document.getElementById('back-link-note').addEventListener('click', function(e){ e.preventDefault(); goBack(); });
-  document.getElementById('back-link-being').addEventListener('click', function(e){ e.preventDefault(); goBack(); });
-  document.getElementById('back-link-here').addEventListener('click', function(e){ e.preventDefault(); goBack(); });
-  document.getElementById('back-link-clefs').addEventListener('click', function(e){ e.preventDefault(); goBack(); });
-
-  document.getElementById('msg-being').addEventListener('click', function(){ navStack.push(currentView); showBeing(); });
-  document.getElementById('msg-here').addEventListener('click', function(){ navStack.push(currentView); showHere(); });
-
-  ['2','3'].forEach(function(n){
-    document.getElementById('back-link-artifact-' + n).addEventListener('click', function(e){ e.preventDefault(); goBack(); });
+  /* Listeners Back */
+  ['back-link','back-link-yes','back-link-no','back-link-perf','back-link-please','back-link-note','back-link-being','back-link-here','back-link-clefs'].forEach(id=>{
+      var el = document.getElementById(id); if(el) el.onclick = function(e){ e.preventDefault(); goBack(); };
   });
-  document.getElementById('artlife-back-phrase').addEventListener('click', function(){ goToPleaseWithArtifactsShown(); });
 
-  /* ---------------- BEING KEYS LOGIC ---------------- */
+  document.getElementById('msg-being').onclick = function(){ navStack.push(currentView); showBeing(); };
+  document.getElementById('msg-here').onclick = function(){ navStack.push(currentView); showHere(); };
+  document.getElementById('artlife-back-phrase').onclick = function(){ goToPleaseWithArtifactsShown(); };
+
+  /* BEING KEYS LOGIC */
   var keysFound = 0;
   function enterBeingPage(){
     keysFound = 0;
-    document.querySelectorAll('.being-key').forEach(function(k){
-      k.style.display = 'block';
-    });
+    document.querySelectorAll('.being-key').forEach(k => k.style.display = 'block');
   }
-
-  document.querySelectorAll('.being-key').forEach(function(keyEl){
+  document.querySelectorAll('.being-key').forEach(keyEl => {
     keyEl.addEventListener('click', function(){
-      var id = keyEl.getAttribute('data-key');
-      var snd = document.getElementById('clef-' + id);
-      if(snd && soundOn) {
-        var clip = snd.cloneNode(true);
-        clip.volume = 0.8;
-        clip.play().catch(function(){});
-      }
-
       keyEl.style.display = 'none';
       keysFound++;
-      if(keysFound >= 4){
-        setTimeout(function(){
-          navStack.push(currentView);
-          showClefs();
-        }, 500);
-      }
+      // Joue toujours les sons dans l'ordre 1 -> 2 -> 3 -> 4
+      var snd = document.getElementById('clef-' + keysFound);
+      if(snd && soundOn) { var clip = snd.cloneNode(true); clip.volume = 0.8; clip.play().catch(function(){}); }
+      if(keysFound >= 4){ setTimeout(function(){ navStack.push(currentView); showClefs(); }, 500); }
     });
   });
 
-  var noteSounds = {
-    'note-1': document.getElementById('sound-note-1'), 'note-2': document.getElementById('sound-note-2'),
-    'note-3': document.getElementById('sound-note-3'), 'note-4': document.getElementById('sound-note-4')
+  /* PAGE CLEFS LOGIC */
+  var clefsMsg = document.getElementById('clefs-msg');
+  var clefsOverlay = document.getElementById('clefs-intro-overlay');
+  var clefsVideo = document.getElementById('clefs-video');
+
+  function enterClefsPage(){
+      clefsOverlay.style.display = 'flex';
+      clefsMsg.classList.remove('show');
+      clefsVideo.style.display = 'none';
+      clefsVideo.pause();
+      // 2 secondes de noir avant d'afficher le message
+      setTimeout(() => {
+          if(currentView === 'clefs') clefsMsg.classList.add('show');
+      }, 2000);
+  }
+
+  clefsMsg.onclick = function(){
+      clefsMsg.classList.remove('show');
+      clefsOverlay.style.display = 'none';
+      clefsVideo.style.display = 'block';
+      clefsVideo.currentTime = 0;
+      clefsVideo.play().catch(function(){});
   };
-  Object.keys(noteSounds).forEach(function(k){ noteSounds[k].load(); });
 
-  var noteWinningSequence = ['note-1', 'note-2', 'note-3', 'note-4'];
-  var noteClickHistory = [];
-  var noteSolved = false;
-  var imgAutismEl = document.getElementById('img-autism');
+  /* NOTE LOGIC */
+  var noteWinning = ['note-1', 'note-2', 'note-3', 'note-4'], noteHistory = [], noteSolved = false;
+  function enterNotePage(){ noteHistory = []; noteSolved = false; document.getElementById('img-autism').style.display = 'none'; }
+  document.querySelectorAll('.note-zone').forEach(zone => {
+    zone.onclick = function(){
+      var id = zone.getAttribute('data-note'); var clip = document.getElementById('sound-' + id).cloneNode(true); clip.volume = 0.8; clip.play().catch(function(){});
+      if(noteSolved) return; noteHistory.push(id); if(noteHistory.length > 4) noteHistory.shift();
+      if(noteHistory.length === 4 && noteHistory.every((v,i)=>v===noteWinning[i])){ noteSolved = true; document.getElementById('img-autism').style.display = 'block'; }
+    };
+  });
+  document.getElementById('page-note').onclick = function(e){ if(noteSolved && !e.target.closest('.back')) goToPleaseWithArtifactsShown(); };
 
-  function enterNotePage(){ noteClickHistory = []; noteSolved = false; imgAutismEl.style.display = 'none'; }
+  /* PLEASE LOGIC */
+  var pleasePhrases = ["I think we're safe here", "The temperature is perfect. It's like being indoors", "No wind. No sound. Nothing. I can't even feel the grass beneath my feet.", "Something's off.", "I hope to see a horse.", "I can't remember how I got here.", "How long have I been here?"], pleaseIdx = 0, pleasePos = [], pleaseArtShown = false;
+  var artifactsRevealSound = document.getElementById('artifacts-reveal-sound'); artifactsRevealSound.volume = 0.3;
+  function enterPleasePage(){ pleaseIdx = 0; document.getElementById('please-messages').innerHTML = ''; pleasePos = []; pleaseArtShown = false; document.getElementById('please-artifacts').classList.remove('show'); artifactsRevealSound.pause(); }
+  function revealPleaseArtifacts(){ pleaseArtShown = true; document.getElementById('please-messages').innerHTML = ''; document.getElementById('please-artifacts').classList.add('show'); document.querySelectorAll('.artifact-item video').forEach(v=>{v.currentTime=0; v.play();}); artifactsRevealSound.currentTime = 0; artifactsRevealSound.play(); }
+  function goToPleaseWithArtifactsShown(){ navStack.pop(); showPlease(); pleaseIdx = pleasePhrases.length; revealPleaseArtifacts(); }
+  document.getElementById('page-please').onclick = function(e){
+    if(e.target.closest('.back') || e.target.closest('.artifact-item')) return;
+    if(pleaseIdx < pleasePhrases.length){
+      var x = innerWidth*0.5 + (Math.random()-0.5)*innerWidth*0.5, y = innerHeight*0.5 + (Math.random()-0.5)*innerHeight*0.5;
+      var el = document.createElement('p'); el.className = 'please-msg'; el.textContent = pleasePhrases[pleaseIdx++]; el.style.left = x+'px'; el.style.top = y+'px';
+      document.getElementById('please-messages').appendChild(el);
+    } else if(!pleaseArtShown) revealPleaseArtifacts();
+  };
+  ['1','2','3','4'].forEach(n => { document.getElementById('artifact-'+n).onclick = function(e){ e.stopPropagation(); artifactsRevealSound.pause(); navStack.push(currentView); if(n==='4') showNote(); else showArtifact(n); }; });
 
-  document.querySelectorAll('.note-zone').forEach(function(zone){
-    zone.addEventListener('click', function(){
-      var id = zone.getAttribute('data-note');
-      var clip = noteSounds[id].cloneNode(true); clip.volume = 0.8; clip.play().catch(function(){});
-      if(noteSolved) return;
-      noteClickHistory.push(id);
-      if(noteClickHistory.length > noteWinningSequence.length){ noteClickHistory.shift(); }
-      var matches = noteClickHistory.length === noteWinningSequence.length &&
-        noteClickHistory.every(function(v, i){ return v === noteWinningSequence[i]; });
-      if(matches){ noteSolved = true; imgAutismEl.style.display = 'block'; }
+  /* PERF LOGIC */
+  var perfBgVideo = document.getElementById('perf-bg-video'), perfHoldSnd = document.getElementById('perf-hold-sound'), perfActiveHold = null, perfStarted = false, perfHoldTimer = null;
+  function enterPerfPage(){ document.getElementById('perf-intro').style.opacity = '1'; document.getElementById('perf-intro').style.pointerEvents = 'auto'; document.getElementById('perf-intro-text').classList.remove('show'); perfStarted = false; setTimeout(()=>{ if(currentView==='perf') { document.getElementById('perf-intro-text').classList.add('show'); setTimeout(()=>perfStarted=true, 1000); } }, 4000); }
+  document.getElementById('perf-intro').onclick = function(){ if(perfStarted){ this.style.opacity = '0'; this.style.pointerEvents = 'none'; perfBgVideo.play(); } };
+  function perfShowOverlay(e){ if(!perfBgVideo.paused && !e.target.closest('.back')){ perfActiveHold = document.getElementById('perf-hold-'+(Math.floor(Math.random()*4)+1)); perfActiveHold.classList.add('active'); perfActiveHold.play(); perfHoldSnd.play(); clearTimeout(perfHoldTimer); perfHoldTimer = setTimeout(()=>document.getElementById('perf-please-msg').style.display='block', 5000); } }
+  function perfHideOverlay(){ if(perfActiveHold){ perfActiveHold.classList.remove('active'); perfActiveHold.pause(); perfActiveHold = null; } perfHoldSnd.pause(); }
+  document.getElementById('page-perf').onmousedown = perfShowOverlay; window.onmouseup = perfHideOverlay;
+  document.getElementById('perf-please-msg').onclick = function(e){ e.stopPropagation(); goHome(); };
+
+  /* YES LOGIC */
+  var yesImg = document.getElementById('yes-img'), yesIdx = 0;
+  function enterYesSequence(){ yesIdx = 0; yesImg.src = 'yes-img-1.png'; yesImg.style.opacity = '0'; setTimeout(()=>{ yesImg.style.opacity = '1'; yesImg.style.pointerEvents = 'auto'; }, 2000); }
+  function resetYesSequence(){ yesIdx = 0; document.getElementById('yes-undo').style.display = 'none'; }
+  yesImg.onclick = function(){
+    document.getElementById('yes-click-'+(yesIdx+1)).cloneNode(true).play(); yesIdx++;
+    if(yesIdx < 5){ yesImg.src = 'yes-img-'+(yesIdx+1)+'.png'; document.getElementById('yes-undo').style.display = 'block'; document.getElementById('yes-undo').textContent = (yesIdx===4)? 'almost killed you, sorry.' : "sorry, didn't mean to do that."; }
+    else { switchTrack(bgmPerf); setTimeout(()=>{ navStack.push(currentView); showPerf(); }, 300); }
+  };
+  document.getElementById('yes-undo').onclick = function(){ if(yesIdx > 0){ yesIdx--; yesImg.src = 'yes-img-'+(yesIdx+1)+'.png'; if(yesIdx===0) this.style.display='none'; } };
+
+  /* ARTIFACT 2 LOGIC */
+  var lightCounter = 0, lightVisible = false;
+  function enterArtifact2(){ lightCounter = 0; lightVisible = false; document.getElementById('light-display-img').style.display = 'none'; document.getElementById('page-artifact-2').style.background = "#000 url('img-artfact-2.JPG') center center / cover no-repeat"; }
+  document.getElementById('page-artifact-2').onclick = function(e){
+      if(e.target.closest('.back')) return;
+      if(!lightVisible){
+          lightVisible = true; lightCounter++;
+          if(lightCounter > 42){ this.style.background = "#000"; document.getElementById('light-msg-5').style.display = 'block'; return; }
+          var set = (lightCounter > 18) ? ['a','b','c','d','f'] : ['1','2','3','4','5','6'];
+          document.getElementById('light-display-img').src = 'light-'+set[Math.floor(Math.random()*set.length)]+'.JPG';
+          document.getElementById('light-display-img').style.display = 'block';
+          if(soundOn) document.getElementById('switch-sfx-1').cloneNode(true).play();
+          if(lightCounter > 18){ document.getElementById('light-msg-1').style.display='block'; if(soundOn) document.getElementById('son-lose').play(); }
+          if(lightCounter > 24) document.getElementById('light-msg-2').style.display='block';
+          if(lightCounter > 30) document.getElementById('light-msg-3').style.display='block';
+          if(lightCounter > 36) document.getElementById('light-msg-4').style.display='block';
+      } else { lightVisible = false; document.getElementById('light-display-img').style.display = 'none'; if(soundOn) document.getElementById('switch-sfx-2').cloneNode(true).play(); }
+  };
+
+  /* KILLED LOGIC */
+  var kldReveal = 0;
+  function enterKilledPage(){ kldReveal = 0; for(var i=0;i<8;i++) document.getElementById('killed-g'+i).style.opacity='0'; buildKilledLetters(); }
+  function stopKilledSounds(){ for(var i=1;i<=8;i++) { var s = document.getElementById('kld-'+i); s.pause(); s.currentTime=0; } }
+  function buildKilledLetters(){
+    var sk = document.getElementById('stage-killed'); sk.innerHTML = '';
+    "oleander".split('').forEach(ch => {
+        var el = document.createElement('div'); el.className = 'letter'; el.textContent = ch; sk.appendChild(el);
+        var L = { el:el, x:rand(W*0.1, W*0.9), y:rand(H*0.1, H*0.9), vx:rand(-0.5,0.5), vy:rand(-0.5,0.5), depth:rand(0.7,1.3), dragging:false, frozen:false };
+        el.onmousedown = function(){ if(!L.frozen){ L.frozen=true; el.style.opacity='0'; var s=document.getElementById('kld-'+(kldReveal+1)); if(soundOn){s.play();} document.getElementById('killed-g'+kldReveal).style.opacity='1'; kldReveal++; } };
     });
-  });
-
-  document.getElementById('page-note').addEventListener('click', function(e){
-    if(!noteSolved) return;
-    if(e.target.closest && e.target.closest('.back')) return;
-    if(e.target.closest && e.target.closest('.note-zone')) return;
-    goToPleaseWithArtifactsShown();
-  });
-
-  var pleaseContainer = document.getElementById('page-please');
-  var pleaseMessagesEl = document.getElementById('please-messages');
-  var pleasePhrases = [
-    "I think we're safe here", "The temperature is perfect. It's like being indoors",
-    "No wind. No sound. Nothing. I can't even feel the grass beneath my feet.",
-    "Something's off.", "I hope to see a horse.", "I can't remember how I got here.", "How long have I been here?"
-  ];
-  var pleaseMsgIndex = 0;
-  var pleasePlacedPositions = [];
-  var PLEASE_MIN_DIST = 170; 
-  var pleaseArtifactsEl = document.getElementById('please-artifacts');
-  var pleaseArtifactsShown = false;
-  var artifactVideos = [
-    document.querySelector('#artifact-1 video'), 
-    document.querySelector('#artifact-2 video'), 
-    document.querySelector('#artifact-3 video'), 
-    document.querySelector('#artifact-4 video')
-  ];
-  artifactVideos.forEach(function(v){ if(v){ v.volume = 0.7; v.load(); } });
-  var artifactsRevealSound = document.getElementById('artifacts-reveal-sound');
-  artifactsRevealSound.volume = 0.3; artifactsRevealSound.load();
-  artifactsRevealSound.addEventListener('timeupdate', function(){
-    if(artifactsRevealSound.duration && artifactsRevealSound.currentTime >= artifactsRevealSound.duration - 0.20){
-      artifactsRevealSound.currentTime = 0; artifactsRevealSound.play().catch(function(){});
-    }
-  });
-
-  function enterPleasePage(){
-    pleaseMsgIndex = 0; pleaseMessagesEl.innerHTML = '';
-    pleasePlacedPositions = []; pleaseArtifactsShown = false;
-    pleaseArtifactsEl.classList.remove('show');
-    artifactVideos.forEach(function(v){ if(v){ v.pause(); v.currentTime = 0; } });
-    artifactsRevealSound.pause(); artifactsRevealSound.currentTime = 0;
   }
 
-  function pickPleasePosition(){
-    var x, y, tries = 0, ok = false;
-    while(!ok && tries < 40){
-      x = innerWidth * 0.5 + (Math.random() - 0.5) * innerWidth * 0.5;
-      y = innerHeight * 0.5 + (Math.random() - 0.5) * innerHeight * 0.5;
-      ok = pleasePlacedPositions.every(function(p){
-        var dx = p.x - x, dy = p.y - y; return Math.sqrt(dx*dx + dy*dy) >= PLEASE_MIN_DIST;
-      });
-      tries++;
-    }
-    pleasePlacedPositions.push({x:x, y:y}); return {x:x, y:y};
-  }
-
-  function revealPleaseArtifacts(){
-    pleaseArtifactsShown = true; pleaseMessagesEl.innerHTML = '';
-    pleaseArtifactsEl.classList.add('show');
-    artifactVideos.forEach(function(v){ if(v){ v.currentTime = 0; v.play().catch(function(){}); } });
-    artifactsRevealSound.currentTime = 0; artifactsRevealSound.play().catch(function(){});
-  }
-
-  function goToPleaseWithArtifactsShown(){
-    navStack.pop(); showPlease(); pleaseMsgIndex = pleasePhrases.length; revealPleaseArtifacts();
-  }
-
-  pleaseContainer.addEventListener('click', function(e){
-    if(e.target.closest && e.target.closest('.back')) return;
-    if(e.target.closest && e.target.closest('.artifact-item')) return;
-    if(pleaseMsgIndex < pleasePhrases.length){
-      var phrase = pleasePhrases[pleaseMsgIndex]; pleaseMsgIndex++;
-      var pos = pickPleasePosition();
-      var el = document.createElement('p'); el.className = 'please-msg'; el.textContent = phrase;
-      el.style.left = pos.x + 'px'; el.style.top = pos.y + 'px';
-      pleaseMessagesEl.appendChild(el); return;
-    }
-    if(!pleaseArtifactsShown){ revealPleaseArtifacts(); }
-  });
-
-  ['1','2','3','4'].forEach(function(n){
-    document.getElementById('artifact-' + n).addEventListener('click', function(e){
-      e.stopPropagation(); artifactsRevealSound.pause(); navStack.push(currentView);
-      if(n === '4'){ showNote(); } else { showArtifact(n); }
-    });
-  });
-
-  var perfContainer = document.getElementById('page-perf');
-  var perfBgVideo = document.getElementById('perf-bg-video');
-  var perfHoldVideos = [
-    document.getElementById('perf-hold-1'), document.getElementById('perf-hold-2'),
-    document.getElementById('perf-hold-3'), document.getElementById('perf-hold-4')
-  ];
-  var perfHoldSound = document.getElementById('perf-hold-sound');
-  perfHoldSound.volume = 0.7;
-  var perfActiveHold = null;
-  var perfStarted = false; var perfHoldTimer = null;
-  var perfPleaseMsg = document.getElementById('perf-please-msg');
-
-  perfHoldVideos.forEach(function(v){ v.load(); }); perfHoldSound.load();
-
-  function perfShowOverlay(e){
-    if(!perfStarted) return;
-    if(e.target.closest && e.target.closest('.back')) return;
-    if(e.target === perfPleaseMsg) return;
-    perfActiveHold = perfHoldVideos[Math.floor(Math.random() * perfHoldVideos.length)];
-    perfActiveHold.classList.add('active'); perfActiveHold.currentTime = 0; perfActiveHold.play().catch(function(){});
-    if(perfHoldSound.duration && isFinite(perfHoldSound.duration) && perfHoldSound.duration > 0){
-      perfHoldSound.currentTime = Math.random() * perfHoldSound.duration;
-    }
-    perfHoldSound.play().catch(function(){});
-    clearTimeout(perfHoldTimer);
-    perfHoldTimer = setTimeout(function(){ perfPleaseMsg.style.display = 'block'; }, 5000);
-  }
-  function perfHideOverlay(){
-    if(perfActiveHold){ perfActiveHold.classList.remove('active'); perfActiveHold.pause(); perfActiveHold = null; }
-    perfHoldSound.pause(); clearTimeout(perfHoldTimer);
-  }
-  perfContainer.addEventListener('mousedown', perfShowOverlay);
-  window.addEventListener('mouseup', perfHideOverlay);
-  perfContainer.addEventListener('touchstart', perfShowOverlay, {passive:true});
-  window.addEventListener('touchend', perfHideOverlay);
-
-  function goHomeFromPleaseMsg(e){ e.stopPropagation(); goHome(); }
-  perfPleaseMsg.addEventListener('mousedown', goHomeFromPleaseMsg);
-  perfPleaseMsg.addEventListener('touchstart', goHomeFromPleaseMsg, {passive:false});
-
-  var perfIntroEl = document.getElementById('perf-intro');
-  var perfIntroTextEl = document.getElementById('perf-intro-text');
-  var perfIntroDismissed = false; var perfIntroCanDismiss = false;
-
-  function dismissPerfIntro(e){
-    if(e){ e.stopPropagation(); }
-    if(!perfIntroCanDismiss) return;
-    if(perfIntroDismissed) return;
-    perfIntroDismissed = true; perfStarted = true;
-    perfIntroEl.style.opacity = '0'; perfIntroEl.style.pointerEvents = 'none';
-    perfBgVideo.currentTime = 0; perfBgVideo.play().catch(function(){});
-  }
-  perfIntroEl.addEventListener('mousedown', dismissPerfIntro);
-  perfIntroEl.addEventListener('touchstart', dismissPerfIntro, {passive:true});
-
-  function enterPerfPage(){
-    perfIntroDismissed = false; perfIntroCanDismiss = false; perfStarted = false;
-    perfIntroTextEl.classList.remove('show'); perfIntroEl.style.opacity = '1'; perfIntroEl.style.pointerEvents = 'auto';
-    perfPleaseMsg.style.display = 'none'; clearTimeout(perfHoldTimer);
-    setTimeout(function(){
-      if(!perfIntroDismissed){
-        perfIntroTextEl.classList.add('show');
-        setTimeout(function(){ if(!perfIntroDismissed){ perfIntroCanDismiss = true; } }, 1000);
-      }
-    }, 4000);
-  }
-
-  var yesImgEl = document.getElementById('yes-img');
-  var yesUndoBtn = document.getElementById('yes-undo');
-  var yesImages = ['yes-img-1.png','yes-img-2.png','yes-img-3.png','yes-img-4.png','yes-img-5.png'];
-  var yesSoundEls = [
-    document.getElementById('yes-click-1'), document.getElementById('yes-click-2'),
-    document.getElementById('yes-click-3'), document.getElementById('yes-click-4'),
-    document.getElementById('yes-click-5')
-  ];
-  var yesIndex = 0;
-
-  function updateUndoPhrase(){
-    if(yesIndex >= 1 && yesIndex <= 4){
-      yesUndoBtn.style.display = 'block';
-      yesUndoBtn.textContent = (yesIndex === 4) ? 'almost killed you, sorry.' : "sorry, didn't mean to do that.";
-    } else { yesUndoBtn.style.display = 'none'; }
-  }
-
-  function resetYesSequence(){
-    yesIndex = 0; yesImgEl.src = yesImages[0];
-    yesImgEl.style.opacity = '0'; yesImgEl.style.pointerEvents = 'none';
-    updateUndoPhrase();
-  }
-
-  function enterYesSequence(){
-    resetYesSequence();
-    setTimeout(function(){ yesImgEl.style.opacity = '1'; yesImgEl.style.pointerEvents = 'auto'; }, 2000);
-  }
-
-  yesImgEl.addEventListener('click', function(){
-    var snd = yesSoundEls[yesIndex].cloneNode(true); snd.volume = 0.8; snd.play().catch(function(){});
-    yesIndex++;
-    if(yesIndex < yesImages.length){ yesImgEl.src = yesImages[yesIndex]; updateUndoPhrase(); }
-    else {
-      switchTrack(bgmPerf);
-      setTimeout(function(){ navStack.push(currentView); showPerf(); }, 300);
-    }
-  });
-
-  yesUndoBtn.addEventListener('click', function(){
-    if(yesIndex <= 0) return;
-    yesIndex--; yesImgEl.src = yesImages[yesIndex]; updateUndoPhrase();
-  });
-
-  document.getElementById('opt-yes').addEventListener('click', function(){ navStack.push(currentView); showYes(); });
-  document.getElementById('opt-no').addEventListener('click', function(){ navStack.push(currentView); showNo(); });
-
-  var yesnoOptionsEl = document.getElementById('yesno-options');
-  function enterSecretPage(){
-    yesnoOptionsEl.classList.remove('show');
-    setTimeout(function(){ yesnoOptionsEl.classList.add('show'); }, 3000);
-  }
-
-  var mouseX = W/2, mouseY = H/2; var lastMouseX = mouseX, lastMouseY = mouseY;
-  var mvx = 0, mvy = 0; var hasPointer = false;
-
+  /* CORE ENGINE */
+  var mouseX = W/2, mouseY = H/2, lastX = W/2, lastY = H/2, mvx = 0, mvy = 0, hasPointer = false;
   function updatePointer(x, y){ 
-    mouseX = x; 
-    mouseY = y; 
-    hasPointer = true; 
+    mouseX = x; mouseY = y; hasPointer = true; 
     if(currentView === 'being'){
-      var frame = document.getElementById('being-img-frame');
-      var rect = frame.getBoundingClientRect();
-      var relX = x - rect.left;
-      var relY = y - rect.top;
-      frame.style.setProperty('--flashlight-x', relX + 'px');
-      frame.style.setProperty('--flashlight-y', relY + 'px');
+      var r = document.getElementById('being-img-frame').getBoundingClientRect();
+      document.getElementById('being-img-frame').style.setProperty('--flashlight-x', (x - r.left) + 'px');
+      document.getElementById('being-img-frame').style.setProperty('--flashlight-y', (y - r.top) + 'px');
     }
   }
-  window.addEventListener('mousemove', function(e){ updatePointer(e.clientX, e.clientY); });
-  window.addEventListener('touchmove', function(e){
-    if(e.touches && e.touches[0]) updatePointer(e.touches[0].clientX, e.touches[0].clientY);
-  }, {passive:true});
-
-  var INFLUENCE = 100; var SPEED_THRESHOLD = 6; var STRENGTH = 0.5; var FRICTION = 0.99;
+  window.onmousemove = e => updatePointer(e.clientX, e.clientY);
+  window.ontouchmove = e => { if(e.touches[0]) updatePointer(e.touches[0].clientX, e.touches[0].clientY); };
 
   function frame(){
-    mvx = mvx * 0.8 + (mouseX - lastMouseX) * 0.2;
-    mvy = mvy * 0.8 + (mouseY - lastMouseY) * 0.2;
-    lastMouseX = mouseX; lastMouseY = mouseY;
+    mvx = mvx*0.8 + (mouseX-lastX)*0.2; mvy = mvy*0.8 + (mouseY-lastY)*0.2; lastX = mouseX; lastY = mouseY;
     var speed = Math.sqrt(mvx*mvx + mvy*mvy);
-    for(var i=0; i<letters.length; i++){
-      var L = letters[i];
-      if(L.dragging){ L.el.style.transform = 'translate(' + L.x + 'px,' + L.y + 'px)'; continue; }
-      if(L.inBox){ continue; }
-      if(hasPointer && speed > SPEED_THRESHOLD){
-        var dx = L.x - mouseX; var dy = L.y - mouseY;
-        var dist = Math.sqrt(dx*dx + dy*dy) + 0.001;
-        if(dist < INFLUENCE){
-          var falloff = 1 - dist / INFLUENCE; var force = speed * STRENGTH * falloff * L.depth;
-          L.vx += (dx/dist) * force; L.vy += (dy/dist) * force;
-        }
+    letters.forEach(L => {
+      if(L.dragging || L.inBox) return;
+      if(hasPointer && speed > 6){
+        var dx = L.x - mouseX, dy = L.y - mouseY, dist = Math.sqrt(dx*dx + dy*dy)+0.001;
+        if(dist < 100){ var f = 1 - dist/100, force = speed * 0.5 * f * L.depth; L.vx += (dx/dist)*force; L.vy += (dy/dist)*force; }
       }
-      L.vx *= FRICTION; L.vy *= FRICTION; L.x += L.vx; L.y += L.vy;
-      bounceOffBox(L);
-      if(L.x < BOX){ L.x = BOX; L.vx = Math.abs(L.vx); }
-      if(L.x > W - BOX){ L.x = W - BOX; L.vx = -Math.abs(L.vx); }
-      if(L.y < BOX){ L.y = BOX; L.vy = Math.abs(L.vy); }
-      if(L.y > H - BOX){ L.y = H - BOX; L.vx = -Math.abs(L.vx); }
-      L.el.style.transform = 'translate(' + L.x + 'px,' + L.y + 'px)';
-    }
-    updatePortalState();
-    requestAnimationFrame(frame);
-  }
-
-  function frameStatic(){
-    for(var i=0; i<letters.length; i++){
-      var L = letters[i]; L.el.style.transform = 'translate(' + L.x + 'px,' + L.y + 'px)';
-    }
-    updatePortalState();
-    requestAnimationFrame(frameStatic);
-  }
-
-  if(reduceMotion){ frameStatic(); } else { requestAnimationFrame(frame); }
-
-  /* ---------------- page artfact-3 ("killed") ---------------- */
-  var killedWord = "oleander";
-  var killedChars = killedWord.split('');
-  var killedStageEl = document.getElementById('stage-killed');
-  var killedLetters = [];
-  var killedGroupEls = null;
-  var killedRevealCount = 0;
-  
-  var kldSounds = [
-    document.getElementById('kld-1'), document.getElementById('kld-2'),
-    document.getElementById('kld-3'), document.getElementById('kld-4'),
-    document.getElementById('kld-5'), document.getElementById('kld-6'),
-    document.getElementById('kld-7'), document.getElementById('kld-8')
-  ];
-  kldSounds.forEach(function(s){ if(s) s.volume = 0.6; });
-
-  function getKilledGroupEls(){
-    if(!killedGroupEls){
-      killedGroupEls = [];
-      for(var i=0; i<8; i++){ killedGroupEls.push(document.getElementById('killed-g' + i)); }
-    }
-    return killedGroupEls;
-  }
-
-  function revealNextKilledGroup(){
-    var groups = getKilledGroupEls();
-    if(killedRevealCount < groups.length){
-      var el = groups[killedRevealCount];
-      if(el) el.style.opacity = '1';
-      var snd = kldSounds[killedRevealCount];
-      if(snd && soundOn){ snd.currentTime = 0; snd.play().catch(function(){}); }
-      killedRevealCount++;
-    }
-  }
-  
-  function stopKilledSounds(){
-    kldSounds.forEach(function(snd){ if(snd){ snd.pause(); snd.currentTime = 0; } });
-  }
-  
-  function enterKilledPage(){
-    killedRevealCount = 0;
-    var groups = getKilledGroupEls();
-    groups.forEach(function(g){ if(g) g.style.opacity = '0'; });
-    stopKilledSounds();
-    buildKilledLetters();
-  }
-
-  function freezeKilledLetter(L){
-    if(L.frozen) return;
-    L.frozen = true; L.dragging = false; L.vx = 0; L.vy = 0;
-    L.el.classList.remove('dragging');
-    L.el.style.transition = 'opacity 1s';
-    L.el.style.opacity = '0';
-    revealNextKilledGroup();
-    setTimeout(function(){ L.el.style.display = 'none'; }, 1000);
-  }
-
-  function buildKilledLetters(){
-    killedStageEl.innerHTML = ''; killedLetters = [];
-    var margin = 0.08; var w = innerWidth, h = innerHeight;
-    killedChars.forEach(function(ch){
-      var el = document.createElement('div'); el.className = 'letter'; el.textContent = ch;
-      killedStageEl.appendChild(el);
-      var L = {
-        el: el, x: rand(w*margin, w*(1-margin)), y: rand(h*margin, h*(1-margin)),
-        vx: rand(-0.4, 0.4), vy: rand(-0.4, 0.4), depth: rand(0.7, 1.3),
-        dragging: false, dragOffX: 0, dragOffY: 0, frozen: false
-      };
-      killedLetters.push(L); attachKilledDrag(el, L);
+      L.vx *= 0.99; L.vy *= 0.99; L.x += L.vx; L.y += L.vy; bounceOffBox(L);
+      if(L.x < 12){L.x=12; L.vx=Math.abs(L.vx);} if(L.x > W-12){L.x=W-12; L.vx=-Math.abs(L.vx);}
+      if(L.y < 12){L.y=12; L.vy=Math.abs(L.vy);} if(L.y > H-12){L.y=H-12; L.vy=-Math.abs(L.vy);}
+      L.el.style.transform = 'translate('+L.x+'px,'+L.y+'px)';
     });
+    updatePortalState(); requestAnimationFrame(frame);
   }
+  requestAnimationFrame(frame);
 
-  function attachKilledDrag(el, L){
-    var downX = 0, downY = 0, moved = false; var CLICK_TOLERANCE = 5;
-    function down(clientX, clientY){
-      if(L.frozen) return; L.dragging = true; el.classList.add('dragging');
-      L.dragOffX = clientX - L.x; L.dragOffY = clientY - L.y;
-      downX = clientX; downY = clientY; moved = false;
-    }
-    function move(clientX, clientY){
-      if(!L.dragging) return;
-      if(Math.abs(clientX - downX) > CLICK_TOLERANCE || Math.abs(clientY - downY) > CLICK_TOLERANCE){ moved = true; }
-      var nx = clientX - L.dragOffX; var ny = clientY - L.dragOffY;
-      L.vx = nx - L.x; L.vy = ny - L.y; L.x = nx; L.y = ny;
-    }
-    function up(){
-      if(!L.dragging) return; L.dragging = false; el.classList.remove('dragging');
-      if(!moved){ freezeKilledLetter(L); }
-    }
-    el.addEventListener('mousedown', function(e){ down(e.clientX, e.clientY); e.preventDefault(); });
-    window.addEventListener('mousemove', function(e){ move(e.clientX, e.clientY); });
-    window.addEventListener('mouseup', up);
-    el.addEventListener('touchstart', function(e){ var t = e.touches[0]; down(t.clientX, t.clientY); }, {passive:true});
-    window.addEventListener('touchmove', function(e){ if(L.dragging && e.touches[0]) move(e.touches[0].clientX, e.touches[0].clientY); }, {passive:true});
-    window.addEventListener('touchend', up);
-  }
+  /* SOUND SYSTEM */
+  var bgmHome = document.getElementById('bgm-home'), bgmSecret = document.getElementById('bgm-secret'), bgmYes = document.getElementById('bgm-yes'), bgmPerf = document.getElementById('bgm-perf'), soundBtn = document.getElementById('sound-toggle'), soundOn = false, unlocked = false, currentTrack = bgmHome;
+  function switchTrack(track){ if(currentTrack === track) return; if(unlocked && currentTrack) { currentTrack.pause(); currentTrack.currentTime = 0; } currentTrack = track; if(unlocked && soundOn && currentTrack) currentTrack.play(); }
+  function silenceAmbient(){ if(currentTrack) currentTrack.pause(); currentTrack = null; }
+  function unlock(){ if(unlocked) return; unlocked = true; if(currentTrack){ currentTrack.play().then(()=>{soundOn=true; soundBtn.textContent='son : on';}); } }
+  window.onmousedown = unlock; window.ontouchstart = unlock;
+  soundBtn.onclick = function(){
+    if(!unlocked) { unlock(); return; }
+    if(soundOn){ silenceAmbient(); soundOn = false; this.textContent = 'son : off'; }
+    else { if(currentTrack) currentTrack.play(); soundOn = true; this.textContent = 'son : on'; }
+  };
 
-  buildKilledLetters();
-
-  function frameKilled(){
-    var w = innerWidth, h = innerHeight; var speed = Math.sqrt(mvx*mvx + mvy*mvy);
-    for(var i=0; i<killedLetters.length; i++){
-      var L = killedLetters[i]; if(L.frozen) continue;
-      if(L.dragging){ L.el.style.transform = 'translate(' + L.x + 'px,' + L.y + 'px)'; continue; }
-      if(hasPointer && speed > SPEED_THRESHOLD){
-        var dx = L.x - mouseX; var dy = L.y - mouseY; var dist = Math.sqrt(dx*dx + dy*dy) + 0.001;
-        if(dist < INFLUENCE){
-          var falloff = 1 - dist / INFLUENCE; var force = speed * STRENGTH * falloff * L.depth;
-          L.vx += (dx/dist) * force; L.vy += (dy/dist) * force;
-        }
-      }
-      L.vx *= FRICTION; L.vy *= FRICTION; L.x += L.vx; L.y += L.vy;
-      if(L.x < BOX){ L.x = BOX; L.vx = Math.abs(L.vx); }
-      if(L.x > w - BOX){ L.x = w - BOX; L.vx = -Math.abs(L.vx); }
-      if(L.y < BOX){ L.y = BOX; L.vy = Math.abs(L.vy); }
-      if(L.y > h - BOX){ L.y = h - BOX; L.vy = -Math.abs(L.vy); }
-      L.el.style.transform = 'translate(' + L.x + 'px,' + L.y + 'px)';
-    }
-    requestAnimationFrame(frameKilled);
-  }
-
-  function frameKilledStatic(){
-    for(var i=0; i<killedLetters.length; i++){
-      var L = killedLetters[i]; if(L.frozen) continue;
-      L.el.style.transform = 'translate(' + L.x + 'px,' + L.y + 'px)';
-    }
-    requestAnimationFrame(frameKilledStatic);
-  }
-
-  if(reduceMotion){ frameKilledStatic(); } else { requestAnimationFrame(frameKilled); }
-
-  /* ---------------- ARTIFACT-2 LOGIC ---------------- */
-  var lightImgSet1 = ['light-1.JPG','light-2.JPG','light-3.JPG','light-4.JPG','light-5.JPG','light-6.JPG'];
-  var lightImgSet2 = ['light-a.JPG','light-b.JPG','light-c.JPG','light-d.JPG','light-f.JPG'];
-  
-  [...lightImgSet1, ...lightImgSet2].forEach(function(src){
-    var img = new Image();
-    img.src = src;
-  });
-
-  var lightCounter = 0;
-  var lightIsVisible = false;
-  var lightContainer = document.getElementById('page-artifact-2');
-  var lightDisplay = document.getElementById('light-display-img');
-  var sonLose = document.getElementById('son-lose');
-  var sfxLight1 = document.getElementById('switch-sfx-1');
-  var sfxLight2 = document.getElementById('switch-sfx-2');
-
-  function resetLightArtifact(){
-    lightCounter = 0;
-    lightIsVisible = false;
-    lightDisplay.style.display = 'none';
-    lightContainer.style.background = "#000 url('img-artfact-2.JPG') center center / cover no-repeat";
-    for(let i=1; i<=5; i++){ document.getElementById('light-msg-' + i).style.display = 'none'; }
-    sonLose.pause();
-    sonLose.currentTime = 0;
-  }
-
-  function enterArtifact2(){
-    if(lightCounter > 42){ resetLightArtifact(); }
-    lightIsVisible = false;
-    lightDisplay.style.display = 'none';
-  }
-
-  lightContainer.addEventListener('click', function(e){
-    if(e.target.closest && e.target.closest('.back')) return;
-
-    if(!lightIsVisible){
-      lightIsVisible = true;
-      lightCounter++;
-      
-      if(lightCounter > 42){
-        lightDisplay.style.display = 'none';
-        lightContainer.style.background = "#000";
-        sonLose.pause();
-        silenceAmbient(); 
-        for(let i=1; i<=4; i++){ document.getElementById('light-msg-' + i).style.display = 'none'; }
-        document.getElementById('light-msg-5').style.display = 'block';
-        return;
-      }
-
-      var currentSet = (lightCounter > 18) ? lightImgSet2 : lightImgSet1;
-      var randomImg = currentSet[Math.floor(Math.random() * currentSet.length)];
-      lightDisplay.src = randomImg;
-      lightDisplay.style.display = 'block';
-      
-      if(soundOn) sfxLight1.cloneNode(true).play().catch(function(){});
-
-      if(lightCounter > 18){
-        document.getElementById('light-msg-1').style.display = 'block';
-        if(soundOn && sonLose.paused) sonLose.play().catch(function(){});
-      }
-      if(lightCounter > 24) document.getElementById('light-msg-2').style.display = 'block';
-      if(lightCounter > 30) document.getElementById('light-msg-3').style.display = 'block';
-      if(lightCounter > 36) document.getElementById('light-msg-4').style.display = 'block';
-
-    } else {
-      lightIsVisible = false;
-      lightCounter++;
-      lightDisplay.style.display = 'none';
-      
-      if(lightCounter <= 42) {
-        if(soundOn) sfxLight2.cloneNode(true).play().catch(function(){});
-      }
-      
-      if(lightCounter > 42){
-        lightContainer.style.background = "#000";
-      }
-    }
-  });
-
-
-  /* ---------------- sound ---------------- */
-  var bgmHome = document.getElementById('bgm-home');
-  var bgmSecret = document.getElementById('bgm-secret');
-  var bgmYes = document.getElementById('bgm-yes');
-  var bgmPerf = document.getElementById('bgm-perf');
-  var corridorAudio = document.getElementById('corridor-audio');
-  var soundBtn = document.getElementById('sound-toggle');
-  var soundOn = false;
-  var unlocked = false;
-  var currentTrack = bgmHome;
-
-  bgmHome.volume = 0.6; 
-  bgmSecret.volume = 0.6; 
-  bgmYes.volume = 0.6; 
-  bgmPerf.volume = 0.6;
-  corridorAudio.volume = 0.3; 
-
-  function switchTrack(track){
-    if(currentTrack === track) return;
-    if(unlocked && currentTrack){ currentTrack.pause(); currentTrack.currentTime = 0; }
-    currentTrack = track;
-    if(unlocked && soundOn && currentTrack){ currentTrack.play().catch(function(){}); }
-  }
-
-  function silenceAmbient(){ if(currentTrack){ currentTrack.pause(); } currentTrack = null; }
-
-  function unlockAndPlay(){
-    if(unlocked) return;
-    unlocked = true;
-    if(currentTrack) {
-        currentTrack.play().then(function(){
-          soundOn = true; soundBtn.textContent = 'son : on';
-        }).catch(function(){});
-    }
-  }
-  window.addEventListener('mousedown', unlockAndPlay, {once:true});
-  window.addEventListener('touchstart', unlockAndPlay, {once:true});
-
-  soundBtn.addEventListener('click', function(){
-    if(!unlocked){ unlockAndPlay(); return; }
-    if(soundOn){
-      if(currentTrack) currentTrack.pause();
-      kldSounds.forEach(function(s){ if(s) s.pause(); });
-      sonLose.pause();
-      corridorAudio.pause();
-      soundOn = false; soundBtn.textContent = 'son : off';
-    } else {
-      if(currentTrack) currentTrack.play();
-      for(var i=0; i<killedRevealCount; i++){ if(kldSounds[i]) kldSounds[i].play(); }
-      if(lightCounter > 18 && lightCounter <= 42 && currentView === 'artifact-2') sonLose.play();
-      if(currentView === 'no' && document.getElementById('corridor-video').style.display !== 'none') corridorAudio.play();
-      soundOn = true; soundBtn.textContent = 'son : on';
-    }
-  });
-
-  window.addEventListener('keydown', function(e){
-    if(e.key === '1'){ goHome(); }
-    if(e.key === '2'){ solvedSublime = true; goHome(); navStack.push('home'); showSecret(); }
-    if(e.key === '3'){ solvedSublime = true; goHome(); navStack.push('home'); navStack.push('secret'); showYes(); }
-    if(e.key === '4'){ solvedSublime = true; goHome(); navStack.push('home'); navStack.push('secret'); showNo(); }
-    if(e.key === '5'){ solvedSublime = true; goHome(); navStack.push('home'); navStack.push('secret'); navStack.push('yes'); showPerf(); }
-    if(e.key === '6'){ solvedPlease = true; goHome(); navStack.push('home'); showPlease(); }
-    if(e.key === '7'){ goHome(); navStack.push('home'); navStack.push('please'); showArtifact('1'); }
-    if(e.key === '8'){ goHome(); navStack.push('home'); navStack.push('please'); showArtifact('2'); }
-    if(e.key === '9'){ goHome(); navStack.push('home'); navStack.push('please'); showArtifact('3'); }
-    if(e.key === 'n'){ goHome(); navStack.push('home'); navStack.push('please'); showNote(); }
-    if(e.key === 'b'){ goHome(); navStack.push('home'); navStack.push('no'); showBeing(); }
-    if(e.key === 'c'){ goHome(); navStack.push('home'); navStack.push('no'); navStack.push('being'); showClefs(); }
-  });
+  /* Shortcuts */
+  window.onkeydown = e => {
+    if(e.key === '1') goHome();
+    if(e.key === '2'){ solvedSublime=true; showSecret(); }
+    if(e.key === 'b'){ navStack.push('home'); showBeing(); }
+  };
 })();
 </script>
-
 </body>
 </html>
