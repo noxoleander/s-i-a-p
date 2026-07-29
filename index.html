@@ -95,12 +95,11 @@
     position: absolute;
     color: var(--letter-color);
     font-size: 1.5rem;
-    font-weight: bold; /* En gras */
+    font-weight: bold;
     cursor: pointer;
     z-index: 1;
     user-select: none;
     opacity: 0.9;
-    /* Animation retirée */
   }
   
   #key-1 { top: 22%; left: 35%; }
@@ -108,9 +107,36 @@
   #key-3 { top: 35%; right: 25%; }
   #key-4 { bottom: 18%; right: 40%; }
 
-  /* PAGE CLEFS (Vide pour l'instant) */
+  /* PAGE CLEFS */
   #page-clefs {
     background: #000;
+  }
+  #clefs-intro-container {
+    position: absolute;
+    inset: 0;
+    background: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 5;
+  }
+  #clefs-msg {
+    font-family: Arial, sans-serif;
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--letter-color);
+    cursor: pointer;
+    display: none; /* Apparaît après 2s */
+  }
+  #clefs-bg-video {
+    position: absolute;
+    top: 50%; left: 50%;
+    min-width: 100%; min-height: 100%;
+    width: auto; height: auto;
+    transform: translate(-50%, -50%);
+    object-fit: cover;
+    z-index: 0;
+    display: none;
   }
 
   /* PAGE ARTIFACT 2 */
@@ -594,6 +620,10 @@
 </div>
 
 <div id="page-clefs">
+  <video id="clefs-bg-video" loop playsinline><source src="cheval-bois-vid.mp4" type="video/mp4"></video>
+  <div id="clefs-intro-container">
+    <p id="clefs-msg">need to understand?</p>
+  </div>
   <a class="back" href="#" id="back-link-clefs">← retour</a>
 </div>
 
@@ -877,6 +907,13 @@
     document.getElementById('corridor-audio').pause();
     document.getElementById('msg-being').style.display = 'none';
     document.getElementById('msg-here').style.display = 'none';
+
+    // Reset Clefs
+    var clefVid = document.getElementById('clefs-bg-video');
+    clefVid.pause();
+    clefVid.style.display = 'none';
+    document.getElementById('clefs-intro-container').style.display = 'none';
+    document.getElementById('clefs-msg').style.display = 'none';
   }
 
   function revealView(key){
@@ -942,9 +979,41 @@
   }
 
   function showBeing(){ clearAllViewClasses(); revealView('being'); enterBeingPage(); currentView = 'being'; }
-  function showClefs(){ clearAllViewClasses(); revealView('clefs'); currentView = 'clefs'; }
-  function showHere(){ clearAllViewClasses(); revealView('here'); currentView = 'here'; }
+  
+  /* LOGIQUE PAGE CLEFS */
+  function showClefs(){ 
+    clearAllViewClasses(); 
+    revealView('clefs'); 
+    currentView = 'clefs'; 
+    enterClefsPage();
+  }
 
+  function enterClefsPage() {
+    var introCont = document.getElementById('clefs-intro-container');
+    var msg = document.getElementById('clefs-msg');
+    var vid = document.getElementById('clefs-bg-video');
+
+    introCont.style.display = 'flex';
+    msg.style.display = 'none';
+    vid.style.display = 'none';
+
+    // Timer de 2 secondes avant l'apparition du message
+    setTimeout(function() {
+      if(currentView === 'clefs') {
+        msg.style.display = 'block';
+      }
+    }, 2000);
+
+    msg.onclick = function() {
+      msg.style.display = 'none';
+      introCont.style.display = 'none';
+      vid.style.display = 'block';
+      vid.currentTime = 0;
+      vid.play().catch(function(){});
+    };
+  }
+
+  function showHere(){ clearAllViewClasses(); revealView('here'); currentView = 'here'; }
   function showPerf(){ clearAllViewClasses(); revealView('perf'); enterPerfPage(); currentView = 'perf'; }
   function showPlease(){ clearAllViewClasses(); revealView('please'); switchTrack(bgmHome); enterPleasePage(); currentView = 'please'; }
   
@@ -1017,8 +1086,9 @@
 
   document.querySelectorAll('.being-key').forEach(function(keyEl){
     keyEl.addEventListener('click', function(){
-      var id = keyEl.getAttribute('data-key');
-      var snd = document.getElementById('clef-' + id);
+      // L'ordre des sons est désormais toujours 1, 2, 3, 4
+      var soundId = keysFound + 1;
+      var snd = document.getElementById('clef-' + soundId);
       if(snd && soundOn) {
         var clip = snd.cloneNode(true);
         clip.volume = 0.8;
