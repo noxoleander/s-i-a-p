@@ -68,15 +68,27 @@
     justify-content:center;
   }
 
-  /* PAGE BEING AVEC LAMPE TORCHE */
+  /* PAGE BEING - LOGIQUE CADRE ET LAMPE */
   #page-being {
-    background: #000 url('img-being.jpg') center center / cover no-repeat;
+    background: #000; /* Fond noir total pour les bords */
+  }
+  #being-img-frame {
+    position: relative;
+    /* Ratio 2304 / 1728 = 1.333 (4:3) */
+    width: min(100vw, calc(100vh * 2304 / 1728));
+    height: min(100vh, calc(100vw * 1728 / 2304));
+    background: url('img-being.jpg') center center / cover no-repeat;
+    overflow: hidden; /* Coupe la lampe aux bords de l'image */
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
   #flashlight-overlay {
     position: absolute;
     inset: 0;
     pointer-events: none;
-    background: radial-gradient(circle 150px at var(--cursor-x, 50%) var(--cursor-y, 50%), transparent 0%, rgba(0,0,0,0.98) 100%);
+    /* Cercle de 75px, Noir opaque 100% */
+    background: radial-gradient(circle 75px at var(--flashlight-x, 50%) var(--flashlight-y, 50%), transparent 0%, #000 100%);
     z-index: 2;
   }
 
@@ -540,7 +552,9 @@
 </div>
 
 <div id="page-being">
-  <div id="flashlight-overlay"></div>
+  <div id="being-img-frame">
+    <div id="flashlight-overlay"></div>
+  </div>
   <a class="back" href="#" id="back-link-being">← retour</a>
 </div>
 
@@ -1188,8 +1202,13 @@
     mouseY = y; 
     hasPointer = true; 
     if(currentView === 'being'){
-      document.getElementById('flashlight-overlay').style.setProperty('--cursor-x', x + 'px');
-      document.getElementById('flashlight-overlay').style.setProperty('--cursor-y', y + 'px');
+      var frame = document.getElementById('being-img-frame');
+      var rect = frame.getBoundingClientRect();
+      // Calculer la position relative de la souris par rapport au cadre de l'image
+      var relX = x - rect.left;
+      var relY = y - rect.top;
+      frame.style.setProperty('--flashlight-x', relX + 'px');
+      frame.style.setProperty('--flashlight-y', relY + 'px');
     }
   }
   window.addEventListener('mousemove', function(e){ updatePointer(e.clientX, e.clientY); });
