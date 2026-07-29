@@ -70,13 +70,12 @@
 
   /* PAGE BEING AVEC LAMPE TORCHE */
   #page-being {
-    background: #000 url('img-being.JPG') center center / cover no-repeat;
+    background: #000 url('img-being.jpg') center center / cover no-repeat;
   }
   #flashlight-overlay {
     position: absolute;
     inset: 0;
     pointer-events: none;
-    /* On crée le cercle noir avec un trou transparent au milieu */
     background: radial-gradient(circle 150px at var(--cursor-x, 50%) var(--cursor-y, 50%), transparent 0%, rgba(0,0,0,0.98) 100%);
     z-index: 2;
   }
@@ -317,7 +316,7 @@
   #page-here .back{
     position:absolute;
     bottom:0; left:0;
-    z-index:10; /* Légèrement plus haut pour être au-dessus de la lampe torche */
+    z-index:10;
   }
 
   #page-artlife .artlife-video{
@@ -1188,7 +1187,6 @@
     mouseX = x; 
     mouseY = y; 
     hasPointer = true; 
-    // Mise à jour de la lampe torche pour la page "Being"
     if(currentView === 'being'){
       document.getElementById('flashlight-overlay').style.setProperty('--cursor-x', x + 'px');
       document.getElementById('flashlight-overlay').style.setProperty('--cursor-y', y + 'px');
@@ -1223,7 +1221,7 @@
       if(L.x < BOX){ L.x = BOX; L.vx = Math.abs(L.vx); }
       if(L.x > W - BOX){ L.x = W - BOX; L.vx = -Math.abs(L.vx); }
       if(L.y < BOX){ L.y = BOX; L.vy = Math.abs(L.vy); }
-      if(L.y > H - BOX){ L.y = H - BOX; L.vy = -Math.abs(L.vy); }
+      if(L.y > H - BOX){ L.y = H - BOX; L.vx = -Math.abs(L.vx); }
       L.el.style.transform = 'translate(' + L.x + 'px,' + L.y + 'px)';
     }
     updatePortalState();
@@ -1518,6 +1516,7 @@
     if(e.key === '8'){ goHome(); navStack.push('home'); navStack.push('please'); showArtifact('2'); }
     if(e.key === '9'){ goHome(); navStack.push('home'); navStack.push('please'); showArtifact('3'); }
     if(e.key === 'n'){ goHome(); navStack.push('home'); navStack.push('please'); showNote(); }
+    if(e.key === 'b'){ goHome(); navStack.push('home'); navStack.push('no'); showBeing(); }
   });
 })();
 </script>
