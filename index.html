@@ -68,6 +68,19 @@
     justify-content:center;
   }
 
+  /* PAGE BEING AVEC LAMPE TORCHE */
+  #page-being {
+    background: #000 url('img-being.JPG') center center / cover no-repeat;
+  }
+  #flashlight-overlay {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    /* On crée le cercle noir avec un trou transparent au milieu */
+    background: radial-gradient(circle 150px at var(--cursor-x, 50%) var(--cursor-y, 50%), transparent 0%, rgba(0,0,0,0.98) 100%);
+    z-index: 2;
+  }
+
   /* PAGE ARTIFACT 2 */
   #page-artifact-2 {
     background: #000 url('img-artfact-2.JPG') center center / cover no-repeat;
@@ -108,7 +121,6 @@
   #page-perf video,
   #page-please video,
   #page-artifact-3 video,
-  #page-being video,
   #page-here video{
     position:absolute;
     top:50%; left:50%;
@@ -305,7 +317,7 @@
   #page-here .back{
     position:absolute;
     bottom:0; left:0;
-    z-index:1;
+    z-index:10; /* Légèrement plus haut pour être au-dessus de la lampe torche */
   }
 
   #page-artlife .artlife-video{
@@ -384,7 +396,7 @@
     position:fixed;
     bottom:1.2rem;
     right:1.2rem;
-    z-index:10;
+    z-index:20;
     background:transparent;
     border:1px solid rgba(255,255,255,.4);
     color:#fff;
@@ -529,6 +541,7 @@
 </div>
 
 <div id="page-being">
+  <div id="flashlight-overlay"></div>
   <a class="back" href="#" id="back-link-being">← retour</a>
 </div>
 
@@ -1171,7 +1184,16 @@
   var mouseX = W/2, mouseY = H/2; var lastMouseX = mouseX, lastMouseY = mouseY;
   var mvx = 0, mvy = 0; var hasPointer = false;
 
-  function updatePointer(x, y){ mouseX = x; mouseY = y; hasPointer = true; }
+  function updatePointer(x, y){ 
+    mouseX = x; 
+    mouseY = y; 
+    hasPointer = true; 
+    // Mise à jour de la lampe torche pour la page "Being"
+    if(currentView === 'being'){
+      document.getElementById('flashlight-overlay').style.setProperty('--cursor-x', x + 'px');
+      document.getElementById('flashlight-overlay').style.setProperty('--cursor-y', y + 'px');
+    }
+  }
   window.addEventListener('mousemove', function(e){ updatePointer(e.clientX, e.clientY); });
   window.addEventListener('touchmove', function(e){
     if(e.touches && e.touches[0]) updatePointer(e.touches[0].clientX, e.touches[0].clientY);
@@ -1201,7 +1223,7 @@
       if(L.x < BOX){ L.x = BOX; L.vx = Math.abs(L.vx); }
       if(L.x > W - BOX){ L.x = W - BOX; L.vx = -Math.abs(L.vx); }
       if(L.y < BOX){ L.y = BOX; L.vy = Math.abs(L.vy); }
-      if(L.y > H - BOX){ L.y = H - BOX; L.vx = -Math.abs(L.vx); }
+      if(L.y > H - BOX){ L.y = H - BOX; L.vy = -Math.abs(L.vy); }
       L.el.style.transform = 'translate(' + L.x + 'px,' + L.y + 'px)';
     }
     updatePortalState();
@@ -1445,7 +1467,7 @@
   bgmSecret.volume = 0.6; 
   bgmYes.volume = 0.6; 
   bgmPerf.volume = 0.6;
-  corridorAudio.volume = 0.3; // VOLUME RÉDUIT ICI
+  corridorAudio.volume = 0.3; 
 
   function switchTrack(track){
     if(currentTrack === track) return;
