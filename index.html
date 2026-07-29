@@ -53,7 +53,7 @@
   }
 
   #secret-view, #view-yes, #view-no, #page-perf, #page-please,
-  #page-artlife, #page-artifact-2, #page-artifact-3, #page-being, #page-here{
+  #page-artlife, #page-artifact-2, #page-artifact-3, #page-being, #page-here, #page-clefs{
     position:fixed;
     inset:0;
     z-index:3;
@@ -70,15 +70,14 @@
 
   /* PAGE BEING - LOGIQUE CADRE ET LAMPE */
   #page-being {
-    background: #000; /* Fond noir total pour les bords */
+    background: #000;
   }
   #being-img-frame {
     position: relative;
-    /* Ratio 2304 / 1728 = 1.333 (4:3) */
     width: min(100vw, calc(100vh * 2304 / 1728));
     height: min(100vh, calc(100vw * 1728 / 2304));
     background: url('img-being.jpg') center center / cover no-repeat;
-    overflow: hidden; /* Coupe la lampe aux bords de l'image */
+    overflow: hidden;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -87,9 +86,35 @@
     position: absolute;
     inset: 0;
     pointer-events: none;
-    /* Cercle de 75px, Noir opaque 100% */
     background: radial-gradient(circle 75px at var(--flashlight-x, 50%) var(--flashlight-y, 50%), transparent 0%, #000 100%);
     z-index: 2;
+  }
+
+  /* Clés cachées dans Being */
+  .being-key {
+    position: absolute;
+    color: var(--letter-color);
+    font-size: 1.5rem;
+    cursor: pointer;
+    z-index: 1; /* Sous l'overlay mais sur l'image */
+    user-select: none;
+    opacity: 0.8;
+    transition: transform 0.3s;
+  }
+  .being-key:hover { transform: scale(1.2); }
+  
+  /* Positions arbitraires des clés */
+  #key-1 { top: 20%; left: 30%; }
+  #key-2 { top: 70%; left: 25%; }
+  #key-3 { top: 40%; right: 20%; }
+  #key-4 { bottom: 15%; right: 35%; }
+
+  /* PAGE CLEFS (Celle qui s'ouvre après avoir trouvé les symboles) */
+  #page-clefs {
+    background: #000;
+    color: var(--letter-color);
+    font-family: Arial, sans-serif;
+    text-align: center;
   }
 
   /* PAGE ARTIFACT 2 */
@@ -132,6 +157,7 @@
   #page-perf video,
   #page-please video,
   #page-artifact-3 video,
+  #page-clefs video,
   #page-here video{
     position:absolute;
     top:50%; left:50%;
@@ -189,6 +215,7 @@
   body.v-note #page-note{ opacity:1; pointer-events:auto; }
   body.v-being #page-being{ opacity:1; pointer-events:auto; }
   body.v-here #page-here{ opacity:1; pointer-events:auto; }
+  body.v-clefs #page-clefs{ opacity:1; pointer-events:auto; }
 
   #page-note{
     position:fixed;
@@ -325,7 +352,8 @@
   #page-artifact-3 .back,
   #page-note .back,
   #page-being .back,
-  #page-here .back{
+  #page-here .back,
+  #page-clefs .back{
     position:absolute;
     bottom:0; left:0;
     z-index:10;
@@ -553,9 +581,22 @@
 
 <div id="page-being">
   <div id="being-img-frame">
+    <!-- LES CLEFS CACHÉES -->
+    <div class="being-key" id="key-1">✥</div>
+    <div class="being-key" id="key-2">✧</div>
+    <div class="being-key" id="key-3">◈</div>
+    <div class="being-key" id="key-4">☙</div>
+    
     <div id="flashlight-overlay"></div>
   </div>
   <a class="back" href="#" id="back-link-being">← retour</a>
+</div>
+
+<!-- NOUVELLE PAGE CLEFS -->
+<div id="page-clefs">
+  <video autoplay muted loop playsinline><source src="video-clefs.mp4" type="video/mp4"></video>
+  <h2 style="z-index:1; position:relative;">The garden is open</h2>
+  <a class="back" href="#" id="back-link-clefs">← retour</a>
 </div>
 
 <div id="page-here">
@@ -812,11 +853,12 @@
     'artifact-3': document.getElementById('page-artifact-3'),
     'note': document.getElementById('page-note'),
     'being': document.getElementById('page-being'),
-    'here': document.getElementById('page-here')
+    'here': document.getElementById('page-here'),
+    'clefs': document.getElementById('page-clefs')
   };
 
   function clearAllViewClasses(){
-    document.body.classList.remove('opened', 'v-secret', 'v-yes', 'v-no', 'v-perf', 'v-please', 'v-artifact-1', 'v-artifact-2', 'v-artifact-3', 'v-note', 'v-being', 'v-here');
+    document.body.classList.remove('opened', 'v-secret', 'v-yes', 'v-no', 'v-perf', 'v-please', 'v-artifact-1', 'v-artifact-2', 'v-artifact-3', 'v-note', 'v-being', 'v-here', 'v-clefs');
     Object.keys(allViewEls).forEach(function(key){
       var el = allViewEls[key];
       el.style.opacity = '0'; el.style.pointerEvents = 'none';
@@ -901,7 +943,8 @@
     };
   }
 
-  function showBeing(){ clearAllViewClasses(); revealView('being'); currentView = 'being'; }
+  function showBeing(){ clearAllViewClasses(); revealView('being'); enterBeingPage(); currentView = 'being'; }
+  function showClefs(){ clearAllViewClasses(); revealView('clefs'); currentView = 'clefs'; }
   function showHere(){ clearAllViewClasses(); revealView('here'); currentView = 'here'; }
 
   function showPerf(){ clearAllViewClasses(); revealView('perf'); enterPerfPage(); currentView = 'perf'; }
@@ -942,6 +985,7 @@
       case 'note': showNote(); break;
       case 'being': showBeing(); break;
       case 'here': showHere(); break;
+      case 'clefs': showClefs(); break;
       default: goHome();
     }
   }
@@ -954,6 +998,7 @@
   document.getElementById('back-link-note').addEventListener('click', function(e){ e.preventDefault(); goBack(); });
   document.getElementById('back-link-being').addEventListener('click', function(e){ e.preventDefault(); goBack(); });
   document.getElementById('back-link-here').addEventListener('click', function(e){ e.preventDefault(); goBack(); });
+  document.getElementById('back-link-clefs').addEventListener('click', function(e){ e.preventDefault(); goBack(); });
 
   document.getElementById('msg-being').addEventListener('click', function(){ navStack.push(currentView); showBeing(); });
   document.getElementById('msg-here').addEventListener('click', function(){ navStack.push(currentView); showHere(); });
@@ -962,6 +1007,28 @@
     document.getElementById('back-link-artifact-' + n).addEventListener('click', function(e){ e.preventDefault(); goBack(); });
   });
   document.getElementById('artlife-back-phrase').addEventListener('click', function(){ goToPleaseWithArtifactsShown(); });
+
+  /* ---------------- BEING KEYS LOGIC ---------------- */
+  var keysFound = 0;
+  function enterBeingPage(){
+    keysFound = 0;
+    document.querySelectorAll('.being-key').forEach(function(k){
+      k.style.display = 'block';
+    });
+  }
+
+  document.querySelectorAll('.being-key').forEach(function(keyEl){
+    keyEl.addEventListener('click', function(){
+      keyEl.style.display = 'none';
+      keysFound++;
+      if(keysFound >= 4){
+        setTimeout(function(){
+          navStack.push(currentView);
+          showClefs();
+        }, 500);
+      }
+    });
+  });
 
   var noteSounds = {
     'note-1': document.getElementById('sound-note-1'), 'note-2': document.getElementById('sound-note-2'),
@@ -1204,7 +1271,6 @@
     if(currentView === 'being'){
       var frame = document.getElementById('being-img-frame');
       var rect = frame.getBoundingClientRect();
-      // Calculer la position relative de la souris par rapport au cadre de l'image
       var relX = x - rect.left;
       var relY = y - rect.top;
       frame.style.setProperty('--flashlight-x', relX + 'px');
@@ -1536,6 +1602,7 @@
     if(e.key === '9'){ goHome(); navStack.push('home'); navStack.push('please'); showArtifact('3'); }
     if(e.key === 'n'){ goHome(); navStack.push('home'); navStack.push('please'); showNote(); }
     if(e.key === 'b'){ goHome(); navStack.push('home'); navStack.push('no'); showBeing(); }
+    if(e.key === 'c'){ goHome(); navStack.push('home'); navStack.push('no'); navStack.push('being'); showClefs(); }
   });
 })();
 </script>
