@@ -95,26 +95,22 @@
     position: absolute;
     color: var(--letter-color);
     font-size: 1.5rem;
+    font-weight: bold; /* En gras */
     cursor: pointer;
-    z-index: 1; /* Sous l'overlay mais sur l'image */
+    z-index: 1;
     user-select: none;
-    opacity: 0.8;
-    transition: transform 0.3s;
+    opacity: 0.9;
+    /* Animation retirée */
   }
-  .being-key:hover { transform: scale(1.2); }
   
-  /* Positions arbitraires des clés */
-  #key-1 { top: 20%; left: 30%; }
-  #key-2 { top: 70%; left: 25%; }
-  #key-3 { top: 40%; right: 20%; }
-  #key-4 { bottom: 15%; right: 35%; }
+  #key-1 { top: 22%; left: 35%; }
+  #key-2 { top: 68%; left: 20%; }
+  #key-3 { top: 35%; right: 25%; }
+  #key-4 { bottom: 18%; right: 40%; }
 
-  /* PAGE CLEFS (Celle qui s'ouvre après avoir trouvé les symboles) */
+  /* PAGE CLEFS (Vide pour l'instant) */
   #page-clefs {
     background: #000;
-    color: var(--letter-color);
-    font-family: Arial, sans-serif;
-    text-align: center;
   }
 
   /* PAGE ARTIFACT 2 */
@@ -157,7 +153,6 @@
   #page-perf video,
   #page-please video,
   #page-artifact-3 video,
-  #page-clefs video,
   #page-here video{
     position:absolute;
     top:50%; left:50%;
@@ -549,6 +544,12 @@
 <!-- SON CORRIDOR -->
 <audio id="corridor-audio" preload="auto"><source src="corridor-son.mp3" type="audio/mpeg"></audio>
 
+<!-- SONS DES CLEFS -->
+<audio id="clef-1" preload="auto"><source src="clef-1.mp3" type="audio/mpeg"></audio>
+<audio id="clef-2" preload="auto"><source src="clef-2.mp3" type="audio/mpeg"></audio>
+<audio id="clef-3" preload="auto"><source src="clef-3.mp3" type="audio/mpeg"></audio>
+<audio id="clef-4" preload="auto"><source src="clef-4.mp3" type="audio/mpeg"></audio>
+
 <div id="secret-view">
   <video autoplay muted loop playsinline><source src="video-suite.mp4" type="video/mp4"></video>
   <div class="options" id="yesno-options">
@@ -582,20 +583,17 @@
 <div id="page-being">
   <div id="being-img-frame">
     <!-- LES CLEFS CACHÉES -->
-    <div class="being-key" id="key-1">✥</div>
-    <div class="being-key" id="key-2">✧</div>
-    <div class="being-key" id="key-3">◈</div>
-    <div class="being-key" id="key-4">☙</div>
+    <div class="being-key" id="key-1" data-key="1">✥</div>
+    <div class="being-key" id="key-2" data-key="2">✧</div>
+    <div class="being-key" id="key-3" data-key="3">◈</div>
+    <div class="being-key" id="key-4" data-key="4">☙</div>
     
     <div id="flashlight-overlay"></div>
   </div>
   <a class="back" href="#" id="back-link-being">← retour</a>
 </div>
 
-<!-- NOUVELLE PAGE CLEFS -->
 <div id="page-clefs">
-  <video autoplay muted loop playsinline><source src="video-clefs.mp4" type="video/mp4"></video>
-  <h2 style="z-index:1; position:relative;">The garden is open</h2>
   <a class="back" href="#" id="back-link-clefs">← retour</a>
 </div>
 
@@ -1019,6 +1017,14 @@
 
   document.querySelectorAll('.being-key').forEach(function(keyEl){
     keyEl.addEventListener('click', function(){
+      var id = keyEl.getAttribute('data-key');
+      var snd = document.getElementById('clef-' + id);
+      if(snd && soundOn) {
+        var clip = snd.cloneNode(true);
+        clip.volume = 0.8;
+        clip.play().catch(function(){});
+      }
+
       keyEl.style.display = 'none';
       keysFound++;
       if(keysFound >= 4){
