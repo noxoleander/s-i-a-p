@@ -1656,7 +1656,7 @@
       if(L.x < BOX){ L.x = BOX; L.vx = Math.abs(L.vx); }
       if(L.x > W - BOX){ L.x = W - BOX; L.vx = -Math.abs(L.vx); }
       if(L.y < BOX){ L.y = BOX; L.vy = Math.abs(L.vy); }
-      if(L.y > H - BOX){ L.y = H - BOX; L.vx = -Math.abs(L.vx); }
+      if(L.y > H - BOX){ L.y = H - BOX; L.vy = -Math.abs(L.vy); } // FIX: Changed L.vx to L.vy
       L.el.style.transform = 'translate(' + L.x + 'px,' + L.y + 'px)';
     }
     updatePortalState();
