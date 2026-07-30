@@ -146,19 +146,48 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: center; /* Centrage vertical du bloc complet */
     pointer-events: none;
-    padding: 1.5rem 8vw;
+    padding: 2rem 8vw;
     text-align: center;
-    overflow-y: auto;
   }
   .clefs-line {
-    margin: 0.35em 0;
+    margin: 0.3em 0;
     font-family: Arial, sans-serif;
     font-weight: 700;
     font-size: 0.95rem;
     color: var(--letter-color);
-    line-height: 1.3;
+    line-height: 1.2;
+  }
+
+  /* BOUTONS LANGUE */
+  .lang-switch-container {
+    position: absolute;
+    top: 1.2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 20;
+    display: none; /* Apparaît quand la vidéo commence */
+    gap: 0.6rem;
+  }
+  .lang-btn {
+    background: transparent;
+    border: 1px solid rgba(255,255,255,.4);
+    color: #fff;
+    font-family: Arial, sans-serif;
+    font-size: .65rem;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    padding: .4rem .7rem;
+    cursor: pointer;
+    opacity: .5;
+    transition: opacity .2s, color .2s, border-color .2s;
+  }
+  .lang-btn:hover { opacity: 1; }
+  .lang-btn.active {
+    opacity: 1;
+    color: var(--letter-color);
+    border-color: var(--letter-color);
   }
 
   /* PAGE ARTIFACT 2 */
@@ -615,7 +644,7 @@
 </div>
 
 <div id="view-no">
-  <video autoplay muted loop playsinline><source src="video-no.mp4" type="video/mp4"></video>
+  <video autoplay muted loop playsinline><source src="video-no.mp4" type="video/msg.mp4"></video>
   
   <!-- VIDEOS CORRIDOR -->
   <video id="corridor-video" playsinline preload="auto"><source src="corridor-1.mp4" type="video/mp4"></video>
@@ -646,6 +675,12 @@
   <div id="clefs-intro-container">
     <p id="clefs-msg">need to understand?</p>
   </div>
+  
+  <div class="lang-switch-container" id="clefs-lang-switcher">
+    <button type="button" class="lang-btn active" id="btn-eng">ENG</button>
+    <button type="button" class="lang-btn" id="btn-fr">FR</button>
+  </div>
+
   <div id="clefs-text-container"></div>
   <a class="back" href="#" id="back-link-clefs">← retour</a>
 </div>
@@ -938,6 +973,7 @@
     document.getElementById('clefs-intro-container').style.display = 'none';
     document.getElementById('clefs-msg').style.display = 'none';
     document.getElementById('clefs-text-container').innerHTML = '';
+    document.getElementById('clefs-lang-switcher').style.display = 'none';
     clefsIndex = 0;
     clefsVideoStarted = false;
   }
@@ -1007,7 +1043,7 @@
   function showBeing(){ clearAllViewClasses(); revealView('being'); enterBeingPage(); currentView = 'being'; }
   
   /* ---------------- PAGE CLEFS LOGIC ---------------- */
-  var clefsPhrases = [
+  var clefsPhrasesENG = [
     "I left the red tree.",
     "I had to leave quickly. I only had time to gather the jewels and tie them to my head.",
     "I'm not sure what I experienced afterward was ever real.",
@@ -1023,8 +1059,26 @@
     "I can't make it out very well.",
     "Is it a horse?"
   ];
+  var clefsPhrasesFR = [
+    "J’ai quitté l’arbre rouge.",
+    "J’ai dû partir vite. Je n’eus que le temps de réunir les bijoux et de les accrocher à ma tête.",
+    "Je ne suis pas sûr que ce que j’ai vécu entre-temps ait vraiment été réel.",
+    "D’ailleurs, je ne suis pas non plus sûr que ça l’ait été avant.",
+    "J’ai appris quelque chose : quand vous serez en sécurité, faites les notes dans le bon ordre, et vous saurez.",
+    "Depuis, la lumière me semble singulière. Il y a quelque chose de... pas naturel.",
+    "Est-ce que je nais à nouveau ?",
+    "Quel était cet arbre rouge ?",
+    "Face à un miroir, je le voyais.",
+    "Maintenant, je ne vois plus que l’obscurité.",
+    "Parfois, dans l’obscurité, j’aperçois une forme blanche.",
+    "Elle semble pleine de vie, mystique par sa beauté, triste par son égarement dans le noir.",
+    "Je ne distingue pas très bien.",
+    "Est-ce un cheval ?"
+  ];
+
   var clefsIndex = 0;
   var clefsVideoStarted = false;
+  var currentClefsLang = 'ENG';
 
   function showClefs(){ 
     clearAllViewClasses(); 
@@ -1033,19 +1087,33 @@
     enterClefsPage();
   }
 
+  function renderClefsText() {
+    var textContainer = document.getElementById('clefs-text-container');
+    textContainer.innerHTML = '';
+    var list = (currentClefsLang === 'ENG') ? clefsPhrasesENG : clefsPhrasesFR;
+    for(var i=0; i < clefsIndex; i++) {
+        var lineEl = document.createElement('p');
+        lineEl.className = 'clefs-line';
+        lineEl.textContent = list[i];
+        textContainer.appendChild(lineEl);
+    }
+  }
+
   function enterClefsPage() {
     var introCont = document.getElementById('clefs-intro-container');
     var msg = document.getElementById('clefs-msg');
     var vid = document.getElementById('clefs-bg-video');
-    var textContainer = document.getElementById('clefs-text-container');
+    var switcher = document.getElementById('clefs-lang-switcher');
 
     clefsIndex = 0;
     clefsVideoStarted = false;
-    textContainer.innerHTML = '';
+    currentClefsLang = 'ENG';
+    updateLangButtons();
 
     introCont.style.display = 'flex';
     msg.style.display = 'none';
     vid.style.display = 'none';
+    switcher.style.display = 'none';
 
     setTimeout(function() {
       if(currentView === 'clefs') {
@@ -1058,21 +1126,38 @@
       msg.style.display = 'none';
       introCont.style.display = 'none';
       vid.style.display = 'block';
+      switcher.style.display = 'flex';
       vid.currentTime = 0;
       vid.play().catch(function(){});
       clefsVideoStarted = true;
     };
   }
 
+  function updateLangButtons() {
+    document.getElementById('btn-eng').classList.toggle('active', currentClefsLang === 'ENG');
+    document.getElementById('btn-fr').classList.toggle('active', currentClefsLang === 'FR');
+  }
+
+  document.getElementById('btn-eng').addEventListener('click', function(e){
+    e.stopPropagation();
+    currentClefsLang = 'ENG';
+    updateLangButtons();
+    renderClefsText();
+  });
+
+  document.getElementById('btn-fr').addEventListener('click', function(e){
+    e.stopPropagation();
+    currentClefsLang = 'FR';
+    updateLangButtons();
+    renderClefsText();
+  });
+
   document.getElementById('page-clefs').addEventListener('click', function(e){
     if(!clefsVideoStarted) return;
-    if(e.target.closest && e.target.closest('.back')) return;
-    if(clefsIndex < clefsPhrases.length){
-      var lineEl = document.createElement('p');
-      lineEl.className = 'clefs-line';
-      lineEl.textContent = clefsPhrases[clefsIndex];
-      document.getElementById('clefs-text-container').appendChild(lineEl);
+    if(e.target.closest && (e.target.closest('.back') || e.target.closest('.lang-switch-container'))) return;
+    if(clefsIndex < clefsPhrasesENG.length){
       clefsIndex++;
+      renderClefsText();
     }
   });
 
