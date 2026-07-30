@@ -53,7 +53,8 @@
   }
 
   #secret-view, #view-yes, #view-no, #page-perf, #page-please,
-  #page-artlife, #page-artifact-2, #page-artifact-3, #page-being, #page-here, #page-clefs{
+  #page-artlife, #page-artifact-2, #page-artifact-3, #page-being, #page-here, #page-clefs,
+  #page-thesurface, #page-ofstone {
     position:fixed;
     inset:0;
     z-index:3;
@@ -146,7 +147,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center; /* Centrage vertical du bloc complet */
+    justify-content: center;
     pointer-events: none;
     padding: 2rem 8vw;
     text-align: center;
@@ -160,6 +161,31 @@
     line-height: 1.2;
   }
 
+  /* LIENS VERS LES NOUVELLES PAGES */
+  .clefs-extra-link {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    font-family: Arial, sans-serif;
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--letter-color);
+    cursor: pointer;
+    z-index: 10;
+    display: none; /* Apparaît à la fin du texte */
+    text-decoration: none;
+  }
+  #link-thesurface { left: 4%; }
+  #link-ofstone { right: 4%; }
+
+  /* PAGES TEXTES (THE SURFACE / OF STONE) */
+  .page-txt-img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    z-index: 1;
+  }
+
   /* BOUTONS LANGUE */
   .lang-switch-container {
     position: absolute;
@@ -167,7 +193,7 @@
     left: 50%;
     transform: translateX(-50%);
     z-index: 20;
-    display: none; /* Apparaît quand la vidéo commence */
+    display: flex;
     gap: 0.6rem;
   }
   .lang-btn {
@@ -288,6 +314,8 @@
   body.v-being #page-being{ opacity:1; pointer-events:auto; }
   body.v-here #page-here{ opacity:1; pointer-events:auto; }
   body.v-clefs #page-clefs{ opacity:1; pointer-events:auto; }
+  body.v-thesurface #page-thesurface{ opacity:1; pointer-events:auto; }
+  body.v-ofstone #page-ofstone{ opacity:1; pointer-events:auto; }
 
   #page-note{
     position:fixed;
@@ -425,7 +453,9 @@
   #page-note .back,
   #page-being .back,
   #page-here .back,
-  #page-clefs .back{
+  #page-clefs .back,
+  #page-thesurface .back,
+  #page-ofstone .back {
     position:absolute;
     bottom:0; left:0;
     z-index:10;
@@ -627,6 +657,10 @@
 <audio id="clef-3" preload="auto"><source src="clef-3.mp3" type="audio/mpeg"></audio>
 <audio id="clef-4" preload="auto"><source src="clef-4.mp3" type="audio/mpeg"></audio>
 
+<!-- SONS NOUVELLES PAGES -->
+<audio id="thesurface-son" loop preload="auto"><source src="thesurface-son.mp3" type="audio/mpeg"></audio>
+<audio id="ofstone-son" loop preload="auto"><source src="ofstone-son.mp3" type="audio/mpeg"></audio>
+
 <div id="secret-view">
   <video autoplay muted loop playsinline><source src="video-suite.mp4" type="video/mp4"></video>
   <div class="options" id="yesno-options">
@@ -644,7 +678,7 @@
 </div>
 
 <div id="view-no">
-  <video autoplay muted loop playsinline><source src="video-no.mp4" type="video/msg.mp4"></video>
+  <video autoplay muted loop playsinline><source src="video-no.mp4" type="video/mp4"></video>
   
   <!-- VIDEOS CORRIDOR -->
   <video id="corridor-video" playsinline preload="auto"><source src="corridor-1.mp4" type="video/mp4"></video>
@@ -676,13 +710,35 @@
     <p id="clefs-msg">need to understand?</p>
   </div>
   
-  <div class="lang-switch-container" id="clefs-lang-switcher">
-    <button type="button" class="lang-btn active" id="btn-eng">ENG</button>
-    <button type="button" class="lang-btn" id="btn-fr">FR</button>
+  <div class="lang-switch-container" id="clefs-lang-switcher" style="display:none;">
+    <button type="button" class="lang-btn active btn-eng-cls">ENG</button>
+    <button type="button" class="lang-btn btn-fr-cls">FR</button>
   </div>
 
   <div id="clefs-text-container"></div>
+  
+  <div id="link-thesurface" class="clefs-extra-link">THE SURFACE</div>
+  <div id="link-ofstone" class="clefs-extra-link">OF STONE</div>
+
   <a class="back" href="#" id="back-link-clefs">← retour</a>
+</div>
+
+<div id="page-thesurface">
+  <div class="lang-switch-container">
+    <button type="button" class="lang-btn active btn-eng-cls">ENG</button>
+    <button type="button" class="lang-btn btn-fr-cls">FR</button>
+  </div>
+  <img id="thesurface-img" class="page-txt-img" src="thesurface-txt.jpg" alt="">
+  <a class="back" href="#" id="back-link-thesurface">← retour</a>
+</div>
+
+<div id="page-ofstone">
+  <div class="lang-switch-container">
+    <button type="button" class="lang-btn active btn-eng-cls">ENG</button>
+    <button type="button" class="lang-btn btn-fr-cls">FR</button>
+  </div>
+  <img id="ofstone-img" class="page-txt-img" src="ofstone-txt.jpg" alt="">
+  <a class="back" href="#" id="back-link-ofstone">← retour</a>
 </div>
 
 <div id="page-here">
@@ -940,11 +996,13 @@
     'note': document.getElementById('page-note'),
     'being': document.getElementById('page-being'),
     'here': document.getElementById('page-here'),
-    'clefs': document.getElementById('page-clefs')
+    'clefs': document.getElementById('page-clefs'),
+    'thesurface': document.getElementById('page-thesurface'),
+    'ofstone': document.getElementById('page-ofstone')
   };
 
   function clearAllViewClasses(){
-    document.body.classList.remove('opened', 'v-secret', 'v-yes', 'v-no', 'v-perf', 'v-please', 'v-artifact-1', 'v-artifact-2', 'v-artifact-3', 'v-note', 'v-being', 'v-here', 'v-clefs');
+    document.body.classList.remove('opened', 'v-secret', 'v-yes', 'v-no', 'v-perf', 'v-please', 'v-artifact-1', 'v-artifact-2', 'v-artifact-3', 'v-note', 'v-being', 'v-here', 'v-clefs', 'v-thesurface', 'v-ofstone');
     Object.keys(allViewEls).forEach(function(key){
       var el = allViewEls[key];
       el.style.opacity = '0'; el.style.pointerEvents = 'none';
@@ -974,6 +1032,8 @@
     document.getElementById('clefs-msg').style.display = 'none';
     document.getElementById('clefs-text-container').innerHTML = '';
     document.getElementById('clefs-lang-switcher').style.display = 'none';
+    document.getElementById('link-thesurface').style.display = 'none';
+    document.getElementById('link-ofstone').style.display = 'none';
     clefsIndex = 0;
     clefsVideoStarted = false;
   }
@@ -1097,6 +1157,11 @@
         lineEl.textContent = list[i];
         textContainer.appendChild(lineEl);
     }
+    // Afficher les liens si texte complet
+    if(clefsIndex >= clefsPhrasesENG.length) {
+        document.getElementById('link-thesurface').style.display = 'block';
+        document.getElementById('link-ofstone').style.display = 'block';
+    }
   }
 
   function enterClefsPage() {
@@ -1107,7 +1172,7 @@
 
     clefsIndex = 0;
     clefsVideoStarted = false;
-    currentClefsLang = 'ENG';
+    // On ne réinitialise pas forcément la langue ici pour garder la synchro globale
     updateLangButtons();
 
     introCont.style.display = 'flex';
@@ -1133,33 +1198,79 @@
     };
   }
 
+  /* ---------------- LOGIQUE LANGUES GLOBALE ---------------- */
   function updateLangButtons() {
-    document.getElementById('btn-eng').classList.toggle('active', currentClefsLang === 'ENG');
-    document.getElementById('btn-fr').classList.toggle('active', currentClefsLang === 'FR');
+    document.querySelectorAll('.btn-eng-cls').forEach(b => b.classList.toggle('active', currentClefsLang === 'ENG'));
+    document.querySelectorAll('.btn-fr-cls').forEach(b => b.classList.toggle('active', currentClefsLang === 'FR'));
+    
+    // Mise à jour immédiate des visuels si on est sur une page concernée
+    if(currentView === 'clefs') renderClefsText();
+    if(currentView === 'thesurface') updateTheSurfaceImg();
+    if(currentView === 'ofstone') updateOfStoneImg();
   }
 
-  document.getElementById('btn-eng').addEventListener('click', function(e){
-    e.stopPropagation();
-    currentClefsLang = 'ENG';
-    updateLangButtons();
-    renderClefsText();
+  document.querySelectorAll('.btn-eng-cls').forEach(btn => {
+    btn.addEventListener('click', function(e){
+        e.stopPropagation();
+        currentClefsLang = 'ENG';
+        updateLangButtons();
+    });
   });
 
-  document.getElementById('btn-fr').addEventListener('click', function(e){
-    e.stopPropagation();
-    currentClefsLang = 'FR';
-    updateLangButtons();
-    renderClefsText();
+  document.querySelectorAll('.btn-fr-cls').forEach(btn => {
+    btn.addEventListener('click', function(e){
+        e.stopPropagation();
+        currentClefsLang = 'FR';
+        updateLangButtons();
+    });
   });
 
   document.getElementById('page-clefs').addEventListener('click', function(e){
     if(!clefsVideoStarted) return;
-    if(e.target.closest && (e.target.closest('.back') || e.target.closest('.lang-switch-container'))) return;
+    if(e.target.closest && (e.target.closest('.back') || e.target.closest('.lang-switch-container') || e.target.closest('.clefs-extra-link'))) return;
     if(clefsIndex < clefsPhrasesENG.length){
       clefsIndex++;
       renderClefsText();
     }
   });
+
+  /* ---------------- THE SURFACE / OF STONE LOGIC ---------------- */
+  function showTheSurface(){
+    clearAllViewClasses();
+    revealView('thesurface');
+    currentView = 'thesurface';
+    updateTheSurfaceImg();
+    switchTrack(document.getElementById('thesurface-son'));
+  }
+  function updateTheSurfaceImg(){
+    const img = document.getElementById('thesurface-img');
+    img.src = (currentClefsLang === 'ENG') ? 'thesurface-txt.jpg' : 'thesurface-txtfr.jpg';
+  }
+
+  function showOfStone(){
+    clearAllViewClasses();
+    revealView('ofstone');
+    currentView = 'ofstone';
+    updateOfStoneImg();
+    switchTrack(document.getElementById('ofstone-son'));
+  }
+  function updateOfStoneImg(){
+    const img = document.getElementById('ofstone-img');
+    img.src = (currentClefsLang === 'ENG') ? 'ofstone-txt.jpg' : 'ofstone-txtfr.jpg';
+  }
+
+  document.getElementById('link-thesurface').addEventListener('click', function(e){
+    e.stopPropagation(); navStack.push(currentView); showTheSurface();
+  });
+  document.getElementById('link-ofstone').addEventListener('click', function(e){
+    e.stopPropagation(); navStack.push(currentView); showOfStone();
+  });
+
+  document.getElementById('back-link-thesurface').addEventListener('click', function(e){ e.preventDefault(); goBack(); });
+  document.getElementById('back-link-ofstone').addEventListener('click', function(e){ e.preventDefault(); goBack(); });
+
+
+  /* ---------------- RESTE DE LA LOGIQUE ---------------- */
 
   function showHere(){ clearAllViewClasses(); revealView('here'); currentView = 'here'; }
   function showPerf(){ clearAllViewClasses(); revealView('perf'); enterPerfPage(); currentView = 'perf'; }
@@ -1201,6 +1312,8 @@
       case 'being': showBeing(); break;
       case 'here': showHere(); break;
       case 'clefs': showClefs(); break;
+      case 'thesurface': showTheSurface(); break;
+      case 'ofstone': showOfStone(); break;
       default: goHome();
     }
   }
