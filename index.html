@@ -110,6 +110,7 @@
   /* PAGE CLEFS */
   #page-clefs {
     background: #000;
+    cursor: pointer;
   }
   #clefs-intro-container {
     position: absolute;
@@ -126,7 +127,7 @@
     font-size: 0.95rem;
     color: var(--letter-color);
     cursor: pointer;
-    display: none; /* Apparaît après 2s */
+    display: none;
   }
   #clefs-bg-video {
     position: absolute;
@@ -137,6 +138,27 @@
     object-fit: cover;
     z-index: 0;
     display: none;
+  }
+  #clefs-text-container {
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    padding: 1.5rem 8vw;
+    text-align: center;
+    overflow-y: auto;
+  }
+  .clefs-line {
+    margin: 0.35em 0;
+    font-family: Arial, sans-serif;
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--letter-color);
+    line-height: 1.3;
   }
 
   /* PAGE ARTIFACT 2 */
@@ -624,6 +646,7 @@
   <div id="clefs-intro-container">
     <p id="clefs-msg">need to understand?</p>
   </div>
+  <div id="clefs-text-container"></div>
   <a class="back" href="#" id="back-link-clefs">← retour</a>
 </div>
 
@@ -914,6 +937,9 @@
     clefVid.style.display = 'none';
     document.getElementById('clefs-intro-container').style.display = 'none';
     document.getElementById('clefs-msg').style.display = 'none';
+    document.getElementById('clefs-text-container').innerHTML = '';
+    clefsIndex = 0;
+    clefsVideoStarted = false;
   }
 
   function revealView(key){
@@ -980,7 +1006,26 @@
 
   function showBeing(){ clearAllViewClasses(); revealView('being'); enterBeingPage(); currentView = 'being'; }
   
-  /* LOGIQUE PAGE CLEFS */
+  /* ---------------- PAGE CLEFS LOGIC ---------------- */
+  var clefsPhrases = [
+    "I left the red tree.",
+    "I had to leave quickly. I only had time to gather the jewels and tie them to my head.",
+    "I'm not sure what I experienced afterward was ever real.",
+    "Actually, I'm not sure it was ever real to begin with.",
+    "I learned something. When you're safe, play the notes in the right order, and you'll know.",
+    "Ever since then, the light has felt peculiar. There's something... unnatural about it.",
+    "Am I being born again?",
+    "What was that red tree?",
+    "When I was looking into a mirror, I could see it.",
+    "Now, I see nothing but darkness.",
+    "Sometimes, in the darkness, I catch sight of a white figure.",
+    "It seems full of life, mystical in its beauty, sorrowful in the way it wanders through the dark.",
+    "I can't make it out very well.",
+    "Is it a horse?"
+  ];
+  var clefsIndex = 0;
+  var clefsVideoStarted = false;
+
   function showClefs(){ 
     clearAllViewClasses(); 
     revealView('clefs'); 
@@ -992,26 +1037,44 @@
     var introCont = document.getElementById('clefs-intro-container');
     var msg = document.getElementById('clefs-msg');
     var vid = document.getElementById('clefs-bg-video');
+    var textContainer = document.getElementById('clefs-text-container');
+
+    clefsIndex = 0;
+    clefsVideoStarted = false;
+    textContainer.innerHTML = '';
 
     introCont.style.display = 'flex';
     msg.style.display = 'none';
     vid.style.display = 'none';
 
-    // Timer de 2 secondes avant l'apparition du message
     setTimeout(function() {
       if(currentView === 'clefs') {
         msg.style.display = 'block';
       }
     }, 2000);
 
-    msg.onclick = function() {
+    msg.onclick = function(e) {
+      e.stopPropagation();
       msg.style.display = 'none';
       introCont.style.display = 'none';
       vid.style.display = 'block';
       vid.currentTime = 0;
       vid.play().catch(function(){});
+      clefsVideoStarted = true;
     };
   }
+
+  document.getElementById('page-clefs').addEventListener('click', function(e){
+    if(!clefsVideoStarted) return;
+    if(e.target.closest && e.target.closest('.back')) return;
+    if(clefsIndex < clefsPhrases.length){
+      var lineEl = document.createElement('p');
+      lineEl.className = 'clefs-line';
+      lineEl.textContent = clefsPhrases[clefsIndex];
+      document.getElementById('clefs-text-container').appendChild(lineEl);
+      clefsIndex++;
+    }
+  });
 
   function showHere(){ clearAllViewClasses(); revealView('here'); currentView = 'here'; }
   function showPerf(){ clearAllViewClasses(); revealView('perf'); enterPerfPage(); currentView = 'perf'; }
@@ -1086,7 +1149,6 @@
 
   document.querySelectorAll('.being-key').forEach(function(keyEl){
     keyEl.addEventListener('click', function(){
-      // L'ordre des sons est désormais toujours 1, 2, 3, 4
       var soundId = keysFound + 1;
       var snd = document.getElementById('clef-' + soundId);
       if(snd && soundOn) {
