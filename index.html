@@ -1024,7 +1024,13 @@
     document.getElementById('msg-being').style.display = 'none';
     document.getElementById('msg-here').style.display = 'none';
 
-    // Reset Clefs
+    // RESET NOUVEAUX SONS
+    const s1 = document.getElementById('thesurface-son');
+    s1.pause(); s1.currentTime = 0;
+    const s2 = document.getElementById('ofstone-son');
+    s2.pause(); s2.currentTime = 0;
+
+    // Reset Clefs (Visuel uniquement, clefsIndex est préservé pour le retour en arrière)
     var clefVid = document.getElementById('clefs-bg-video');
     clefVid.pause();
     clefVid.style.display = 'none';
@@ -1034,7 +1040,6 @@
     document.getElementById('clefs-lang-switcher').style.display = 'none';
     document.getElementById('link-thesurface').style.display = 'none';
     document.getElementById('link-ofstone').style.display = 'none';
-    clefsIndex = 0;
     clefsVideoStarted = false;
   }
 
@@ -1046,6 +1051,7 @@
 
   function goHome(){
     clearAllViewClasses();
+    clefsIndex = 0; // Reset définitif de l'index des clefs seulement au retour à l'accueil
     solvedSublime = false; solvedPlease = false;
     resetYesSequence(); switchTrack(bgmHome);
     perfBgVideo.pause(); perfHideOverlay();
@@ -1170,32 +1176,41 @@
     var vid = document.getElementById('clefs-bg-video');
     var switcher = document.getElementById('clefs-lang-switcher');
 
-    clefsIndex = 0;
-    clefsVideoStarted = false;
-    // On ne réinitialise pas forcément la langue ici pour garder la synchro globale
     updateLangButtons();
 
-    introCont.style.display = 'flex';
-    msg.style.display = 'none';
-    vid.style.display = 'none';
-    switcher.style.display = 'none';
+    // Logique de retour : si clefsIndex > 0, on court-circuite l'intro
+    if(clefsIndex > 0) {
+        introCont.style.display = 'none';
+        msg.style.display = 'none';
+        vid.style.display = 'block';
+        switcher.style.display = 'flex';
+        vid.currentTime = 0;
+        vid.play().catch(function(){});
+        clefsVideoStarted = true;
+        renderClefsText();
+    } else {
+        introCont.style.display = 'flex';
+        msg.style.display = 'none';
+        vid.style.display = 'none';
+        switcher.style.display = 'none';
 
-    setTimeout(function() {
-      if(currentView === 'clefs') {
-        msg.style.display = 'block';
-      }
-    }, 2000);
+        setTimeout(function() {
+          if(currentView === 'clefs') {
+            msg.style.display = 'block';
+          }
+        }, 2000);
 
-    msg.onclick = function(e) {
-      e.stopPropagation();
-      msg.style.display = 'none';
-      introCont.style.display = 'none';
-      vid.style.display = 'block';
-      switcher.style.display = 'flex';
-      vid.currentTime = 0;
-      vid.play().catch(function(){});
-      clefsVideoStarted = true;
-    };
+        msg.onclick = function(e) {
+          e.stopPropagation();
+          msg.style.display = 'none';
+          introCont.style.display = 'none';
+          vid.style.display = 'block';
+          switcher.style.display = 'flex';
+          vid.currentTime = 0;
+          vid.play().catch(function(){});
+          clefsVideoStarted = true;
+        };
+    }
   }
 
   /* ---------------- LOGIQUE LANGUES GLOBALE ---------------- */
@@ -1203,7 +1218,6 @@
     document.querySelectorAll('.btn-eng-cls').forEach(b => b.classList.toggle('active', currentClefsLang === 'ENG'));
     document.querySelectorAll('.btn-fr-cls').forEach(b => b.classList.toggle('active', currentClefsLang === 'FR'));
     
-    // Mise à jour immédiate des visuels si on est sur une page concernée
     if(currentView === 'clefs') renderClefsText();
     if(currentView === 'thesurface') updateTheSurfaceImg();
     if(currentView === 'ofstone') updateOfStoneImg();
